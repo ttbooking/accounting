@@ -38,7 +38,10 @@
         "laravel": {
             "providers": [
                 "Daniser\\Accounting\\AccountingServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Ledger": "Daniser\\Accounting\\Facades\\Ledger"
+            }
         }
     },
     "suggest": {
