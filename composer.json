@@ -16,9 +16,9 @@
     "require": {
         "php": ">=7.4",
         "ext-mbstring": "*",
-        "illuminate/contracts": "^5.8",
-        "illuminate/support": "^5.8",
-        "illuminate/database": "^5.8",
+        "illuminate/contracts": ">=5.8",
+        "illuminate/support": ">=5.8",
+        "illuminate/database": ">=5.8",
         "moneyphp/money": "^3.3"
     },
     "autoload": {
@@ -42,6 +42,6 @@
         }
     },
     "suggest": {
-        "illuminate/events": "Required to utilize transaction events (^5.8)."
+        "illuminate/events": "Required to utilize transaction events (>=5.8)."
     }
 }
