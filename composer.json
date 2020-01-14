@@ -16,7 +16,9 @@
     "require": {
         "php": ">=7.4",
         "ext-mbstring": "*",
-        "laravel/framework": "^5.8",
+        "illuminate/contracts": "^5.8",
+        "illuminate/support": "^5.8",
+        "illuminate/database": "^5.8",
         "moneyphp/money": "^3.3"
     },
     "autoload": {
@@ -38,5 +40,8 @@
                 "Daniser\\Accounting\\AccountingServiceProvider"
             ]
         }
+    },
+    "suggest": {
+        "illuminate/events": "Required to utilize transaction events (^5.8)."
     }
 }

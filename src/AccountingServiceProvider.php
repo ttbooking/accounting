@@ -16,11 +16,11 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/accounting.php' => config_path('accounting.php')
+                __DIR__.'/../config/accounting.php' => $this->app->configPath('accounting.php')
             ], 'config');
 
             $this->publishes([
-                __DIR__.'/../database/migrations' => database_path('migrations')
+                __DIR__.'/../database/migrations' => $this->app->databasePath('migrations')
             ], 'migrations');
 
             $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
