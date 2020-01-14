@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class DummyClass extends Migration
+{
+    public function up()
+    {
+        Schema::create('DummyTable', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('source_id')->index();
+            $table->unsignedInteger('destination_id')->index();
+            $table->unsignedDecimal('amount', 15, 5);
+            $table->char('currency', 3)->index();
+            $table->json('payload')->nullable();
+            $table->unsignedTinyInteger('status')->default(0);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('finished_at')->nullable();
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('DummyTable');
+    }
+}
