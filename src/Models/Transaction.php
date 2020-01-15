@@ -28,11 +28,17 @@ class Transaction extends Model
     const STATUS_CANCELED = 2;
     const STATUS_FAILED = 3;
 
+    const UPDATED_AT = self::CREATED_AT;
+
+    protected $attributes = [
+        'status' => self::STATUS_STARTED,
+    ];
+
     protected $casts = [
         'payload' => 'array',
     ];
 
-    protected $fillable = ['source_id', 'destination_id', 'amount', 'currency', 'payload'];
+    protected $fillable = ['source_id', 'destination_id', 'amount', 'currency', 'payload', 'status'];
 
     public function getAmountAttribute($amount)
     {

@@ -5,7 +5,7 @@ namespace Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Money\Currency;
 
-interface AccountOwner extends Account
+interface AccountOwner //extends Account
 {
     public function getIdentifier();
 

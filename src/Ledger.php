@@ -115,41 +115,41 @@ class Ledger implements Contracts\Ledger
 
     public function getDefaultType(): string
     {
-        return $this->config['account.default_type'];
+        return $this->config['account']['default_type'];
     }
 
     public function setDefaultType(string $type): void
     {
-        $this->config['account.default_type'] = $type;
+        $this->config['account']['default_type'] = $type;
     }
 
     public function getDefaultCurrency(): Currency
     {
-        return new Currency($this->config['account.default_currency']);
+        return new Currency($this->config['account']['default_currency']);
     }
 
     public function setDefaultCurrency(Currency $currency): void
     {
-        $this->config['account.default_currency'] = $currency->getCode();
+        $this->config['account']['default_currency'] = $currency->getCode();
     }
 
     public function getAutoCommit(): bool
     {
-        return $this->config['transaction.auto_commit'];
+        return $this->config['transaction']['auto_commit'];
     }
 
     public function setAutoCommit(bool $autoCommit): void
     {
-        $this->config['transaction.auto_commit'] = $autoCommit;
+        $this->config['transaction']['auto_commit'] = $autoCommit;
     }
 
     public function getCommitAttempts(): int
     {
-        return $this->config['transaction.commit_attempts'];
+        return $this->config['transaction']['commit_attempts'];
     }
 
     public function setCommitAttempts(int $attempts): void
     {
-        $this->config['transaction.commit_attempts'] = $attempts;
+        $this->config['transaction']['commit_attempts'] = $attempts;
     }
 }

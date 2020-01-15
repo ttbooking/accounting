@@ -66,11 +66,11 @@ class Account extends AccountAbstract
 
     public function increment(Money $amount): void
     {
-        $this->model->newQuery()->increment('balance', $this->ledger->convertMoney($amount, $this->getCurrency()));
+        $this->model->increment('balance', $this->ledger->convertMoney($amount, $this->getCurrency())->getAmount());
     }
 
     public function decrement(Money $amount): void
     {
-        $this->model->newQuery()->decrement('balance', $this->ledger->convertMoney($amount, $this->getCurrency()));
+        $this->model->decrement('balance', $this->ledger->convertMoney($amount, $this->getCurrency())->getAmount());
     }
 }
