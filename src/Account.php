@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting;
 
-use Money\Money;
 use Money\Currency;
+use Money\Money;
 
 class Account extends AccountAbstract
 {
@@ -37,7 +37,6 @@ class Account extends AccountAbstract
 
     public function getOwner(): Contracts\AccountOwner
     {
-
     }
 
     public function getBalance(): Money
@@ -60,7 +59,7 @@ class Account extends AccountAbstract
         $this->model->limit = $this->ledger->convertMoney($limit, $this->getCurrency())->getAmount();
     }
 
-    public function transfer(Contracts\Account $recipient, Money/*|int*/ $amount, array $payload = null): Transaction
+    public function transfer(Contracts\Account $recipient, Money /*|int*/ $amount, array $payload = null): Transaction
     {
         return $this->ledger->newTransaction($this, $recipient, $amount, $payload);
     }

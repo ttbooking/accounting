@@ -2,14 +2,13 @@
 
 namespace Daniser\Accounting\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Money\Currency;
 use Money\Money;
-use Carbon\Carbon;
 
 /**
- * Class Transaction
- * @package Daniser\Accounting\Models
+ * Class Transaction.
  * @property int $id
  * @property int $source_id
  * @property int $destination_id

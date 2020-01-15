@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting\Contracts;
 
-use Money\Currency;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
+use Money\Currency;
 
 interface AccountOwner extends Account
 {
@@ -11,9 +11,9 @@ interface AccountOwner extends Account
 
     public function getOwnerType(): string;
 
-    public function getLender(): ?AccountOwner;
+    public function getLender(): ?self;
 
-    public function setLender(AccountOwner $lender = null);
+    public function setLender(self $lender = null);
 
     /**
      * @param string|null $type

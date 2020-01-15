@@ -2,13 +2,13 @@
 
 namespace Daniser\Accounting;
 
-use Money\Money;
-use Money\Currency;
-use Money\Converter;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Money\Converter;
+use Money\Currency;
+use Money\Money;
 
 class Ledger implements Contracts\Ledger
 {
@@ -36,24 +36,34 @@ class Ledger implements Contracts\Ledger
     }
 
     /**
-	 * @param string|object $event
-	 * @param mixed $payload
-	 * @param bool $halt
+     * @param string|object $event
+     * @param mixed $payload
+     * @param bool $halt
      *
-	 * @return mixed
-	 */
+     * @return mixed
+     */
     public function fireEvent($event, $payload = [], $halt = true)
     {
-        if (!isset($this->dispatcher)) return $halt ? null : [];
-        if (is_string($event)) $event = "accounting.$event";
-		return $this->dispatcher->dispatch($event, $payload, $halt);
+        if (! isset($this->dispatcher)) {
+            return $halt ? null : [];
+        }
+        if (is_string($event)) {
+            $event = "accounting.$event";
+        }
+
+        return $this->dispatcher->dispatch($event, $payload, $halt);
     }
 
     public function convertMoney(Money $money, Currency $counterCurrency, $roundingMode = null): Money
     {
-        if ($money->getCurrency()->getCode() === $counterCurrency->getCode()) return $money;
-        if (!$this->converter) throw new \RuntimeException("Can't convert money: no converter available.");
+        if ($money->getCurrency()->getCode() === $counterCurrency->getCode()) {
+            return $money;
+        }
+        if (! $this->converter) {
+            throw new \RuntimeException("Can't convert money: no converter available.");
+        }
         $roundingMode = $roundingMode ?? $this->getRoundingMode();
+
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
     }
 
@@ -62,6 +72,7 @@ class Ledger implements Contracts\Ledger
         try {
             $type = $type ?? $this->getDefaultType();
             $currency = $currency ?? $this->getDefaultCurrency();
+
             return new Account($this, Models\Account::findByRequisites(
                 $owner->getIdentifier(), $type, $currency->getCode()
             ));
@@ -79,7 +90,7 @@ class Ledger implements Contracts\Ledger
         }
     }
 
-    public function newTransaction(Contracts\Account $source, Contracts\Account $destination, Money/*|int*/ $amount, array $payload = null): Transaction
+    public function newTransaction(Contracts\Account $source, Contracts\Account $destination, Money /*|int*/ $amount, array $payload = null): Transaction
     {
         return tap(new Transaction($this, Models\Transaction::create([
             'source_id' => $source->getUniqueIdentifier(),

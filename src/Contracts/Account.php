@@ -2,12 +2,12 @@
 
 namespace Daniser\Accounting\Contracts;
 
-use Money\Money;
 use Money\Currency;
+use Money\Money;
 
 /**
  * ->lock(...) := transfer from current account to owner's account type 'locked'
- * ->unlock(...) := transfer from owner's account type 'locked' to current account
+ * ->unlock(...) := transfer from owner's account type 'locked' to current account.
  */
 interface Account
 {
@@ -34,5 +34,5 @@ interface Account
      *
      * @return Transaction
      */
-    public function transfer(Account $recipient, Money/*|int*/ $amount, array $payload = null): Transaction;
+    public function transfer(self $recipient, Money /*|int*/ $amount, array $payload = null): Transaction;
 }
