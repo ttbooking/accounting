@@ -2,15 +2,14 @@
 
 namespace Daniser\Accounting\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Money\Currency;
 use Money\Money;
-use Carbon\Carbon;
 
 /**
- * Class Account
- * @package Daniser\Accounting\Models
+ * Class Account.
  * @property int $id
  * @property int $owner_id
  * @property string $type

@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting\Contracts;
 
-use Money\Money;
 use Daniser\Accounting\Exceptions\TransactionException;
+use Money\Money;
 
 interface Transaction
 {
@@ -18,7 +18,7 @@ interface Transaction
 
     public function getAmount(): Money;
 
-    public function getPayload() : ?array;
+    public function getPayload(): ?array;
 
     public function getStatus(): int;
 

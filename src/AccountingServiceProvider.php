@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 
 class AccountingServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -16,11 +16,11 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/accounting.php' => $this->app->configPath('accounting.php')
+                __DIR__.'/../config/accounting.php' => $this->app->configPath('accounting.php'),
             ], 'config');
 
             $this->publishes([
-                __DIR__.'/../database/migrations' => $this->app->databasePath('migrations')
+                __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
             ], 'migrations');
 
             $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
@@ -35,7 +35,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
 
         $this->app->alias(Contracts\Ledger::class, 'ledger');
 
-        $this->app->when(Ledger::class)->needs('$config')->give(fn($app) => $app['config']['accounting']);
+        $this->app->when(Ledger::class)->needs('$config')->give(fn ($app) => $app['config']['accounting']);
     }
 
     public function provides()

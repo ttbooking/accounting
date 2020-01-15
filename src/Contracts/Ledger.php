@@ -2,10 +2,10 @@
 
 namespace Daniser\Accounting\Contracts;
 
-use Money\Money;
-use Money\Currency;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
+use Money\Currency;
+use Money\Money;
 
 interface Ledger
 {
@@ -46,7 +46,7 @@ interface Ledger
      *
      * @return Transaction
      */
-    public function newTransaction(Account $source, Account $destination, Money/*|int*/ $amount, array $payload = null): Transaction;
+    public function newTransaction(Account $source, Account $destination, Money /*|int*/ $amount, array $payload = null): Transaction;
 
     /**
      * @return int
@@ -87,14 +87,14 @@ interface Ledger
      * @param bool $autoCommit
      */
     public function setAutoCommit(bool $autoCommit): void;
-	
-	/**
-	 * @return int
-	 */
-	public function getCommitAttempts(): int;
-	
-	/**
-	 * @param int $attempts
-	 */
-	public function setCommitAttempts(int $attempts): void;
+
+    /**
+     * @return int
+     */
+    public function getCommitAttempts(): int;
+
+    /**
+     * @param int $attempts
+     */
+    public function setCommitAttempts(int $attempts): void;
 }

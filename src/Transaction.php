@@ -79,7 +79,9 @@ class Transaction implements Contracts\Transaction
         }
 
         // Let's try and commit given transaction with configured number of attempts.
-        try { DB::transaction(fn() => $this->commitInternal(), $this->ledger->getCommitAttempts()); }
+        try {
+            DB::transaction(fn () => $this->commitInternal(), $this->ledger->getCommitAttempts());
+        }
 
         // On failure we'll enter transaction into appropriate state, fire corresponding event
         // and rethrow higher order exception (except if it's suppressed via one of the listeners).

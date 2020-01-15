@@ -2,12 +2,11 @@
 
 namespace Daniser\Accounting\Concerns;
 
-use Illuminate\Database\Eloquent\Collection;
 use Daniser\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
- * Trait HasAccounts
- * @package Daniser\Accounting\Concerns
+ * Trait HasAccounts.
  *
  * @property Collection|Account[] $accounts
  */
