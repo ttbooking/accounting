@@ -5,6 +5,7 @@
     "keywords": ["accounting", "ledger"],
     "license": "MIT",
     "support": {
+        "issues": "https://github.com/daniser/accounting/issues",
         "source": "https://github.com/daniser/accounting"
     },
     "authors": [
@@ -14,12 +15,17 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
-        "ext-mbstring": "*",
-        "illuminate/contracts": ">=5.8",
-        "illuminate/support": ">=5.8",
-        "illuminate/database": ">=5.8",
-        "moneyphp/money": "^3.3"
+        "php": "^7.4",
+        "illuminate/contracts": "~5.8.0|^6.0|^7.0",
+        "illuminate/support": "~5.8.0|^6.0|^7.0",
+        "illuminate/database": "~5.8.0|^6.0|^7.0",
+        "moneyphp/money": "^3.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5|^8.0"
+    },
+    "suggest": {
+        "illuminate/events": "Required to utilize transaction events (~5.8.0|^6.0|^7.0)."
     },
     "autoload": {
         "psr-4": {
@@ -44,7 +50,9 @@
             }
         }
     },
-    "suggest": {
-        "illuminate/events": "Required to utilize transaction events (>=5.8)."
-    }
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
