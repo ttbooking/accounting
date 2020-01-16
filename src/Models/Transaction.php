@@ -28,7 +28,7 @@ class Transaction extends Model
     const STATUS_CANCELED = 2;
     const STATUS_FAILED = 3;
 
-    const UPDATED_AT = self::CREATED_AT;
+    const UPDATED_AT = 'finished_at';
 
     protected $attributes = [
         'status' => self::STATUS_STARTED,

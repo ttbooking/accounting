@@ -5,9 +5,9 @@ return [
     'rounding_mode' => \Money\Money::ROUND_HALF_UP,
 
     'account' => [
-        'default_type' => 'default',
-        'default_currency' => 'EUR',
-        'auto_create' => false,
+        'default_type' => env('ACCOUNTING_ACCOUNT_DEFAULT_TYPE', 'default'),
+        'default_currency' => env('ACCOUNTING_ACCOUNT_DEFAULT_CURRENCY', 'USD'),
+        'auto_create' => env('ACCOUNTING_ACCOUNT_AUTO_CREATE', false),
         'type_owner_mappings' => [
             //'order' => ...
         ],
@@ -15,9 +15,9 @@ return [
     ],
 
     'transaction' => [
-        'default_currency' => 'EUR', // source/destination
-        'auto_commit' => false,
-        'commit_attempts' => 1,
+        'default_currency' => env('ACCOUNTING_TRANSACTION_DEFAULT_CURRENCY', 'USD'), // source/destination
+        'auto_commit' => env('ACCOUNTING_TRANSACTION_AUTO_COMMIT', false),
+        'commit_attempts' => env('ACCOUNTING_TRANSACTION_COMMIT_ATTEMPTS', 1),
     ],
 
 ];
