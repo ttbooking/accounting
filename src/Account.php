@@ -41,17 +41,17 @@ class Account extends AccountAbstract
 
     public function getBalance(): Money
     {
-        return $this->model->balance;
+        return new Money($this->model->balance, $this->getCurrency());
     }
 
     public function getCurrency(): Currency
     {
-        return $this->model->currency;
+        return new Currency($this->model->currency);
     }
 
     public function getLimit(): Money
     {
-        return $this->model->limit;
+        return new Money($this->model->limit, $this->getCurrency());
     }
 
     public function setLimit(Money $limit): void
@@ -66,11 +66,17 @@ class Account extends AccountAbstract
 
     public function increment(Money $amount): void
     {
-        $this->model->increment('balance', $this->ledger->convertMoney($amount, $this->getCurrency())->getAmount());
+        $amount = $this->ledger->convertMoney($amount, $this->getCurrency());
+        $this->ledger->getUseMoneyCalculator()
+            ? $this->model->update(['balance' => $this->getBalance()->add($amount)->getAmount()])
+            : $this->model->increment('balance', $amount->getAmount());
     }
 
     public function decrement(Money $amount): void
     {
-        $this->model->decrement('balance', $this->ledger->convertMoney($amount, $this->getCurrency())->getAmount());
+        $amount = $this->ledger->convertMoney($amount, $this->getCurrency());
+        $this->ledger->getUseMoneyCalculator()
+            ? $this->model->update(['balance' => $this->getBalance()->subtract($amount)->getAmount()])
+            : $this->model->decrement('balance', $amount->getAmount());
     }
 }

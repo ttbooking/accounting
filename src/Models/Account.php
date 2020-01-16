@@ -5,23 +5,23 @@ namespace Daniser\Accounting\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Money\Currency;
-use Money\Money;
 
 /**
  * Class Account.
  * @property int $id
  * @property int $owner_id
  * @property string $type
- * @property Currency $currency
- * @property Money $balance
- * @property Money $limit
+ * @property string $currency
+ * @property string $balance
+ * @property string $limit
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Model $owner
  */
 class Account extends Model
 {
+    protected $fillable = ['owner_id', 'type', 'currency', 'balance', 'limit'];
+
     /**
      * @param int $ownerId
      * @param string $type
@@ -38,21 +38,6 @@ class Account extends Model
             ->where('type', $type)
             ->where('currency', $currency)
             ->firstOrFail();
-    }
-
-    public function getCurrencyAttribute($currency)
-    {
-        return new Currency($currency);
-    }
-
-    public function getBalanceAttribute($balance)
-    {
-        return new Money($balance, $this->currency);
-    }
-
-    public function getLimitAttribute($limit)
-    {
-        return new Money($limit, $this->currency);
     }
 
     public function owner()

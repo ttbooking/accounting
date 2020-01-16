@@ -3,6 +3,7 @@
 namespace Daniser\Accounting;
 
 use Illuminate\Support\Facades\DB;
+use Money\Currency;
 use Money\Money;
 
 class Transaction implements Contracts\Transaction
@@ -37,7 +38,12 @@ class Transaction implements Contracts\Transaction
 
     public function getAmount(): Money
     {
-        return $this->model->amount;
+        return new Money($this->model->amount, $this->getCurrency());
+    }
+
+    public function getCurrency(): Currency
+    {
+        return new Currency($this->model->currency);
     }
 
     public function getPayload(): ?array

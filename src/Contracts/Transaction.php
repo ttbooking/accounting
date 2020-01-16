@@ -3,6 +3,7 @@
 namespace Daniser\Accounting\Contracts;
 
 use Daniser\Accounting\Exceptions\TransactionException;
+use Money\Currency;
 use Money\Money;
 
 interface Transaction
@@ -17,6 +18,8 @@ interface Transaction
     public function getDestination(): Account;
 
     public function getAmount(): Money;
+
+    public function getCurrency(): Currency;
 
     public function getPayload(): ?array;
 

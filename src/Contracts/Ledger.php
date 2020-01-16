@@ -81,6 +81,16 @@ interface Ledger
     /**
      * @return bool
      */
+    public function getUseMoneyCalculator(): bool;
+
+    /**
+     * @param bool $useMoneyCalculator
+     */
+    public function setUseMoneyCalculator(bool $useMoneyCalculator): void;
+
+    /**
+     * @return bool
+     */
     public function getAutoCommit(): bool;
 
     /**

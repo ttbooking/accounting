@@ -133,6 +133,16 @@ class Ledger implements Contracts\Ledger
         $this->config['account']['default_currency'] = $currency->getCode();
     }
 
+    public function getUseMoneyCalculator(): bool
+    {
+        return $this->config['account']['use_money_calculator'];
+    }
+
+    public function setUseMoneyCalculator(bool $useMoneyCalculator): void
+    {
+        $this->config['account']['use_money_calculator'] = $useMoneyCalculator;
+    }
+
     public function getAutoCommit(): bool
     {
         return $this->config['transaction']['auto_commit'];

@@ -4,16 +4,14 @@ namespace Daniser\Accounting\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Money\Currency;
-use Money\Money;
 
 /**
  * Class Transaction.
  * @property int $id
  * @property int $source_id
  * @property int $destination_id
- * @property Money $amount
- * @property Currency $currency
+ * @property string $amount
+ * @property string $currency
  * @property array|null $payload
  * @property int $status
  * @property Carbon $created_at
@@ -39,16 +37,6 @@ class Transaction extends Model
     ];
 
     protected $fillable = ['source_id', 'destination_id', 'amount', 'currency', 'payload', 'status'];
-
-    public function getAmountAttribute($amount)
-    {
-        return new Money($amount, $this->currency);
-    }
-
-    public function getCurrencyAttribute($currency)
-    {
-        return new Currency($currency);
-    }
 
     public function source()
     {
