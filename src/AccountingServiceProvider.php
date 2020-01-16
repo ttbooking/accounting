@@ -36,6 +36,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
 
         $this->app->singleton(Contracts\Ledger::class, function () {
             $currencies = new ISOCurrencies;
+
             return $this->app->make(Ledger::class, [
                 'config' => $this->app['config']['accounting'],
                 'parser' => new DecimalMoneyParser($currencies),
