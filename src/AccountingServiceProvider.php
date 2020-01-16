@@ -4,6 +4,9 @@ namespace Daniser\Accounting;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
+use Money\Currencies\ISOCurrencies;
+use Money\Formatter\DecimalMoneyFormatter;
+use Money\Parser\DecimalMoneyParser;
 
 class AccountingServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -31,11 +34,16 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     {
         $this->mergeConfigFrom(__DIR__.'/../config/accounting.php', 'accounting');
 
-        $this->app->singleton(Contracts\Ledger::class, Ledger::class);
+        $this->app->singleton(Contracts\Ledger::class, function () {
+            $currencies = new ISOCurrencies;
+            return $this->app->make(Ledger::class, [
+                'config' => $this->app['config']['accounting'],
+                'parser' => new DecimalMoneyParser($currencies),
+                'formatter' => new DecimalMoneyFormatter($currencies),
+            ]);
+        });
 
         $this->app->alias(Contracts\Ledger::class, 'ledger');
-
-        $this->app->when(Ledger::class)->needs('$config')->give(fn ($app) => $app['config']['accounting']);
     }
 
     public function provides()

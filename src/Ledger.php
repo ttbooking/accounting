@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Money\Converter;
 use Money\Currency;
 use Money\Money;
+use Money\MoneyFormatter;
+use Money\MoneyParser;
 
 class Ledger implements Contracts\Ledger
 {
@@ -18,6 +20,12 @@ class Ledger implements Contracts\Ledger
     /** @var Dispatcher|null $dispatcher */
     protected ?Dispatcher $dispatcher;
 
+    /** @var MoneyParser|null $parser */
+    protected ?MoneyParser $parser;
+
+    /** @var MoneyFormatter|null $formatter */
+    protected ?MoneyFormatter $formatter;
+
     /** @var Converter|null $converter */
     protected ?Converter $converter;
 
@@ -26,12 +34,16 @@ class Ledger implements Contracts\Ledger
      *
      * @param array $config
      * @param Dispatcher|null $dispatcher
+     * @param MoneyParser|null $parser
+     * @param MoneyFormatter|null $formatter
      * @param Converter|null $converter
      */
-    public function __construct(array $config = [], Dispatcher $dispatcher = null, Converter $converter = null)
+    public function __construct(array $config = [], Dispatcher $dispatcher = null, MoneyParser $parser = null, MoneyFormatter $formatter = null, Converter $converter = null)
     {
         $this->config = $config;
         $this->dispatcher = $dispatcher;
+        $this->parser = $parser;
+        $this->formatter = $formatter;
         $this->converter = $converter;
     }
 
@@ -44,7 +56,7 @@ class Ledger implements Contracts\Ledger
      */
     public function fireEvent($event, $payload = [], $halt = true)
     {
-        if (! isset($this->dispatcher)) {
+        if (! $this->dispatcher) {
             return $halt ? null : [];
         }
         if (is_string($event)) {
@@ -52,6 +64,33 @@ class Ledger implements Contracts\Ledger
         }
 
         return $this->dispatcher->dispatch($event, $payload, $halt);
+    }
+
+    /**
+     * @param string $money
+     * @param Currency|null $forceCurrency
+     * @return Money
+     */
+    public function parseMoney(string $money, Currency $forceCurrency = null): Money
+    {
+        if (! $this->parser) {
+            return new Money($money, $forceCurrency ?? $this->getDefaultCurrency());
+        }
+
+        return $this->parser->parse($money, $forceCurrency);
+    }
+
+    /**
+     * @param Money $money
+     * @return string
+     */
+    public function formatMoney(Money $money): string
+    {
+        if (! $this->formatter) {
+            return $money->getAmount();
+        }
+
+        return $this->formatter->format($money);
     }
 
     public function convertMoney(Money $money, Currency $counterCurrency, $roundingMode = null): Money
@@ -62,7 +101,7 @@ class Ledger implements Contracts\Ledger
         if (! $this->converter) {
             throw new \RuntimeException("Can't convert money: no converter available.");
         }
-        $roundingMode = $roundingMode ?? $this->getRoundingMode();
+        $roundingMode ??= $this->getRoundingMode();
 
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
     }
@@ -70,8 +109,8 @@ class Ledger implements Contracts\Ledger
     public function getAccount(Contracts\AccountOwner $owner, $type = null, Currency $currency = null): Contracts\Account
     {
         try {
-            $type = $type ?? $this->getDefaultType();
-            $currency = $currency ?? $this->getDefaultCurrency();
+            $type ??= $this->getDefaultType();
+            $currency ??= $this->getDefaultCurrency();
 
             return new Account($this, Models\Account::findByRequisites(
                 $owner->getIdentifier(), $type, $currency->getCode()

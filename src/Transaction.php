@@ -38,7 +38,7 @@ class Transaction implements Contracts\Transaction
 
     public function getAmount(): Money
     {
-        return new Money($this->model->amount, $this->getCurrency());
+        return $this->ledger->parseMoney($this->model->amount, $this->getCurrency());
     }
 
     public function getCurrency(): Currency

@@ -41,7 +41,7 @@ class Account extends AccountAbstract
 
     public function getBalance(): Money
     {
-        return new Money($this->model->balance, $this->getCurrency());
+        return $this->ledger->parseMoney($this->model->balance, $this->getCurrency());
     }
 
     public function getCurrency(): Currency
@@ -51,12 +51,12 @@ class Account extends AccountAbstract
 
     public function getLimit(): Money
     {
-        return new Money($this->model->limit, $this->getCurrency());
+        return $this->ledger->parseMoney($this->model->limit, $this->getCurrency());
     }
 
     public function setLimit(Money $limit): void
     {
-        $this->model->limit = $this->ledger->convertMoney($limit, $this->getCurrency())->getAmount();
+        $this->model->limit = $this->ledger->formatMoney($this->ledger->convertMoney($limit, $this->getCurrency()));
     }
 
     public function transfer(Contracts\Account $recipient, Money /*|int*/ $amount, array $payload = null): Transaction
@@ -68,15 +68,15 @@ class Account extends AccountAbstract
     {
         $amount = $this->ledger->convertMoney($amount, $this->getCurrency());
         $this->ledger->getUseMoneyCalculator()
-            ? $this->model->update(['balance' => $this->getBalance()->add($amount)->getAmount()])
-            : $this->model->increment('balance', $amount->getAmount());
+            ? $this->model->update(['balance' => $this->ledger->formatMoney($this->getBalance()->add($amount))])
+            : $this->model->increment('balance', $this->ledger->formatMoney($amount));
     }
 
     public function decrement(Money $amount): void
     {
         $amount = $this->ledger->convertMoney($amount, $this->getCurrency());
         $this->ledger->getUseMoneyCalculator()
-            ? $this->model->update(['balance' => $this->getBalance()->subtract($amount)->getAmount()])
-            : $this->model->decrement('balance', $amount->getAmount());
+            ? $this->model->update(['balance' => $this->ledger->formatMoney($this->getBalance()->subtract($amount))])
+            : $this->model->decrement('balance', $this->ledger->formatMoney($amount));
     }
 }
