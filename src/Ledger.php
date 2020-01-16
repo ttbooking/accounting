@@ -38,8 +38,13 @@ class Ledger implements Contracts\Ledger
      * @param MoneyFormatter|null $formatter
      * @param Converter|null $converter
      */
-    public function __construct(array $config = [], Dispatcher $dispatcher = null, MoneyParser $parser = null, MoneyFormatter $formatter = null, Converter $converter = null)
-    {
+    public function __construct(
+        array $config = [],
+        Dispatcher $dispatcher = null,
+        MoneyParser $parser = null,
+        MoneyFormatter $formatter = null,
+        Converter $converter = null
+    ) {
         $this->config = $config;
         $this->dispatcher = $dispatcher;
         $this->parser = $parser;
@@ -129,12 +134,12 @@ class Ledger implements Contracts\Ledger
         }
     }
 
-    public function newTransaction(Contracts\Account $source, Contracts\Account $destination, Money /*|int*/ $amount, array $payload = null): Transaction
+    public function newTransaction(Contracts\Account $source, Contracts\Account $destination, Money $amount, array $payload = null): Transaction
     {
         return tap(new Transaction($this, Models\Transaction::create([
             'source_id' => $source->getUniqueIdentifier(),
             'destination_id' => $destination->getUniqueIdentifier(),
-            'amount' => $amount->getAmount(),
+            'amount' => $this->formatMoney($amount),
             'currency' => $amount->getCurrency()->getCode(),
             'payload' => $payload,
         ])), function (Transaction $transaction) {

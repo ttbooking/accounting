@@ -13,7 +13,7 @@ abstract class AccountAbstract implements Contracts\Account
          * @var Money
          * @var array|null $payload
          */
-        [$amount, $payload] = $arguments;
+        [$amount, $payload] = $arguments + [1 => null];
 
         if (! Str::startsWith($name, 'un')) {
             return $this->transfer(

@@ -46,7 +46,7 @@ interface Ledger
      *
      * @return Transaction
      */
-    public function newTransaction(Account $source, Account $destination, Money /*|int*/ $amount, array $payload = null): Transaction;
+    public function newTransaction(Account $source, Account $destination, Money $amount, array $payload = null): Transaction;
 
     /**
      * @return int
