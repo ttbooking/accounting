@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 /**
  * Class Account.
  * @property int $id
+ * @property string $owner_type
  * @property int $owner_id
  * @property string $type
  * @property string $currency
@@ -20,9 +21,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  */
 class Account extends Model
 {
-    protected $fillable = ['owner_id', 'type', 'currency', 'balance', 'limit'];
+    protected $fillable = ['owner_type', 'owner_id', 'type', 'currency', 'balance', 'limit'];
 
     /**
+     * @param string $ownerType
      * @param int $ownerId
      * @param string $type
      * @param string $currency
@@ -31,9 +33,10 @@ class Account extends Model
      *
      * @return static|Model
      */
-    public static function findByRequisites($ownerId, $type, $currency): self
+    public static function findByRequisites($ownerType, $ownerId, $type, $currency): self
     {
         return static::query()
+            ->where('owner_type', $ownerType)
             ->where('owner_id', $ownerId)
             ->where('type', $type)
             ->where('currency', $currency)

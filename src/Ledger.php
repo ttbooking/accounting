@@ -118,7 +118,7 @@ class Ledger implements Contracts\Ledger
             $currency ??= $this->getDefaultCurrency();
 
             return new Account($this, Models\Account::findByRequisites(
-                $owner->getIdentifier(), $type, $currency->getCode()
+                $owner->getOwnerType(), $owner->getIdentifier(), $type, $currency->getCode()
             ));
         } catch (ModelNotFoundException $e) {
             throw new AccountNotFoundException('Account with given parameters not found.', 0, $e);

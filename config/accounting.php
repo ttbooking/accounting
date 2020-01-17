@@ -4,6 +4,11 @@ return [
 
     'rounding_mode' => \Money\Money::ROUND_HALF_UP,
 
+    'owner' => [
+        'user' => ['default'],
+        'order' => ['paid'],
+    ],
+
     'account' => [
         'default_type' => env('ACCOUNTING_ACCOUNT_DEFAULT_TYPE', 'default'),
         'default_currency' => env('ACCOUNTING_ACCOUNT_DEFAULT_CURRENCY', 'USD'),
