@@ -2,9 +2,9 @@
 
 namespace Daniser\Accounting\Drivers\Eloquent;
 
+use Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
-use Daniser\Accounting\Contracts;
 use Daniser\Accounting\Models;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

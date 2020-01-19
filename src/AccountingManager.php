@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting;
 
-use Illuminate\Support\Manager;
 use Daniser\Accounting\Drivers\Eloquent\Ledger;
+use Illuminate\Support\Manager;
 use Money\Currencies\ISOCurrencies;
 use Money\Formatter\DecimalMoneyFormatter;
 use Money\Parser\DecimalMoneyParser;

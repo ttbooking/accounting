@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting\Drivers\Eloquent;
 
-use Daniser\Accounting\Drivers\AccountAbstract;
 use Daniser\Accounting\Contracts;
+use Daniser\Accounting\Drivers\AccountAbstract;
 use Daniser\Accounting\Models;
 use Money\Currency;
 use Money\Money;
