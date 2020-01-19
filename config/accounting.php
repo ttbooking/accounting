@@ -2,6 +2,8 @@
 
 return [
 
+    'driver' => env('ACCOUNTING_DRIVER', 'eloquent'),
+
     'rounding_mode' => \Money\Money::ROUND_HALF_UP,
 
     'owner' => [

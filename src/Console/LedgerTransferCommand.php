@@ -1,5 +1,7 @@
 <?php
 
+namespace Daniser\Accounting\Console;
+
 use Illuminate\Console\Command;
 
 class LedgerTransferCommand extends Command

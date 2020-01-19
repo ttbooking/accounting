@@ -1,9 +1,11 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace Daniser\Accounting\Drivers\Eloquent;
 
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
+use Daniser\Accounting\Contracts;
+use Daniser\Accounting\Models;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Money\Converter;
@@ -111,7 +113,7 @@ class Ledger implements Contracts\Ledger
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
     }
 
-    public function getAccount(Contracts\AccountOwner $owner, $type = null, Currency $currency = null): Contracts\Account
+    public function getAccount(Contracts\AccountOwner $owner, $type = null, Currency $currency = null): Account
     {
         try {
             $type ??= $this->getDefaultType();
@@ -125,7 +127,7 @@ class Ledger implements Contracts\Ledger
         }
     }
 
-    public function getTransaction($id): Contracts\Transaction
+    public function getTransaction($id): Transaction
     {
         try {
             return new Transaction($this, Models\Transaction::findOrFail($id));

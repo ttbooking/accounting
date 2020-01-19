@@ -1,8 +1,12 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace Daniser\Accounting\Drivers\Eloquent;
 
 use Illuminate\Support\Facades\DB;
+use Daniser\Accounting\Contracts;
+use Daniser\Accounting\Models;
+use Daniser\Accounting\Events;
+use Daniser\Accounting\Exceptions;
 use Money\Currency;
 use Money\Money;
 

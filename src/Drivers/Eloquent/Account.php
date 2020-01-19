@@ -1,7 +1,10 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace Daniser\Accounting\Drivers\Eloquent;
 
+use Daniser\Accounting\Drivers\AccountAbstract;
+use Daniser\Accounting\Contracts;
+use Daniser\Accounting\Models;
 use Money\Currency;
 use Money\Money;
 
@@ -37,6 +40,7 @@ class Account extends AccountAbstract
 
     public function getOwner(): Contracts\AccountOwner
     {
+        return $this->model->owner;
     }
 
     public function getBalance(): Money

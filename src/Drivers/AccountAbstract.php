@@ -1,7 +1,8 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace Daniser\Accounting\Drivers;
 
+use Daniser\Accounting\Contracts;
 use Illuminate\Support\Str;
 use Money\Money;
 

@@ -4,9 +4,9 @@ namespace Daniser\Accounting;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
-use Money\Currencies\ISOCurrencies;
-use Money\Formatter\DecimalMoneyFormatter;
-use Money\Parser\DecimalMoneyParser;
+//use Money\Currencies\ISOCurrencies;
+//use Money\Formatter\DecimalMoneyFormatter;
+//use Money\Parser\DecimalMoneyParser;
 
 class AccountingServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -27,6 +27,10 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
             ], 'migrations');
 
             $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
+            $this->commands([
+                Console\LedgerTransferCommand::class,
+            ]);
         }
     }
 
@@ -34,7 +38,11 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     {
         $this->mergeConfigFrom(__DIR__.'/../config/accounting.php', 'accounting');
 
-        $this->app->singleton(Contracts\Ledger::class, function () {
+        $this->registerAccountingManager();
+
+        $this->registerAccountingDriver();
+
+        /*$this->app->singleton(Contracts\Ledger::class, function () {
             $currencies = new ISOCurrencies;
 
             return $this->app->make(Ledger::class, [
@@ -44,7 +52,31 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
             ]);
         });
 
-        $this->app->alias(Contracts\Ledger::class, 'ledger');
+        $this->app->alias(Contracts\Ledger::class, 'ledger');*/
+    }
+
+    /**
+     * Register the accounting manager instance.
+     *
+     * @return void
+     */
+    protected function registerAccountingManager()
+    {
+        $this->app->singleton('accounting', function ($app) {
+            return new AccountingManager($app);
+        });
+    }
+
+    /**
+     * Register the accounting driver instance.
+     *
+     * @return void
+     */
+    protected function registerAccountingDriver()
+    {
+        $this->app->singleton('ledger', function ($app) {
+            return $app->make('accounting')->driver();
+        });
     }
 
     public function provides()
