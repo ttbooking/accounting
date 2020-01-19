@@ -75,13 +75,15 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
      */
     protected function registerAccountingDriver()
     {
-        $this->app->singleton('ledger', function ($app) {
+        $this->app->singleton(Contracts\Ledger::class, function ($app) {
             return $app->make('accounting')->driver();
         });
+
+        $this->app->alias(Contracts\Ledger::class, 'ledger');
     }
 
     public function provides()
     {
-        return [Contracts\Ledger::class, 'ledger'];
+        return ['accounting', Contracts\Ledger::class, 'ledger'];
     }
 }
