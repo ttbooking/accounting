@@ -4,11 +4,20 @@ return [
 
     'driver' => env('ACCOUNTING_DRIVER', 'eloquent'),
 
-    'rounding_mode' => \Money\Money::ROUND_HALF_UP,
+    'rounding_mode' => Money\Money::ROUND_HALF_UP,
 
     'owner' => [
-        'user' => ['default'],
-        'order' => ['paid'],
+        'default_resolver' => Daniser\Accounting\Resolvers\ModelResolver::class,
+        'aliases' => [
+            'user' => App\User::class,
+        ],
+        'mappings' => [
+            'user' => ['default'],
+            'order' => ['paid'],
+        ],
+        'resolvers' => [
+            'user' => Daniser\Accounting\Resolvers\ModelResolver::class,
+        ],
     ],
 
     'account' => [
