@@ -29,6 +29,8 @@ return [
             //'order' => ...
         ],
         'default_owner_mapping' => '',
+        'allowed_types' => [],
+        'allowed_currencies' => [],
     ],
 
     'transaction' => [
