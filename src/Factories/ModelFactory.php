@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting\Factories;
 
-use Daniser\Accounting\Contracts\OwnerFactory;
 use Daniser\Accounting\Contracts\AccountOwner;
+use Daniser\Accounting\Contracts\OwnerFactory;
 use Daniser\Accounting\Exceptions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

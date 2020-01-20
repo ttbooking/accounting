@@ -2,10 +2,10 @@
 
 namespace Daniser\Accounting\Factories;
 
+use App\User;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Exceptions;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\User;
 
 class UserFactory extends ModelFactory
 {

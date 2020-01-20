@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting\Factories;
 
-use Daniser\Accounting\Contracts\OwnerFactory;
 use Daniser\Accounting\Contracts\AccountOwner;
+use Daniser\Accounting\Contracts\OwnerFactory;
 use Daniser\Accounting\Exceptions\OwnerTypeMismatchException;
 
 class AliasFactory implements OwnerFactory
@@ -31,7 +31,10 @@ class AliasFactory implements OwnerFactory
         try {
             return $this->factory->getOwner($type, $id);
         } catch (OwnerTypeMismatchException $e) {
-            if (! array_key_exists($type, $this->aliases)) throw $e;
+            if (! array_key_exists($type, $this->aliases)) {
+                throw $e;
+            }
+
             return $this->factory->getOwner($this->aliases[$type], $id);
         }
     }
