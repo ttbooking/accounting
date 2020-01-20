@@ -6,6 +6,16 @@ return [
 
     'rounding_mode' => Money\Money::ROUND_HALF_UP,
 
+    // chain of responsibility (type + id) OR strategy (type) + abstract factory (id) ???
+    'factories' => [
+        App\User::class => Daniser\Accounting\Factories\UserFactory::class,
+    ],
+
+    // decorator
+    'aliases' => [
+        'user' => App\User::class,
+    ],
+
     'owner' => [
         'default_resolver' => Daniser\Accounting\Resolvers\ModelResolver::class,
         'aliases' => [
