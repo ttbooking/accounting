@@ -76,6 +76,13 @@ class Ledger implements Contracts\Ledger
         return $this->resolver->resolve($type, $id);
     }
 
+    public function locateAccount(string $address): Account
+    {
+        [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $address);
+
+        return $this->getAccount($this->resolveOwner($ownerType, $ownerId), $accountType, new Currency($accountCurrency));
+    }
+
     /**
      * @param string|object $event
      * @param mixed $payload

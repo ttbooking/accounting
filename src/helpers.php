@@ -16,17 +16,16 @@ if (! function_exists('transfer_money')) {
      */
     function transfer_money($from, $to, $amount, array $payload = null): Transaction
     {
-        $accountLocator = Ledger::getAccountLocator();
         $moneyParser = Ledger::getMoneyParser();
 
         if (! $from instanceof Account) {
             /** @var Account $from */
-            $from = $accountLocator->locate($from);
+            $from = Ledger::locateAccount($from);
         }
 
         if (! $to instanceof Account) {
             /** @var Account $to */
-            $to = $accountLocator->locate($to);
+            $to = Ledger::locateAccount($to);
         }
 
         if (! $amount instanceof Money) {

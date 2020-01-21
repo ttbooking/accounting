@@ -30,6 +30,15 @@ interface Ledger
     public function getAccount(AccountOwner $owner, $type = null, Currency $currency = null): Account;
 
     /**
+     * @param string $address
+     *
+     * @throws AccountNotFoundException
+     *
+     * @return Account
+     */
+    public function locateAccount(string $address): Account;
+
+    /**
      * @param mixed $id
      *
      * @throws TransactionNotFoundException
