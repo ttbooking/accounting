@@ -40,8 +40,7 @@ class Account extends AccountAbstract
 
     public function getOwner(): Contracts\AccountOwner
     {
-        //return $this->model->owner;
-        return $this->ledger->resolveOwner(implode(':', [$this->model->owner_type, $this->model->owner_id]));
+        return $this->ledger->resolveOwner($this->model->owner_type, $this->model->owner_id);
     }
 
     public function getBalance(): Money
