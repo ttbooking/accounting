@@ -6,6 +6,7 @@ use Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Daniser\Accounting\Models;
+use Daniser\EntityResolver\Contracts\EntityResolver;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Money\Converter;
@@ -19,8 +20,8 @@ class Ledger implements Contracts\Ledger
     /** @var array $config */
     protected array $config;
 
-    /** @var Contracts\OwnerFactory|null $resolver */
-    protected ?Contracts\OwnerFactory $resolver;
+    /** @var EntityResolver|null $resolver */
+    protected ?EntityResolver $resolver;
 
     /** @var Dispatcher|null $dispatcher */
     protected ?Dispatcher $dispatcher;
@@ -38,7 +39,7 @@ class Ledger implements Contracts\Ledger
      * Ledger constructor.
      *
      * @param array $config
-     * @param Contracts\OwnerFactory|null $resolver
+     * @param EntityResolver|null $resolver
      * @param Dispatcher|null $dispatcher
      * @param MoneyParser|null $parser
      * @param MoneyFormatter|null $formatter
@@ -46,7 +47,7 @@ class Ledger implements Contracts\Ledger
      */
     public function __construct(
         array $config = [],
-        Contracts\OwnerFactory $resolver = null,
+        EntityResolver $resolver = null,
         Dispatcher $dispatcher = null,
         MoneyParser $parser = null,
         MoneyFormatter $formatter = null,
@@ -66,13 +67,13 @@ class Ledger implements Contracts\Ledger
      *
      * @return Contracts\AccountOwner
      */
-    public function resolveOwner(string $type, $id)
+    public function resolveOwner(string $type, $id): Contracts\AccountOwner
     {
         if (! $this->resolver) {
             throw new \RuntimeException("Can't resolve entity: no resolver defined.");
         }
 
-        return $this->resolver->getOwner($type, $id);
+        return $this->resolver->resolve($type, $id);
     }
 
     /**

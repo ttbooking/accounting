@@ -43,9 +43,6 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
 
         $this->registerAccountingDriver();
 
-        // TODO: make ResolverFactory package from this code.
-        $this->registerOwnerFactory();
-
         /*$this->app->singleton(Contracts\Ledger::class, function () {
             $currencies = new ISOCurrencies;
 
@@ -85,26 +82,8 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
         $this->app->alias(Contracts\Ledger::class, 'ledger');
     }
 
-    /**
-     * Register the account owner factory instance.
-     *
-     * @return void
-     */
-    protected function registerOwnerFactory()
-    {
-        $this->app->singleton(Contracts\OwnerFactory::class, function () {
-            return $this->app->make(Factories\AggregateFactory::class, [
-                'factories' => $this->app['config']['accounting.factories'],
-            ]);
-        });
-
-        $this->app->extend(Contracts\OwnerFactory::class, function (Contracts\OwnerFactory $factory) {
-            return new Factories\AliasFactory($factory, $this->app['config']['accounting.aliases']);
-        });
-    }
-
     public function provides()
     {
-        return ['accounting', Contracts\Ledger::class, 'ledger', Contracts\OwnerFactory::class];
+        return ['accounting', Contracts\Ledger::class, 'ledger'];
     }
 }

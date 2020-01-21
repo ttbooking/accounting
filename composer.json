@@ -19,6 +19,7 @@
         "illuminate/contracts": "~5.8.0|^6.0|^7.0",
         "illuminate/support": "~5.8.0|^6.0|^7.0",
         "illuminate/database": "~5.8.0|^6.0|^7.0",
+        "daniser/entity-resolver": "*",
         "moneyphp/money": "^3.2"
     },
     "require-dev": {
