@@ -7,6 +7,7 @@ return [
     'rounding_mode' => Money\Money::ROUND_HALF_UP,
 
     'owner' => [
+        'default_type' => env('ACCOUNTING_OWNER_DEFAULT_TYPE', 'user'),
         'mappings' => [
             'user' => ['default'],
             'order' => ['paid'],

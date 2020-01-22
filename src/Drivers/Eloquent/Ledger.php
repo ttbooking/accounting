@@ -20,8 +20,8 @@ class Ledger implements Contracts\Ledger
     /** @var array $config */
     protected array $config;
 
-    /** @var EntityResolver|null $resolver */
-    protected ?EntityResolver $resolver;
+    /** @var Contracts\AccountOwnerResolver|null $resolver */
+    protected ?Contracts\AccountOwnerResolver $resolver;
 
     /** @var Dispatcher|null $dispatcher */
     protected ?Dispatcher $dispatcher;
@@ -39,7 +39,7 @@ class Ledger implements Contracts\Ledger
      * Ledger constructor.
      *
      * @param array $config
-     * @param EntityResolver|null $resolver
+     * @param Contracts\AccountOwnerResolver|null $resolver
      * @param Dispatcher|null $dispatcher
      * @param MoneyParser|null $parser
      * @param MoneyFormatter|null $formatter
@@ -47,7 +47,7 @@ class Ledger implements Contracts\Ledger
      */
     public function __construct(
         array $config = [],
-        EntityResolver $resolver = null,
+        Contracts\AccountOwnerResolver $resolver = null,
         Dispatcher $dispatcher = null,
         MoneyParser $parser = null,
         MoneyFormatter $formatter = null,
@@ -80,7 +80,11 @@ class Ledger implements Contracts\Ledger
     {
         [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $address);
 
-        return $this->getAccount($this->resolveOwner($ownerType, $ownerId), $accountType, new Currency($accountCurrency));
+        if (! $ownerType) $ownerType = $this->getDefaultOwnerType();
+        if (! $accountType) $accountType = $this->getDefaultType();
+        $accountCurrency = $accountCurrency ? new Currency($accountCurrency) : $this->getDefaultCurrency();
+
+        return $this->getAccount($this->resolveOwner($ownerType, $ownerId), $accountType, $accountCurrency);
     }
 
     /**
@@ -186,6 +190,16 @@ class Ledger implements Contracts\Ledger
     public function setRoundingMode(int $type): void
     {
         $this->config['rounding_mode'] = $type;
+    }
+
+    public function getDefaultOwnerType(): string
+    {
+        return $this->config['owner']['default_type'];
+    }
+
+    public function setDefaultOwnerType(string $type): void
+    {
+        $this->config['owner']['default_type'] = $type;
     }
 
     public function getDefaultType(): string

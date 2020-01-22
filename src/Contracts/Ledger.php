@@ -70,6 +70,16 @@ interface Ledger
     /**
      * @return string
      */
+    public function getDefaultOwnerType(): string;
+
+    /**
+     * @param string $type
+     */
+    public function setDefaultOwnerType(string $type): void;
+
+    /**
+     * @return string
+     */
     public function getDefaultType(): string;
 
     /**

@@ -43,6 +43,8 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
 
         $this->registerAccountingDriver();
 
+        $this->registerAccountOwnerResolver();
+
         /*$this->app->singleton(Contracts\Ledger::class, function () {
             $currencies = new ISOCurrencies;
 
@@ -82,8 +84,18 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
         $this->app->alias(Contracts\Ledger::class, 'ledger');
     }
 
+    /**
+     * Register the account owner resolver instance.
+     *
+     * @return void
+     */
+    protected function registerAccountOwnerResolver()
+    {
+        $this->app->singleton(Contracts\AccountOwnerResolver::class, Support\AccountOwnerResolver::class);
+    }
+
     public function provides()
     {
-        return ['accounting', Contracts\Ledger::class, 'ledger'];
+        return ['accounting', Contracts\Ledger::class, 'ledger', Contracts\AccountOwnerResolver::class];
     }
 }
