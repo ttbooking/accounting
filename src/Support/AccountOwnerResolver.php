@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting\Support;
 
-use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\Accounting\Contracts;
+use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\EntityResolver\Exceptions\EntityTypeMismatchException;
 
 class AccountOwnerResolver implements Contracts\AccountOwnerResolver

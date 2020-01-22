@@ -6,7 +6,6 @@ use Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Daniser\Accounting\Models;
-use Daniser\EntityResolver\Contracts\EntityResolver;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Money\Converter;
@@ -80,8 +79,12 @@ class Ledger implements Contracts\Ledger
     {
         [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $address);
 
-        if (! $ownerType) $ownerType = $this->getDefaultOwnerType();
-        if (! $accountType) $accountType = $this->getDefaultType();
+        if (! $ownerType) {
+            $ownerType = $this->getDefaultOwnerType();
+        }
+        if (! $accountType) {
+            $accountType = $this->getDefaultType();
+        }
         $accountCurrency = $accountCurrency ? new Currency($accountCurrency) : $this->getDefaultCurrency();
 
         return $this->getAccount($this->resolveOwner($ownerType, $ownerId), $accountType, $accountCurrency);
