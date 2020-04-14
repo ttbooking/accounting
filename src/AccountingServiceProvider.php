@@ -4,10 +4,9 @@ namespace Daniser\Accounting;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
-
-//use Money\Currencies\ISOCurrencies;
-//use Money\Formatter\DecimalMoneyFormatter;
-//use Money\Parser\DecimalMoneyParser;
+use Money\Currencies\ISOCurrencies;
+use Money\Formatter\DecimalMoneyFormatter;
+use Money\Parser\DecimalMoneyParser;
 
 class AccountingServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -39,15 +38,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     {
         $this->mergeConfigFrom(__DIR__.'/../config/accounting.php', 'accounting');
 
-        $this->registerAccountingManager();
-
-        $this->registerAccountingDriver();
-
-        $this->registerAccountOwnerResolver();
-
-        $this->registerAccountLocator();
-
-        /*$this->app->singleton(Contracts\Ledger::class, function () {
+        $this->app->singleton(Contracts\Ledger::class, function () {
             $currencies = new ISOCurrencies;
 
             return $this->app->make(Ledger::class, [
@@ -57,63 +48,11 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
             ]);
         });
 
-        $this->app->alias(Contracts\Ledger::class, 'ledger');*/
-    }
-
-    /**
-     * Register the accounting manager instance.
-     *
-     * @return void
-     */
-    protected function registerAccountingManager()
-    {
-        $this->app->singleton('accounting', function ($app) {
-            return new AccountingManager($app);
-        });
-    }
-
-    /**
-     * Register the accounting driver instance.
-     *
-     * @return void
-     */
-    protected function registerAccountingDriver()
-    {
-        $this->app->singleton(Contracts\Ledger::class, function () {
-            return $this->app->make('accounting')->driver();
-        });
-
         $this->app->alias(Contracts\Ledger::class, 'ledger');
-    }
-
-    /**
-     * Register the account owner resolver instance.
-     *
-     * @return void
-     */
-    protected function registerAccountOwnerResolver()
-    {
-        $this->app->singleton(Contracts\AccountOwnerResolver::class, Support\AccountOwnerResolver::class);
-    }
-
-    /**
-     * Register the account locator instance.
-     *
-     * @return void
-     */
-    protected function registerAccountLocator()
-    {
-        $this->app->singleton(Contracts\AccountLocator::class, Support\AccountLocator::class);
     }
 
     public function provides()
     {
-        return [
-            'accounting',
-            Contracts\Ledger::class,
-            'ledger',
-            Contracts\AccountOwnerResolver::class,
-            Contracts\AccountLocator::class,
-        ];
+        return [Contracts\Ledger::class, 'ledger'];
     }
 }

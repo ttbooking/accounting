@@ -11,7 +11,7 @@ use Money\Money;
  */
 interface Account
 {
-    public function getUniqueIdentifier();
+    public function getKey();
 
     public function getType(): string;
 
@@ -34,5 +34,5 @@ interface Account
      *
      * @return Transaction
      */
-    public function transfer(self $recipient, Money /*|int*/ $amount, array $payload = null): Transaction;
+    public function transferMoney(self $recipient, Money $amount, array $payload = null): Transaction;
 }

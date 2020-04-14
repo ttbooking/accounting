@@ -1,6 +1,6 @@
 <?php
 
-namespace Daniser\Accounting\Drivers\Eloquent;
+namespace Daniser\Accounting;
 
 use Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
@@ -80,12 +80,12 @@ class Ledger implements Contracts\Ledger
         [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $address);
 
         if (! $ownerType) {
-            $ownerType = $this->getDefaultOwnerType();
+            $ownerType = $this->config['owner']['default_type'];
         }
         if (! $accountType) {
-            $accountType = $this->getDefaultType();
+            $accountType = $this->config['account']['default_type'];
         }
-        $accountCurrency = $accountCurrency ? new Currency($accountCurrency) : $this->getDefaultCurrency();
+        $accountCurrency = new Currency($accountCurrency ?: $this->config['account']['default_currency']);
 
         return $this->getAccount($this->resolveOwner($ownerType, $ownerId), $accountType, $accountCurrency);
     }
@@ -117,7 +117,7 @@ class Ledger implements Contracts\Ledger
     public function parseMoney(string $money, Currency $forceCurrency = null): Money
     {
         if (! $this->parser) {
-            return new Money($money, $forceCurrency ?? $this->getDefaultCurrency());
+            return new Money($money, $forceCurrency ?? new Currency($this->config['account']['default_currency']));
         }
 
         return $this->parser->parse($money, $forceCurrency);
@@ -144,7 +144,7 @@ class Ledger implements Contracts\Ledger
         if (! $this->converter) {
             throw new \RuntimeException("Can't convert money: no converter available.");
         }
-        $roundingMode ??= $this->getRoundingMode();
+        $roundingMode ??= $this->config['rounding_mode'];
 
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
     }
@@ -152,8 +152,8 @@ class Ledger implements Contracts\Ledger
     public function getAccount(Contracts\AccountOwner $owner, $type = null, Currency $currency = null): Account
     {
         try {
-            $type ??= $this->getDefaultType();
-            $currency ??= $this->getDefaultCurrency();
+            $type ??= $this->config['account']['default_type'];
+            $currency ??= new Currency($this->config['account']['default_currency']);
 
             return new Account($this, Models\Account::findByRequisites(
                 $owner->getOwnerType(), $owner->getIdentifier(), $type, $currency->getCode()
@@ -181,77 +181,7 @@ class Ledger implements Contracts\Ledger
             'currency' => $amount->getCurrency()->getCode(),
             'payload' => $payload,
         ])), function (Transaction $transaction) {
-            $this->getAutoCommit() && $transaction->commit();
+            $this->config['transaction']['auto_commit'] && $transaction->commit();
         });
-    }
-
-    public function getRoundingMode(): int
-    {
-        return $this->config['rounding_mode'];
-    }
-
-    public function setRoundingMode(int $type): void
-    {
-        $this->config['rounding_mode'] = $type;
-    }
-
-    public function getDefaultOwnerType(): string
-    {
-        return $this->config['owner']['default_type'];
-    }
-
-    public function setDefaultOwnerType(string $type): void
-    {
-        $this->config['owner']['default_type'] = $type;
-    }
-
-    public function getDefaultType(): string
-    {
-        return $this->config['account']['default_type'];
-    }
-
-    public function setDefaultType(string $type): void
-    {
-        $this->config['account']['default_type'] = $type;
-    }
-
-    public function getDefaultCurrency(): Currency
-    {
-        return new Currency($this->config['account']['default_currency']);
-    }
-
-    public function setDefaultCurrency(Currency $currency): void
-    {
-        $this->config['account']['default_currency'] = $currency->getCode();
-    }
-
-    public function getUseMoneyCalculator(): bool
-    {
-        return $this->config['account']['use_money_calculator'];
-    }
-
-    public function setUseMoneyCalculator(bool $useMoneyCalculator): void
-    {
-        $this->config['account']['use_money_calculator'] = $useMoneyCalculator;
-    }
-
-    public function getAutoCommit(): bool
-    {
-        return $this->config['transaction']['auto_commit'];
-    }
-
-    public function setAutoCommit(bool $autoCommit): void
-    {
-        $this->config['transaction']['auto_commit'] = $autoCommit;
-    }
-
-    public function getCommitAttempts(): int
-    {
-        return $this->config['transaction']['commit_attempts'];
-    }
-
-    public function setCommitAttempts(int $attempts): void
-    {
-        $this->config['transaction']['commit_attempts'] = $attempts;
     }
 }
