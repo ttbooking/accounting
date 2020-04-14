@@ -7,7 +7,7 @@ use Daniser\Accounting\Events\TransactionCommitting;
 
 class CheckBalance
 {
-    /** @var Ledger $ledger */
+    /** @var Ledger */
     protected Ledger $ledger;
 
     /**

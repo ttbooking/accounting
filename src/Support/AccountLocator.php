@@ -8,10 +8,10 @@ use Money\Currency;
 
 class AccountLocator implements Contracts\AccountLocator
 {
-    /** @var Contracts\AccountOwnerResolver $resolver */
+    /** @var Contracts\AccountOwnerResolver */
     protected Contracts\AccountOwnerResolver $resolver;
 
-    /** @var Repository $config */
+    /** @var Repository */
     protected Repository $config;
 
     /**

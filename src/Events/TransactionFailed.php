@@ -7,7 +7,7 @@ use Throwable;
 
 class TransactionFailed extends TransactionEvent
 {
-    /** @var Throwable $exception */
+    /** @var Throwable */
     public Throwable $exception;
 
     /**

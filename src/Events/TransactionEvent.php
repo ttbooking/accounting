@@ -6,7 +6,7 @@ use Daniser\Accounting\Contracts\Transaction;
 
 abstract class TransactionEvent
 {
-    /** @var Transaction $transaction */
+    /** @var Transaction */
     public Transaction $transaction;
 
     /**

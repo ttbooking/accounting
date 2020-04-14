@@ -2,10 +2,8 @@
 
 namespace Daniser\Accounting;
 
-use Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
-use Daniser\Accounting\Models;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Money\Converter;
@@ -16,22 +14,22 @@ use Money\MoneyParser;
 
 class Ledger implements Contracts\Ledger
 {
-    /** @var array $config */
+    /** @var array */
     protected array $config;
 
-    /** @var Contracts\AccountOwnerResolver|null $resolver */
+    /** @var Contracts\AccountOwnerResolver|null */
     protected ?Contracts\AccountOwnerResolver $resolver;
 
-    /** @var Dispatcher|null $dispatcher */
+    /** @var Dispatcher|null */
     protected ?Dispatcher $dispatcher;
 
-    /** @var MoneyParser|null $parser */
+    /** @var MoneyParser|null */
     protected ?MoneyParser $parser;
 
-    /** @var MoneyFormatter|null $formatter */
+    /** @var MoneyFormatter|null */
     protected ?MoneyFormatter $formatter;
 
-    /** @var Converter|null $converter */
+    /** @var Converter|null */
     protected ?Converter $converter;
 
     /**

@@ -128,8 +128,8 @@ class Transaction extends Model implements TransactionContract
             DB::transaction(fn () => $this->commitInternal(), config('accounting.transaction.commit_attempts'));
         }
 
-            // On failure we'll enter transaction into appropriate state, fire corresponding event
-            // and rethrow higher order exception (except if it's suppressed via one of the listeners).
+        // On failure we'll enter transaction into appropriate state, fire corresponding event
+        // and rethrow higher order exception (except if it's suppressed via one of the listeners).
         catch (\Throwable $e) {
             $this->setStatus(self::STATUS_FAILED);
             if (true !== Ledger::fireEvent(new Events\TransactionFailed($this, $e))) {

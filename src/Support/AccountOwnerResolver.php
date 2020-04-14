@@ -8,7 +8,7 @@ use Daniser\EntityResolver\Exceptions\EntityTypeMismatchException;
 
 class AccountOwnerResolver implements Contracts\AccountOwnerResolver
 {
-    /** @var EntityResolver $resolver */
+    /** @var EntityResolver */
     protected EntityResolver $resolver;
 
     /**
