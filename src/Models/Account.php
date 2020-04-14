@@ -35,9 +35,9 @@ class Account extends Model implements AccountContract
 
     protected $primaryKey = 'uuid';
 
-    //protected $keyType = 'string';
+    protected $keyType = 'string';
 
-    //public $incrementing = false;
+    public $incrementing = false;
 
     protected $fillable = ['owner_type', 'owner_id', 'type', 'currency', 'balance', 'limit'];
 

@@ -39,9 +39,9 @@ class Transaction extends Model implements TransactionContract
 
     protected $primaryKey = 'uuid';
 
-    //protected $keyType = 'string';
+    protected $keyType = 'string';
 
-    //public $incrementing = false;
+    public $incrementing = false;
 
     const UPDATED_AT = 'finished_at';
 
