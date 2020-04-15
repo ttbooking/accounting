@@ -17,9 +17,6 @@ class Ledger implements Contracts\Ledger
     /** @var array */
     protected array $config;
 
-    /** @var Contracts\AccountOwnerResolver|null */
-    protected ?Contracts\AccountOwnerResolver $resolver;
-
     /** @var Dispatcher|null */
     protected ?Dispatcher $dispatcher;
 
@@ -36,7 +33,6 @@ class Ledger implements Contracts\Ledger
      * Ledger constructor.
      *
      * @param array $config
-     * @param Contracts\AccountOwnerResolver|null $resolver
      * @param Dispatcher|null $dispatcher
      * @param MoneyParser|null $parser
      * @param MoneyFormatter|null $formatter
@@ -44,33 +40,16 @@ class Ledger implements Contracts\Ledger
      */
     public function __construct(
         array $config = [],
-        Contracts\AccountOwnerResolver $resolver = null,
         Dispatcher $dispatcher = null,
         MoneyParser $parser = null,
         MoneyFormatter $formatter = null,
         Converter $converter = null
     ) {
         $this->config = $config;
-        $this->resolver = $resolver;
         $this->dispatcher = $dispatcher;
         $this->parser = $parser;
         $this->formatter = $formatter;
         $this->converter = $converter;
-    }
-
-    /**
-     * @param string $type
-     * @param mixed $id
-     *
-     * @return Contracts\AccountOwner
-     */
-    public function resolveOwner(string $type, $id): Contracts\AccountOwner
-    {
-        if (! $this->resolver) {
-            throw new \RuntimeException("Can't resolve entity: no resolver defined.");
-        }
-
-        return $this->resolver->resolve($type, $id);
     }
 
     /*public function locateAccount(string $address): Account
