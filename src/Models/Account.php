@@ -9,7 +9,6 @@ use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Facades\Ledger;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
 use Money\Currency;
 use Money\Money;
