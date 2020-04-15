@@ -2,8 +2,8 @@
 
 namespace Daniser\Accounting\Concerns;
 
-use Daniser\Accounting\Models\Account;
 use Daniser\Accounting\Contracts\Account as AccountContract;
+use Daniser\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Money\Currency;
