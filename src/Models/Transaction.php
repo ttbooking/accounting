@@ -43,6 +43,8 @@ class Transaction extends Model implements TransactionContract
 
     public $incrementing = false;
 
+    protected $orderedUuid = true;
+
     const UPDATED_AT = 'finished_at';
 
     protected $attributes = [
