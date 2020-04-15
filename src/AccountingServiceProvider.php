@@ -38,6 +38,8 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     {
         $this->mergeConfigFrom(__DIR__.'/../config/accounting.php', 'accounting');
 
+        $this->registerEntityResolvers();
+
         $this->app->singleton(Contracts\Ledger::class, function () {
             $currencies = new ISOCurrencies;
 
@@ -51,8 +53,24 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
         $this->app->alias(Contracts\Ledger::class, 'ledger');
     }
 
+    /**
+     * Register entity resolver instances.
+     *
+     * @return void
+     */
+    protected function registerEntityResolvers()
+    {
+        $this->app->singleton(Contracts\AccountOwnerResolver::class, Support\AccountOwnerResolver::class);
+        $this->app->singleton(Contracts\AccountResolver::class, Support\AccountResolver::class);
+    }
+
     public function provides()
     {
-        return [Contracts\Ledger::class, 'ledger'];
+        return [
+            Contracts\Ledger::class,
+            'ledger',
+            Contracts\AccountOwnerResolver::class,
+            Contracts\AccountResolver::class,
+        ];
     }
 }

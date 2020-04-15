@@ -3,32 +3,35 @@
 namespace Daniser\Accounting\Support;
 
 use Daniser\Accounting\Contracts;
+use Daniser\Accounting\Contracts\Account;
+use Daniser\Accounting\Contracts\AccountOwnerResolver;
+use Daniser\EntityResolver\Exceptions\EntityTypeMismatchException;
 use Illuminate\Contracts\Config\Repository;
 use Money\Currency;
 
-class AccountLocator implements Contracts\AccountLocator
+class AccountResolver implements Contracts\AccountResolver
 {
-    /** @var Contracts\AccountOwnerResolver */
-    protected Contracts\AccountOwnerResolver $resolver;
+    /** @var AccountOwnerResolver */
+    protected AccountOwnerResolver $resolver;
 
     /** @var Repository */
     protected Repository $config;
 
     /**
-     * AccountLocator constructor.
+     * AccountResolver constructor.
      *
-     * @param Contracts\AccountOwnerResolver $resolver
+     * @param AccountOwnerResolver $resolver
      * @param Repository $config
      */
-    public function __construct(Contracts\AccountOwnerResolver $resolver, Repository $config)
+    public function __construct(AccountOwnerResolver $resolver, Repository $config)
     {
         $this->resolver = $resolver;
         $this->config = $config;
     }
 
-    public function locate(string $address): Contracts\Account
+    public function resolve(string $type, $id): Account
     {
-        [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $address);
+        [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $id);
 
         if ($ownerType === '') {
             $this->config->get('accounting.owner.default_type');
