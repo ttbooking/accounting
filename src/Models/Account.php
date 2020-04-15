@@ -22,7 +22,7 @@ use Money\Money;
  * @property string $type
  * @property string $currency
  * @property string $balance
- * @property string $limit
+ * @property array|null $context
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Model|AccountOwner $owner
@@ -39,7 +39,11 @@ class Account extends Model implements AccountContract
 
     public $incrementing = false;
 
-    protected $fillable = ['owner_type', 'owner_id', 'type', 'currency', 'balance', 'limit'];
+    protected $casts = [
+        'context' => 'array',
+    ];
+
+    protected $fillable = ['owner_type', 'owner_id', 'type', 'currency', 'balance', 'context'];
 
     /**
      * @param string $ownerType

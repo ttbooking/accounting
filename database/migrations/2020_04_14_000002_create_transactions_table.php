@@ -14,19 +14,16 @@ class CreateTransactionsTable extends Migration
     public function up()
     {
         Schema::create('accounting_transactions', function (Blueprint $table) {
-            //$table->increments('id');
-            //$table->unsignedInteger('source_id')->index();
-            //$table->unsignedInteger('destination_id')->index();
             $table->uuid('uuid')->primary();
             $table->uuid('source_uuid')->index();
             $table->uuid('destination_uuid')->index();
-            $table->unsignedDecimal('amount', 15, 5);
             $table->char('currency', 3)->index();
             $table->unsignedDecimal('st_rate', 15, 5)->default(1);
             $table->unsignedDecimal('td_rate', 15, 5)->default(1);
+            $table->unsignedDecimal('amount', 15, 5);
             $table->json('payload')->nullable();
             $table->unsignedTinyInteger('status')->default(0)->index();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('created_at')->nullable();
             $table->timestamp('finished_at')->nullable();
             $table->string('hash')->nullable();
 

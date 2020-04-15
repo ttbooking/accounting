@@ -14,15 +14,12 @@ class CreateAccountsTable extends Migration
     public function up()
     {
         Schema::create('accounting_accounts', function (Blueprint $table) {
-            //$table->increments('id');
-            //$table->string('owner_type', 36)->index();
-            //$table->unsignedInteger('owner_id')->index();
             $table->uuid('uuid')->primary();
             $table->morphs('owner');
             $table->string('type', 36)->index();
             $table->char('currency', 3)->index();
             $table->decimal('balance', 15, 5)->default(0);
-            $table->decimal('limit', 15, 5)->nullable();
+            $table->json('context')->nullable();
             $table->timestamps();
             $table->unique(['owner_type', 'owner_id', 'type', 'currency']);
         });

@@ -20,10 +20,10 @@ use Money\Money;
  * @property string $uuid
  * @property string $source_uuid
  * @property string $destination_uuid
- * @property string $amount
  * @property string $currency
  * @property string $st_rate
  * @property string $td_rate
+ * @property string $amount
  * @property array|null $payload
  * @property int $status
  * @property Carbon $created_at
@@ -55,7 +55,7 @@ class Transaction extends Model implements TransactionContract
         'payload' => 'array',
     ];
 
-    protected $fillable = ['source_uuid', 'destination_uuid', 'amount', 'currency', 'payload', 'status'];
+    protected $fillable = ['source_uuid', 'destination_uuid', 'currency', 'st_rate', 'td_rate', 'amount', 'payload', 'status'];
 
     public function source()
     {
