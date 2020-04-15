@@ -45,8 +45,8 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
 
             return $this->app->make(Ledger::class, [
                 'config' => $this->app['config']['accounting'],
-                'parser' => new DecimalMoneyParser($currencies),
-                'formatter' => new DecimalMoneyFormatter($currencies),
+                'serializer' => new DecimalMoneyFormatter($currencies),
+                'deserializer' => new DecimalMoneyParser($currencies),
             ]);
         });
 

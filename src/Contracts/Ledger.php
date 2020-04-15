@@ -2,13 +2,50 @@
 
 namespace Daniser\Accounting\Contracts;
 
-use Daniser\Accounting\Exceptions\AccountNotFoundException;
-use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Money\Currency;
 use Money\Money;
 
 interface Ledger
 {
+    /**
+     * @param string|object $event
+     * @param mixed $payload
+     * @param bool $halt
+     *
+     * @return mixed
+     */
+    public function fireEvent($event, $payload = [], $halt = true);
+
+    /**
+     * @param Money $money
+     *
+     * @return string
+     */
+    public function serializeMoney(Money $money): string;
+
+    /**
+     * @param string $money
+     * @param Currency|null $forceCurrency
+     *
+     * @return Money
+     */
+    public function deserializeMoney(string $money, Currency $forceCurrency = null): Money;
+
+    /**
+     * @param Money $money
+     *
+     * @return string
+     */
+    public function formatMoney(Money $money): string;
+
+    /**
+     * @param string $money
+     * @param Currency|null $forceCurrency
+     *
+     * @return Money
+     */
+    public function parseMoney(string $money, Currency $forceCurrency = null): Money;
+
     /**
      * @param Money $money
      * @param Currency $counterCurrency
@@ -17,43 +54,4 @@ interface Ledger
      * @return Money
      */
     public function convertMoney(Money $money, Currency $counterCurrency, $roundingMode = null): Money;
-
-    /**
-     * @param AccountOwner $owner
-     * @param string|null $type
-     * @param Currency|null $currency
-     *
-     * @throws AccountNotFoundException
-     *
-     * @return Account
-     */
-    //public function getAccount(AccountOwner $owner, $type = null, Currency $currency = null): Account;
-
-    /**
-     * @param string $address
-     *
-     * @throws AccountNotFoundException
-     *
-     * @return Account
-     */
-    //public function locateAccount(string $address): Account;
-
-    /**
-     * @param mixed $id
-     *
-     * @throws TransactionNotFoundException
-     *
-     * @return Transaction
-     */
-    //public function getTransaction($id): Transaction;
-
-    /**
-     * @param Account $source
-     * @param Account $destination
-     * @param Money $amount
-     * @param array|null $payload
-     *
-     * @return Transaction
-     */
-    //public function newTransaction(Account $source, Account $destination, Money $amount, array $payload = null): Transaction;
 }

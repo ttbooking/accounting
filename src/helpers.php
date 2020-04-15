@@ -1,14 +1,15 @@
 <?php
 
-use Daniser\Accounting\Contracts\Account;
+use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\Transaction;
 use Daniser\Accounting\Facades\Ledger;
+use Daniser\Accounting\Models\Account;
 use Money\Money;
 
 if (! function_exists('transfer_money')) {
     /**
-     * @param Account|string $from
-     * @param Account|string $to
+     * @param AccountContract|string $from
+     * @param AccountContract|string $to
      * @param Money|string|int|float $amount
      * @param array|null $payload
      *
@@ -16,23 +17,18 @@ if (! function_exists('transfer_money')) {
      */
     function transfer_money($from, $to, $amount, array $payload = null): Transaction
     {
-        $moneyParser = Ledger::getMoneyParser();
-
-        if (! $from instanceof Account) {
-            /** @var Account $from */
-            $from = Ledger::locateAccount($from);
+        if (! $from instanceof AccountContract) {
+            $from = Account::resolve($from);
         }
 
-        if (! $to instanceof Account) {
-            /** @var Account $to */
-            $to = Ledger::locateAccount($to);
+        if (! $to instanceof AccountContract) {
+            $to = Account::resolve($to);
         }
 
         if (! $amount instanceof Money) {
-            /** @var Money $amount */
-            $amount = $moneyParser->parse($amount);
+            $amount = Ledger::parseMoney($amount);
         }
 
-        return $from->transfer($to, $amount, $payload);
+        return $from->transferMoney($to, $amount, $payload);
     }
 }

@@ -47,26 +47,6 @@ class Account extends Model implements AccountContract
     protected $fillable = ['owner_type', 'owner_id', 'type', 'currency', 'balance', 'context'];
 
     /**
-     * @param string $ownerType
-     * @param int $ownerId
-     * @param string $type
-     * @param string $currency
-     *
-     * @throws ModelNotFoundException
-     *
-     * @return static|Model
-     */
-    public static function findByRequisites($ownerType, $ownerId, $type, $currency): self
-    {
-        return static::query()
-            ->where('owner_type', $ownerType)
-            ->where('owner_id', $ownerId)
-            ->where('type', $type)
-            ->where('currency', $currency)
-            ->firstOrFail();
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
     public function owner()
@@ -96,7 +76,7 @@ class Account extends Model implements AccountContract
 
     public function getBalance(bool $fix = false): Money
     {
-        return Ledger::parseMoney($this->balance, $this->getCurrency());
+        return Ledger::unserializeMoney($this->balance, $this->getCurrency());
     }
 
     public function isBalanceValid(): bool
@@ -110,7 +90,7 @@ class Account extends Model implements AccountContract
             'source_uuid' => $this->getAccountKey(),
             'destination_uuid' => $recipient->getAccountKey(),
             'currency' => $amount->getCurrency()->getCode(),
-            'amount' => Ledger::formatMoney($amount),
+            'amount' => Ledger::serializeMoney($amount),
             'payload' => $payload,
         ]), function (Transaction $transaction) {
             config('accounting.transaction.auto_commit') && $transaction->commit();
@@ -121,16 +101,16 @@ class Account extends Model implements AccountContract
     {
         $amount = Ledger::convertMoney($amount, $this->getCurrency());
         config('accounting.account.use_money_calculator')
-            ? $this->update(['balance' => Ledger::formatMoney($this->getBalance()->add($amount))])
-            : $this->increment('balance', Ledger::formatMoney($amount));
+            ? $this->update(['balance' => Ledger::serializeMoney($this->getBalance()->add($amount))])
+            : $this->increment('balance', Ledger::serializeMoney($amount));
     }
 
     public function decrementMoney(Money $amount): void
     {
         $amount = Ledger::convertMoney($amount, $this->getCurrency());
         config('accounting.account.use_money_calculator')
-            ? $this->update(['balance' => Ledger::formatMoney($this->getBalance()->subtract($amount))])
-            : $this->decrement('balance', Ledger::formatMoney($amount));
+            ? $this->update(['balance' => Ledger::serializeMoney($this->getBalance()->subtract($amount))])
+            : $this->decrement('balance', Ledger::serializeMoney($amount));
     }
 
     public function __call($method, $parameters)

@@ -92,7 +92,7 @@ class Transaction extends Model implements TransactionContract
 
     public function getAmount(): Money
     {
-        return Ledger::parseMoney($this->amount, $this->getCurrency());
+        return Ledger::unserializeMoney($this->amount, $this->getCurrency());
     }
 
     public function getPayload(): ?array
