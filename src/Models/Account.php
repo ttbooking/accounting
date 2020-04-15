@@ -75,7 +75,7 @@ class Account extends Model implements AccountContract
 
     public function getBalance(bool $fix = false): Money
     {
-        return Ledger::unserializeMoney($this->balance, $this->getCurrency());
+        return Ledger::deserializeMoney($this->balance, $this->getCurrency());
     }
 
     public function isBalanceValid(): bool
