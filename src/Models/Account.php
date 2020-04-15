@@ -130,7 +130,6 @@ class Account extends Model implements AccountContract
         try {
             return parent::__call($method, $parameters);
         } catch (\Exception $e) {
-
             if ($method !== $action = Str::replaceLast('Money', '', $method)) {
                 /**
                  * @var Money
@@ -152,7 +151,6 @@ class Account extends Model implements AccountContract
             } else {
                 throw $e;
             }
-
         }
     }
 }
