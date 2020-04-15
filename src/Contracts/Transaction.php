@@ -17,9 +17,9 @@ interface Transaction
 
     public function getDestination(): Account;
 
-    public function getAmount(): Money;
-
     public function getCurrency(): Currency;
+
+    public function getAmount(): Money;
 
     public function getPayload(): ?array;
 

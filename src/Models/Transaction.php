@@ -45,6 +45,8 @@ class Transaction extends Model implements TransactionContract
 
     protected $orderedUuid = true;
 
+    const CREATED_AT = 'started_at';
+
     const UPDATED_AT = 'finished_at';
 
     protected $attributes = [
@@ -57,11 +59,17 @@ class Transaction extends Model implements TransactionContract
 
     protected $fillable = ['source_uuid', 'destination_uuid', 'currency', 'st_rate', 'td_rate', 'amount', 'payload', 'status'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function source()
     {
         return $this->belongsTo(Account::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function destination()
     {
         return $this->belongsTo(Account::class);
@@ -77,14 +85,14 @@ class Transaction extends Model implements TransactionContract
         return $this->destination;
     }
 
-    public function getAmount(): Money
-    {
-        return Ledger::parseMoney($this->amount, $this->getCurrency());
-    }
-
     public function getCurrency(): Currency
     {
         return new Currency($this->currency);
+    }
+
+    public function getAmount(): Money
+    {
+        return Ledger::parseMoney($this->amount, $this->getCurrency());
     }
 
     public function getPayload(): ?array

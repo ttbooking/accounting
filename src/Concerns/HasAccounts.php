@@ -2,7 +2,7 @@
 
 namespace Daniser\Accounting\Concerns;
 
-use BadMethodCallException;
+//use BadMethodCallException;
 use Daniser\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +11,7 @@ use Money\Currency;
 /**
  * Trait HasAccounts.
  *
- * @mixin \Daniser\Accounting\Contracts\Account
+ * #mixin \Daniser\Accounting\Contracts\Account
  *
  * @property Collection|Account[] $accounts
  */
@@ -39,12 +39,12 @@ trait HasAccounts
         ]);
     }
 
-    public function __call($method, $parameters)
+    /*public function __call($method, $parameters)
     {
         try {
             return parent::__call($method, $parameters);
         } catch (BadMethodCallException $e) {
             return $this->forwardCallTo($this->getAccount(), $method, $parameters);
         }
-    }
+    }*/
 }

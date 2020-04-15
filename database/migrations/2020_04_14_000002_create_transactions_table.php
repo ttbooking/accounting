@@ -23,7 +23,7 @@ class CreateTransactionsTable extends Migration
             $table->unsignedDecimal('amount', 15, 5);
             $table->json('payload')->nullable();
             $table->unsignedTinyInteger('status')->default(0)->index();
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
             $table->string('hash')->nullable();
 

@@ -65,9 +65,22 @@ class Account extends Model implements AccountContract
             ->firstOrFail();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
     public function owner()
     {
         return $this->morphTo();
+    }
+
+    public function getAccountKey()
+    {
+        return $this->getKey();
+    }
+
+    public function getOwner(): AccountOwner
+    {
+        return $this->owner;
     }
 
     public function getType(): string
@@ -75,38 +88,28 @@ class Account extends Model implements AccountContract
         return $this->type;
     }
 
-    public function getOwner()
-    {
-        return $this->owner;
-    }
-
-    public function getBalance(): Money
-    {
-        return Ledger::parseMoney($this->balance, $this->getCurrency());
-    }
-
     public function getCurrency(): Currency
     {
         return new Currency($this->currency);
     }
 
-    public function getLimit(): Money
+    public function getBalance(bool $fix = false): Money
     {
-        return Ledger::parseMoney($this->limit, $this->getCurrency());
+        return Ledger::parseMoney($this->balance, $this->getCurrency());
     }
 
-    public function setLimit(Money $limit): void
+    public function isBalanceValid(): bool
     {
-        $this->limit = Ledger::formatMoney(Ledger::convertMoney($limit, $this->getCurrency()));
+        return true;
     }
 
     public function transferMoney(AccountContract $recipient, Money $amount, array $payload = null): Transaction
     {
         return tap(Transaction::create([
-            'source_uuid' => $this->getKey(),
-            'destination_uuid' => $recipient->getKey(),
-            'amount' => Ledger::formatMoney($amount),
+            'source_uuid' => $this->getAccountKey(),
+            'destination_uuid' => $recipient->getAccountKey(),
             'currency' => $amount->getCurrency()->getCode(),
+            'amount' => Ledger::formatMoney($amount),
             'payload' => $payload,
         ]), function (Transaction $transaction) {
             config('accounting.transaction.auto_commit') && $transaction->commit();
