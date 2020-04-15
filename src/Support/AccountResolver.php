@@ -5,7 +5,6 @@ namespace Daniser\Accounting\Support;
 use Daniser\Accounting\Contracts;
 use Daniser\Accounting\Contracts\Account;
 use Daniser\Accounting\Contracts\AccountOwnerResolver;
-use Daniser\EntityResolver\Exceptions\EntityTypeMismatchException;
 use Illuminate\Contracts\Config\Repository;
 use Money\Currency;
 
