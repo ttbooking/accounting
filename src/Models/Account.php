@@ -71,7 +71,7 @@ class Account extends Model implements AccountContract
         return $this->type;
     }
 
-    public function getOwner(): AccountOwner
+    public function getOwner()
     {
         return $this->owner;
     }
@@ -125,24 +125,34 @@ class Account extends Model implements AccountContract
             : $this->decrement('balance', Ledger::formatMoney($amount));
     }
 
-    /*public function __call($name, $arguments)
+    public function __call($method, $parameters)
     {
-        //
-        // @var Money
-        // @var array|null $payload
-        //
-        [$amount, $payload] = $arguments + [1 => null];
+        try {
+            return parent::__call($method, $parameters);
+        } catch (\Exception $e) {
 
-        if (! Str::startsWith($name, 'un')) {
-            return $this->transferMoney(
-                $this->getOwner()->getAccount("{$name}ed", $amount->getCurrency()),
-                $amount, $payload
-            );
-        } else {
-            $name = Str::substr($name, 2);
+            if ($method !== $action = Str::replaceLast('Money', '', $method)) {
+                /**
+                 * @var Money
+                 * @var array|null $payload
+                 */
+                [$amount, $payload] = $parameters + [1 => null];
 
-            return $this->getOwner()->getAccount("{$name}ed", $amount->getCurrency())
-                ->transferMoney($this, $amount, $payload);
+                if (! Str::startsWith($action, 'un')) {
+                    return $this->transferMoney(
+                        $this->getOwner()->getAccount("{$action}ed", $amount->getCurrency()),
+                        $amount, $payload
+                    );
+                } else {
+                    $action = Str::substr($action, 2);
+
+                    return $this->getOwner()->getAccount("{$action}ed", $amount->getCurrency())
+                        ->transferMoney($this, $amount, $payload);
+                }
+            } else {
+                throw $e;
+            }
+
         }
-    }*/
+    }
 }

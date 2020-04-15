@@ -15,7 +15,7 @@ interface Account
 
     public function getType(): string;
 
-    public function getOwner(): AccountOwner;
+    public function getOwner();
 
     public function getBalance(): Money;
 
