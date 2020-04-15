@@ -27,7 +27,7 @@ interface Ledger
      *
      * @return Account
      */
-    public function getAccount(AccountOwner $owner, $type = null, Currency $currency = null): Account;
+    //public function getAccount(AccountOwner $owner, $type = null, Currency $currency = null): Account;
 
     /**
      * @param string $address
@@ -36,7 +36,7 @@ interface Ledger
      *
      * @return Account
      */
-    public function locateAccount(string $address): Account;
+    //public function locateAccount(string $address): Account;
 
     /**
      * @param mixed $id
@@ -45,7 +45,7 @@ interface Ledger
      *
      * @return Transaction
      */
-    public function getTransaction($id): Transaction;
+    //public function getTransaction($id): Transaction;
 
     /**
      * @param Account $source
@@ -55,5 +55,5 @@ interface Ledger
      *
      * @return Transaction
      */
-    public function newTransaction(Account $source, Account $destination, Money $amount, array $payload = null): Transaction;
+    //public function newTransaction(Account $source, Account $destination, Money $amount, array $payload = null): Transaction;
 }

@@ -22,13 +22,13 @@ class CreateTransactionsTable extends Migration
             $table->uuid('destination_uuid')->index();
             $table->unsignedDecimal('amount', 15, 5);
             $table->char('currency', 3)->index();
-            $table->unsignedDecimal('st_rate', 15, 5);
-            $table->unsignedDecimal('td_rate', 15, 5);
+            $table->unsignedDecimal('st_rate', 15, 5)->default(1);
+            $table->unsignedDecimal('td_rate', 15, 5)->default(1);
             $table->json('payload')->nullable();
             $table->unsignedTinyInteger('status')->default(0)->index();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('finished_at')->nullable();
-            $table->string('hash');
+            $table->string('hash')->nullable();
 
             $table->foreign('source_uuid')->references('uuid')->on('accounting_accounts');
             $table->foreign('destination_uuid')->references('uuid')->on('accounting_accounts');

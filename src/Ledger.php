@@ -73,7 +73,7 @@ class Ledger implements Contracts\Ledger
         return $this->resolver->resolve($type, $id);
     }
 
-    public function locateAccount(string $address): Account
+    /*public function locateAccount(string $address): Account
     {
         [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $address);
 
@@ -86,7 +86,7 @@ class Ledger implements Contracts\Ledger
         $accountCurrency = new Currency($accountCurrency ?: $this->config['account']['default_currency']);
 
         return $this->getAccount($this->resolveOwner($ownerType, $ownerId), $accountType, $accountCurrency);
-    }
+    }*/
 
     /**
      * @param string|object $event
@@ -147,7 +147,7 @@ class Ledger implements Contracts\Ledger
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
     }
 
-    public function getAccount(Contracts\AccountOwner $owner, $type = null, Currency $currency = null): Account
+    /*public function getAccount(Contracts\AccountOwner $owner, $type = null, Currency $currency = null): Account
     {
         try {
             $type ??= $this->config['account']['default_type'];
@@ -159,18 +159,18 @@ class Ledger implements Contracts\Ledger
         } catch (ModelNotFoundException $e) {
             throw new AccountNotFoundException('Account with given parameters not found.', 0, $e);
         }
-    }
+    }*/
 
-    public function getTransaction($id): Transaction
+    /*public function getTransaction($id): Transaction
     {
         try {
             return new Transaction($this, Models\Transaction::findOrFail($id));
         } catch (ModelNotFoundException $e) {
             throw new TransactionNotFoundException("Transaction with id $id not found.", 0, $e);
         }
-    }
+    }*/
 
-    public function newTransaction(Contracts\Account $source, Contracts\Account $destination, Money $amount, array $payload = null): Transaction
+    /*public function newTransaction(Contracts\Account $source, Contracts\Account $destination, Money $amount, array $payload = null): Transaction
     {
         return tap(new Transaction($this, Models\Transaction::create([
             'source_id' => $source->getUniqueIdentifier(),
@@ -181,5 +181,5 @@ class Ledger implements Contracts\Ledger
         ])), function (Transaction $transaction) {
             $this->config['transaction']['auto_commit'] && $transaction->commit();
         });
-    }
+    }*/
 }
