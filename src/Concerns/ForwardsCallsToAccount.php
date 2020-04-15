@@ -2,11 +2,18 @@
 
 namespace Daniser\Accounting\Concerns;
 
+use BadMethodCallException;
+use Daniser\Accounting\Contracts\Account;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Contracts\Transaction;
 use Money\Currency;
 use Money\Money;
 
+/**
+ * Trait ForwardsCallsToAccount.
+ *
+ * @mixin \Daniser\Accounting\Contracts\Account
+ */
 trait ForwardsCallsToAccount
 {
     public function getAccountKey()
@@ -39,8 +46,17 @@ trait ForwardsCallsToAccount
         return $this->getAccount()->isBalanceValid();
     }
 
-    public function transferMoney(self $recipient, Money $amount, array $payload = null): Transaction
+    public function transferMoney(Account $recipient, Money $amount, array $payload = null): Transaction
     {
         return $this->getAccount()->transferMoney($recipient, $amount, $payload);
+    }
+
+    public function __call($method, $parameters)
+    {
+        try {
+            return parent::__call($method, $parameters);
+        } catch (BadMethodCallException $e) {
+            return $this->forwardCallTo($this->getAccount(), $method, $parameters);
+        }
     }
 }
