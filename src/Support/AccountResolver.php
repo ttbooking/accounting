@@ -33,15 +33,15 @@ class AccountResolver implements Contracts\AccountResolver
         [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $id);
 
         if ($ownerType === '') {
-            $this->config->get('accounting.owner.default_type');
+            $ownerType = $this->config->get('accounting.owner.default_type');
         }
 
         if ($accountType === '') {
-            $this->config->get('accounting.account.default_type');
+            $accountType = $this->config->get('accounting.account.default_type');
         }
 
         if ($accountCurrency === '') {
-            $this->config->get('accounting.account.default_currency');
+            $accountCurrency = $this->config->get('accounting.account.default_currency');
         }
 
         return $this->resolver
