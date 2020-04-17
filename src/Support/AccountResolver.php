@@ -2,13 +2,14 @@
 
 namespace Daniser\Accounting\Support;
 
-use Daniser\Accounting\Contracts;
 use Daniser\Accounting\Contracts\Account;
-use Daniser\Accounting\Contracts\AccountOwnerResolver;
+use Daniser\Accounting\Exceptions\AccountNotFoundException;
+use Daniser\EntityResolver\Contracts\EntityResolver;
+use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
 use Illuminate\Contracts\Config\Repository;
 use Money\Currency;
 
-class AccountResolver implements Contracts\AccountResolver
+class AccountResolver implements EntityResolver
 {
     /** @var AccountOwnerResolver */
     protected AccountOwnerResolver $resolver;
@@ -44,8 +45,12 @@ class AccountResolver implements Contracts\AccountResolver
             $accountCurrency = $this->config->get('accounting.account.default_currency');
         }
 
-        return $this->resolver
-            ->resolve($ownerType, $ownerId)
-            ->getAccount($accountType, new Currency($accountCurrency));
+        try {
+            return $this->resolver
+                ->resolve($ownerType, $ownerId)
+                ->getAccount($accountType, new Currency($accountCurrency));
+        } catch (AccountNotFoundException $e) {
+            throw new EntityNotFoundException("Account with address $id not found.", $e->getCode(), $e);
+        }
     }
 }

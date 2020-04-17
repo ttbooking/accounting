@@ -143,7 +143,7 @@ class Transaction extends Model implements TransactionContract
         catch (\Throwable $e) {
             $this->setStatus(self::STATUS_FAILED);
             if (true !== Ledger::fireEvent(new Events\TransactionFailed($this, $e))) {
-                throw new Exceptions\TransactionCommitFailedException('Transaction commit has failed.', 0, $e);
+                throw new Exceptions\TransactionCommitFailedException('Transaction commit has failed.', $e->getCode(), $e);
             }
         }
 

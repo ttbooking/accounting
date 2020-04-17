@@ -4,10 +4,10 @@ namespace Daniser\Accounting\Models;
 
 use Carbon\Carbon;
 use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
-use Daniser\Accounting\Concerns\Resolvable;
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Facades\Ledger;
+use Daniser\EntityResolver\Concerns\Resolvable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Money\Currency;
