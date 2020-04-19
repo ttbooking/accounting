@@ -31,7 +31,7 @@ class AccountResolver implements EntityResolver
 
     public function resolve(string $type, $id): Account
     {
-        [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $id);
+        [$ownerType, $ownerId, $accountType, $accountCurrency] = explode(':', $id) + ['', '', '', ''];
 
         if ($ownerType === '') {
             $ownerType = $this->config->get('accounting.owner.default_type');
