@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
+use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\EntityResolver\Concerns\Resolvable;
 use Illuminate\Database\Eloquent\Model;
@@ -85,6 +86,10 @@ class Account extends Model implements AccountContract
 
     public function transferMoney(AccountContract $recipient, Money $amount, array $payload = null): Transaction
     {
+        if ($this->getAccountKey() === $recipient->getAccountKey()) {
+            throw new TransactionIdenticalEndpointsException('Transaction endpoints are identical.');
+        }
+
         return tap(Transaction::create([
             'source_uuid' => $this->getAccountKey(),
             'destination_uuid' => $recipient->getAccountKey(),

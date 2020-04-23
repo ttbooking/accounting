@@ -5,6 +5,7 @@ namespace Daniser\Accounting;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Money\Currencies\ISOCurrencies;
+use Money\Currency;
 use Money\Formatter\DecimalMoneyFormatter;
 use Money\Parser\DecimalMoneyParser;
 
@@ -34,9 +35,24 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
         }
     }
 
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/accounting.php', 'accounting');
+
+        $this->app->bind(Support\AccountResolver::class, function () {
+            return new Support\AccountResolver(
+                $this->app->make(Support\AccountOwnerResolver::class),
+                $this->app['config']['accounting.owner.default_type'],
+                $this->app['config']['accounting.account.default_type'],
+                new Currency($this->app['config']['accounting.account.default_currency']),
+                $this->app['config']['entity-resolver.composite_delimiter']
+            );
+        });
 
         $this->app->singleton(Contracts\Ledger::class, function () {
             $currencies = new ISOCurrencies;
@@ -51,8 +67,13 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
         $this->app->alias(Contracts\Ledger::class, 'ledger');
     }
 
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
     public function provides()
     {
-        return [Contracts\Ledger::class, 'ledger'];
+        return [Support\AccountResolver::class, Contracts\Ledger::class, 'ledger'];
     }
 }

@@ -17,12 +17,15 @@ if (! function_exists('transfer_money')) {
      */
     function transfer_money($from, $to, $amount, array $payload = null): Transaction
     {
-        if (! $from instanceof AccountContract) {
-            $from = Account::resolve($from);
+        if (! $to instanceof AccountContract) {
+            if (! $from instanceof AccountContract) {
+                $to = [$to, $from];
+            }
+            $to = Account::resolve($to);
         }
 
-        if (! $to instanceof AccountContract) {
-            $to = Account::resolve($to);
+        if (! $from instanceof AccountContract) {
+            $from = Account::resolve($from);
         }
 
         if (! $amount instanceof Money) {

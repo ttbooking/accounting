@@ -2,6 +2,7 @@
 
 namespace Daniser\Accounting\Contracts;
 
+use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Money\Currency;
 use Money\Money;
 
@@ -23,6 +24,8 @@ interface Account
      * @param Account $recipient
      * @param Money $amount
      * @param array|null $payload
+     *
+     * @throws TransactionIdenticalEndpointsException
      *
      * @return Transaction
      */
