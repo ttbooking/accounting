@@ -2,7 +2,6 @@
 
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\Transaction;
-use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Models\Account;
 use Money\Money;
 
