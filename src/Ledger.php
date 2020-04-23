@@ -2,6 +2,8 @@
 
 namespace Daniser\Accounting;
 
+use Daniser\Accounting\Contracts\SafeMoneyParser;
+use Daniser\Accounting\Support\FallbackMoneyParser;
 use Illuminate\Contracts\Events\Dispatcher;
 use Money\Converter;
 use Money\Currency;
@@ -20,14 +22,14 @@ class Ledger implements Contracts\Ledger
     /** @var MoneyFormatter|null */
     protected ?MoneyFormatter $serializer;
 
-    /** @var MoneyParser|null */
-    protected ?MoneyParser $deserializer;
+    /** @var SafeMoneyParser|null */
+    protected ?SafeMoneyParser $deserializer;
 
     /** @var MoneyFormatter|null */
     protected ?MoneyFormatter $formatter;
 
-    /** @var MoneyParser|null */
-    protected ?MoneyParser $parser;
+    /** @var SafeMoneyParser|null */
+    protected ?SafeMoneyParser $parser;
 
     /** @var Converter|null */
     protected ?Converter $converter;
@@ -55,9 +57,9 @@ class Ledger implements Contracts\Ledger
         $this->config = $config;
         $this->dispatcher = $dispatcher;
         $this->serializer = $serializer;
-        $this->deserializer = $deserializer;
+        $this->deserializer = self::decorateParser($deserializer);
         $this->formatter = $formatter ?? $serializer;
-        $this->parser = $parser ?? $deserializer;
+        $this->parser = self::decorateParser($parser ?? $deserializer);
         $this->converter = $converter;
     }
 
@@ -82,13 +84,15 @@ class Ledger implements Contracts\Ledger
         return $this->serializer->format($money);
     }
 
-    public function deserializeMoney(string $money, Currency $forceCurrency = null): Money
+    public function deserializeMoney(string $money, Currency $fallbackCurrency = null): Money
     {
+        $fallbackCurrency ??= new Currency($this->config['account']['default_currency']);
+
         if (! $this->deserializer) {
-            return new Money($money, $forceCurrency ?? new Currency($this->config['account']['default_currency']));
+            return new Money($money, $fallbackCurrency);
         }
 
-        return $this->deserializer->parse($money, $forceCurrency);
+        return $this->deserializer->parse($money, $fallbackCurrency);
     }
 
     public function formatMoney(Money $money): string
@@ -100,13 +104,15 @@ class Ledger implements Contracts\Ledger
         return $this->formatter->format($money);
     }
 
-    public function parseMoney(string $money, Currency $forceCurrency = null): Money
+    public function parseMoney(string $money, Currency $fallbackCurrency = null): Money
     {
+        $fallbackCurrency ??= new Currency($this->config['account']['default_currency']);
+
         if (! $this->parser) {
-            return new Money($money, $forceCurrency ?? new Currency($this->config['account']['default_currency']));
+            return new Money($money, $fallbackCurrency);
         }
 
-        return $this->parser->parse($money, $forceCurrency);
+        return $this->parser->parse($money, $fallbackCurrency);
     }
 
     public function convertMoney(Money $money, Currency $counterCurrency, $roundingMode = null): Money
@@ -120,5 +126,15 @@ class Ledger implements Contracts\Ledger
         $roundingMode ??= $this->config['rounding_mode'];
 
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
+    }
+
+    /**
+     * @param MoneyParser|null $parser
+     *
+     * @return SafeMoneyParser|null
+     */
+    private static function decorateParser(?MoneyParser $parser)
+    {
+        return $parser instanceof SafeMoneyParser || is_null($parser) ? $parser : new FallbackMoneyParser($parser);
     }
 }

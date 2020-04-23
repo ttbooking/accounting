@@ -25,11 +25,11 @@ interface Ledger
 
     /**
      * @param string $money
-     * @param Currency|null $forceCurrency
+     * @param Currency|null $fallbackCurrency
      *
      * @return Money
      */
-    public function deserializeMoney(string $money, Currency $forceCurrency = null): Money;
+    public function deserializeMoney(string $money, Currency $fallbackCurrency = null): Money;
 
     /**
      * @param Money $money
@@ -40,11 +40,11 @@ interface Ledger
 
     /**
      * @param string $money
-     * @param Currency|null $forceCurrency
+     * @param Currency|null $fallbackCurrency
      *
      * @return Money
      */
-    public function parseMoney(string $money, Currency $forceCurrency = null): Money;
+    public function parseMoney(string $money, Currency $fallbackCurrency = null): Money;
 
     /**
      * @param Money $money

@@ -2,13 +2,13 @@
 
 namespace Daniser\Accounting\Support;
 
+use Daniser\Accounting\Contracts\SafeMoneyParser;
 use Money\Currencies;
 use Money\Currency;
 use Money\Exception\ParserException;
-use Money\MoneyParser;
 use Money\Parser\DecimalMoneyParser;
 
-class ExtendedDecimalMoneyParser implements MoneyParser
+class ExtendedDecimalMoneyParser implements SafeMoneyParser
 {
     const PREFIXED_CURRENCY_PATTERN = '/^(?P<currency>[A-Za-z]{3})? ?(?P<decimal>-?(?:0|[1-9]\d*)?\.?\d+?)$/';
 
@@ -25,7 +25,7 @@ class ExtendedDecimalMoneyParser implements MoneyParser
         $this->parser = new DecimalMoneyParser($currencies);
     }
 
-    public function parse($money, $forceCurrency = null)
+    public function parse($money, $fallbackCurrency = null)
     {
         if (! is_string($money)) {
             throw new ParserException('Formatted raw money should be string, e.g. USD1.00');
@@ -38,7 +38,7 @@ class ExtendedDecimalMoneyParser implements MoneyParser
             throw new ParserException(sprintf('Cannot parse "%s" to Money.', $money));
         }
 
-        $currency = $matches['currency'] ? new Currency(strtoupper($matches['currency'])) : $forceCurrency;
+        $currency = $matches['currency'] ? new Currency(strtoupper($matches['currency'])) : $fallbackCurrency;
 
         return $this->parser->parse($matches['decimal'], $currency);
     }
