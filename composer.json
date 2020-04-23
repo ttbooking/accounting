@@ -49,7 +49,9 @@
                 "Daniser\\Accounting\\AccountingServiceProvider"
             ],
             "aliases": {
-                "Ledger": "Daniser\\Accounting\\Facades\\Ledger"
+                "Ledger": "Daniser\\Accounting\\Facades\\Ledger",
+                "Account": "Daniser\\Accounting\\Facades\\Account",
+                "Transaction": "Daniser\\Accounting\\Facades\\Transaction"
             }
         }
     },

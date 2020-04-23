@@ -29,7 +29,7 @@ class CheckBalance
      */
     public function handle(TransactionCommitting $event)
     {
-        $balance = $event->transaction->getSource()->getBalance();
+        $balance = $event->transaction->getOrigin()->getBalance();
         $amount = $this->ledger->convertMoney($event->transaction->getAmount(), $balance->getCurrency());
 
         if ($insufficientFunds = $balance->lessThan($amount)) {

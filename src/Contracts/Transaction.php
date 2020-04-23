@@ -13,7 +13,7 @@ interface Transaction
     const STATUS_CANCELED = 2;
     const STATUS_FAILED = 3;
 
-    public function getSource(): Account;
+    public function getOrigin(): Account;
 
     public function getDestination(): Account;
 

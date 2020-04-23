@@ -3,6 +3,7 @@
 namespace Daniser\Accounting\Contracts;
 
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
+use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Money\Currency;
 use Money\Money;
 
@@ -12,7 +13,7 @@ interface Account
 
     public function getOwner(): AccountOwner;
 
-    public function getType(): string;
+    public function getAccountType(): string;
 
     public function getCurrency(): Currency;
 
@@ -21,13 +22,16 @@ interface Account
     public function isBalanceValid(): bool;
 
     /**
-     * @param Account $recipient
+     * Transfer money to another account.
+     *
+     * @param Account $destination
      * @param Money|string $amount
      * @param array|null $payload
      *
      * @throws TransactionIdenticalEndpointsException
+     * @throws TransactionZeroTransferException
      *
      * @return Transaction
      */
-    public function transferMoney(self $recipient, $amount, array $payload = null): Transaction;
+    public function transferMoney(self $destination, $amount, array $payload = null): Transaction;
 }

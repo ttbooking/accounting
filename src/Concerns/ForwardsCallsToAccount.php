@@ -26,7 +26,7 @@ trait ForwardsCallsToAccount
         return $this;
     }
 
-    public function getType(): string
+    public function getAccountType(): string
     {
         return $this->getAccount()->getType();
     }

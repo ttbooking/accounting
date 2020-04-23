@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 class LedgerTransferCommand extends Command
 {
     protected $signature = 'ledger:transfer
-        {from : Source account identifier}
+        {from : Origin account identifier}
         {to : Destination account identifier}
         {amount : Money amount (with optional currency)}';
 

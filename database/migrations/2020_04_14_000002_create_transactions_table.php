@@ -15,10 +15,10 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('accounting_transactions', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
-            $table->uuid('source_uuid')->index();
+            $table->uuid('origin_uuid')->index();
             $table->uuid('destination_uuid')->index();
             $table->char('currency', 3)->index();
-            $table->unsignedDecimal('st_rate', 15, 5)->default(1);
+            $table->unsignedDecimal('ot_rate', 15, 5)->default(1);
             $table->unsignedDecimal('td_rate', 15, 5)->default(1);
             $table->unsignedDecimal('amount', 15, 5);
             $table->json('payload')->nullable();
@@ -27,7 +27,7 @@ class CreateTransactionsTable extends Migration
             $table->timestamp('finished_at')->nullable();
             $table->string('hash')->nullable();
 
-            $table->foreign('source_uuid')->references('uuid')->on('accounting_accounts');
+            $table->foreign('origin_uuid')->references('uuid')->on('accounting_accounts');
             $table->foreign('destination_uuid')->references('uuid')->on('accounting_accounts');
         });
     }

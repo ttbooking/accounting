@@ -18,17 +18,17 @@ use Money\Money;
  * Class Transaction.
  *
  * @property string $uuid
- * @property string $source_uuid
+ * @property string $origin_uuid
  * @property string $destination_uuid
  * @property string $currency
- * @property string $st_rate
+ * @property string $ot_rate
  * @property string $td_rate
  * @property string $amount
  * @property array|null $payload
  * @property int $status
  * @property Carbon $created_at
  * @property Carbon $finished_at
- * @property Account $source
+ * @property Account $origin
  * @property Account $destination
  */
 class Transaction extends Model implements TransactionContract
@@ -57,12 +57,12 @@ class Transaction extends Model implements TransactionContract
         'payload' => 'array',
     ];
 
-    protected $fillable = ['source_uuid', 'destination_uuid', 'currency', 'st_rate', 'td_rate', 'amount', 'payload', 'status'];
+    protected $fillable = ['origin_uuid', 'destination_uuid', 'currency', 'ot_rate', 'td_rate', 'amount', 'payload', 'status'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function source()
+    public function origin()
     {
         return $this->belongsTo(Account::class);
     }
@@ -75,9 +75,9 @@ class Transaction extends Model implements TransactionContract
         return $this->belongsTo(Account::class);
     }
 
-    public function getSource(): AccountContract
+    public function getOrigin(): AccountContract
     {
-        return $this->source;
+        return $this->origin;
     }
 
     public function getDestination(): AccountContract
@@ -120,7 +120,7 @@ class Transaction extends Model implements TransactionContract
      */
     private function commitInternal(): void
     {
-        $this->getSource()->decrementMoney($this->getAmount());
+        $this->getOrigin()->decrementMoney($this->getAmount());
         $this->getDestination()->incrementMoney($this->getAmount());
         $this->setStatus(self::STATUS_COMMITTED);
     }
@@ -171,7 +171,7 @@ class Transaction extends Model implements TransactionContract
             return $this;
         }
 
-        return $this->getDestination()->transfer($this->getSource(), $this->getAmount(), $this->getPayload());
+        return $this->getDestination()->transferMoney($this->getOrigin(), $this->getAmount(), $this->getPayload());
     }
 
     public function rollback()

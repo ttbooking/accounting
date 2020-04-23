@@ -12,6 +12,16 @@ use Money\Parser\DecimalMoneyParser;
 class AccountingServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
+     * All of the container singletons that should be registered.
+     *
+     * @var array
+     */
+    public array $singletons = [
+        Contracts\AccountManager::class => AccountManager::class,
+        Contracts\TransactionManager::class => TransactionManager::class,
+    ];
+
+    /**
      * Bootstrap any application services.
      *
      * @return void
@@ -64,6 +74,12 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
             ]);
         });
 
+        $this->app->when(AccountManager::class)->needs('$config')
+            ->give($this->app['config']['accounting.account']);
+
+        $this->app->when(TransactionManager::class)->needs('$config')
+            ->give($this->app['config']['accounting.transaction']);
+
         $this->app->alias(Contracts\Ledger::class, 'ledger');
     }
 
@@ -74,6 +90,9 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
      */
     public function provides()
     {
-        return [Support\AccountResolver::class, Contracts\Ledger::class, 'ledger'];
+        return array_merge(
+            array_keys($this->singletons),
+            [Support\AccountResolver::class, Contracts\Ledger::class, 'ledger']
+        );
     }
 }

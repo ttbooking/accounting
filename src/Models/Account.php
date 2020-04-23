@@ -7,7 +7,9 @@ use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
+use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Daniser\Accounting\Facades\Ledger;
+use Daniser\Accounting\Facades\Transaction as TransactionManager;
 use Daniser\EntityResolver\Concerns\Resolvable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -64,7 +66,7 @@ class Account extends Model implements AccountContract
         return $this->owner;
     }
 
-    public function getType(): string
+    public function getAccountType(): string
     {
         return $this->type;
     }
@@ -84,33 +86,21 @@ class Account extends Model implements AccountContract
         return true;
     }
 
-    public function transferMoney(AccountContract $recipient, $amount, array $payload = null): Transaction
+    /**
+     * Transfer money to another account.
+     *
+     * @param AccountContract $destination
+     * @param Money|string $amount
+     * @param array|null $payload
+     *
+     * @throws TransactionIdenticalEndpointsException
+     * @throws TransactionZeroTransferException
+     *
+     * @return Transaction
+     */
+    public function transferMoney(AccountContract $destination, $amount, array $payload = null): Transaction
     {
-        if ($this->getAccountKey() === $recipient->getAccountKey()) {
-            throw new TransactionIdenticalEndpointsException('Transaction endpoints are identical.');
-        }
-
-        if (! $amount instanceof Money) {
-            $fallbackCurrency = config('accounting.transaction.default_currency');
-            if ($fallbackCurrency === 'source') {
-                $fallbackCurrency = $this->getCurrency();
-            } elseif ($fallbackCurrency === 'destination') {
-                $fallbackCurrency = $recipient->getCurrency();
-            } else {
-                $fallbackCurrency = new Currency($fallbackCurrency);
-            }
-            $amount = Ledger::parseMoney($amount, $fallbackCurrency);
-        }
-
-        return tap(Transaction::create([
-            'source_uuid' => $this->getAccountKey(),
-            'destination_uuid' => $recipient->getAccountKey(),
-            'currency' => $amount->getCurrency()->getCode(),
-            'amount' => Ledger::serializeMoney($amount),
-            'payload' => $payload,
-        ]), function (Transaction $transaction) {
-            config('accounting.transaction.auto_commit') && $transaction->commit();
-        });
+        return TransactionManager::create($this, $destination, $amount, $payload);
     }
 
     public function incrementMoney(Money $amount): void

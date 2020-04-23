@@ -26,9 +26,10 @@ return [
     ],
 
     'transaction' => [
-        'default_currency' => env('ACCOUNTING_TRANSACTION_DEFAULT_CURRENCY', 'source'),
+        'default_currency' => env('ACCOUNTING_TRANSACTION_DEFAULT_CURRENCY', 'origin'),
         'auto_commit' => env('ACCOUNTING_TRANSACTION_AUTO_COMMIT', false),
         'commit_attempts' => env('ACCOUNTING_TRANSACTION_COMMIT_ATTEMPTS', 1),
+        'allow_zero_transfers' => env('ACCOUNTING_TRANSACTION_ALLOW_ZERO_TRANSFERS', false),
     ],
 
 ];

@@ -2,27 +2,28 @@
 
 namespace Daniser\Accounting\Concerns;
 
-use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
-use Daniser\Accounting\Models\Account;
+use Daniser\Accounting\Facades\Account;
+use Daniser\Accounting\Models\Account as AccountModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Money\Currency;
 
 /**
  * Trait HasAccounts.
  *
- * @property Collection|Account[] $accounts
+ * @mixin Model
+ * @property Collection|AccountModel[] $accounts
  */
 trait HasAccounts
 {
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
-    public function accounts()
+    public function accounts(): MorphMany
     {
-        return $this->morphMany(Account::class, 'owner');
+        return $this->morphMany(AccountModel::class, 'owner');
     }
 
     /**
@@ -31,17 +32,10 @@ trait HasAccounts
      *
      * @throws AccountNotFoundException
      *
-     * @return AccountContract|Model
+     * @return AccountModel|Model
      */
-    public function getAccount(string $type = null, Currency $currency = null): AccountContract
+    public function getAccount(string $type = null, Currency $currency = null): AccountModel
     {
-        try {
-            return $this->accounts()->firstOrCreate([
-                'type' => $type ?? config('accounting.account.default_type'),
-                'currency' => isset($currency) ? $currency->getCode() : config('accounting.account.default_currency'),
-            ]);
-        } catch (ModelNotFoundException $e) {
-            throw new AccountNotFoundException('Account not found.', $e->getCode(), $e);
-        }
+        return Account::find($this, $type, $currency);
     }
 }
