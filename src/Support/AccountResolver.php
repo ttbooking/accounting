@@ -57,6 +57,7 @@ class AccountResolver implements EntityResolver
                 2 => $this->defaultAccountType,
             ] + $this->bareAddr($previous) + [
                 0 => $this->defaultOwnerType,
+                1 => '',
                 3 => $this->defaultAccountCurrency->getCode(),
             ];
 
