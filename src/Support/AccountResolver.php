@@ -64,7 +64,7 @@ class AccountResolver implements EntityResolver
         try {
             return $this->resolver
                 ->resolve($ownerType, $ownerId)
-                ->getAccount($accountType, new Currency($accountCurrency));
+                ->getAccount($accountType, new Currency(strtoupper($accountCurrency)));
         } catch (AccountNotFoundException $e) {
             throw new EntityNotFoundException("Account with address $id not found.", $e->getCode(), $e);
         }
