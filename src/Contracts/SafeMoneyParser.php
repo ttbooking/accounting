@@ -3,9 +3,9 @@
 namespace Daniser\Accounting\Contracts;
 
 use Money\Currency;
+use Money\Exception\ParserException;
 use Money\Money;
 use Money\MoneyParser;
-use Money\Exception\ParserException;
 
 interface SafeMoneyParser extends MoneyParser
 {
