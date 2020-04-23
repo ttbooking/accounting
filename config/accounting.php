@@ -26,7 +26,7 @@ return [
     ],
 
     'transaction' => [
-        'default_currency' => env('ACCOUNTING_TRANSACTION_DEFAULT_CURRENCY', 'USD'), // source/destination
+        'default_currency' => env('ACCOUNTING_TRANSACTION_DEFAULT_CURRENCY', 'source'),
         'auto_commit' => env('ACCOUNTING_TRANSACTION_AUTO_COMMIT', false),
         'commit_attempts' => env('ACCOUNTING_TRANSACTION_COMMIT_ATTEMPTS', 1),
     ],

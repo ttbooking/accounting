@@ -10,7 +10,7 @@ if (! function_exists('transfer_money')) {
     /**
      * @param AccountContract|string $from
      * @param AccountContract|string $to
-     * @param Money|string|int|float $amount
+     * @param Money|string $amount
      * @param array|null $payload
      *
      * @return Transaction
@@ -26,10 +26,6 @@ if (! function_exists('transfer_money')) {
 
         if (! $from instanceof AccountContract) {
             $from = Account::resolve($from);
-        }
-
-        if (! $amount instanceof Money) {
-            $amount = Ledger::parseMoney($amount);
         }
 
         return $from->transferMoney($to, $amount, $payload);

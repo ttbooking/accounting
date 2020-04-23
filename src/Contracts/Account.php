@@ -22,12 +22,12 @@ interface Account
 
     /**
      * @param Account $recipient
-     * @param Money $amount
+     * @param Money|string $amount
      * @param array|null $payload
      *
      * @throws TransactionIdenticalEndpointsException
      *
      * @return Transaction
      */
-    public function transferMoney(self $recipient, Money $amount, array $payload = null): Transaction;
+    public function transferMoney(self $recipient, $amount, array $payload = null): Transaction;
 }

@@ -84,10 +84,22 @@ class Account extends Model implements AccountContract
         return true;
     }
 
-    public function transferMoney(AccountContract $recipient, Money $amount, array $payload = null): Transaction
+    public function transferMoney(AccountContract $recipient, $amount, array $payload = null): Transaction
     {
         if ($this->getAccountKey() === $recipient->getAccountKey()) {
             throw new TransactionIdenticalEndpointsException('Transaction endpoints are identical.');
+        }
+
+        if (! $amount instanceof Money) {
+            $fallbackCurrency = config('accounting.transaction.default_currency');
+            if ($fallbackCurrency === 'source') {
+                $fallbackCurrency = $this->getCurrency();
+            } elseif ($fallbackCurrency === 'destination') {
+                $fallbackCurrency = $recipient->getCurrency();
+            } else {
+                $fallbackCurrency = new Currency($fallbackCurrency);
+            }
+            $amount = Ledger::parseMoney($amount, $fallbackCurrency);
         }
 
         return tap(Transaction::create([
