@@ -65,7 +65,7 @@ class AccountManager implements Contracts\AccountManager
         }
 
         try {
-            return $owner->accounts()->firstOrFail($this->prepareAttributes($type, $currency));
+            return $owner->accounts()->where($this->prepareAttributes($type, $currency))->firstOrFail();
         } catch (ModelNotFoundException $e) {
             throw new AccountNotFoundException('Account not found.', $e->getCode(), $e);
         }

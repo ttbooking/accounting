@@ -58,7 +58,7 @@ class TransactionManager implements Contracts\TransactionManager
     {
         $currency = $this->config['default_currency'];
 
-        return $$currency instanceof Account
+        return isset($$currency) && $$currency instanceof Account
             ? $$currency->getCurrency()
             : new Currency($currency);
     }
