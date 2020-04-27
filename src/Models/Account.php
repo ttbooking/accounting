@@ -90,7 +90,7 @@ class Account extends Model implements AccountContract
      * Transfer money to another account.
      *
      * @param AccountContract $destination
-     * @param Money|string $amount
+     * @param Money $amount
      * @param array|null $payload
      *
      * @throws TransactionIdenticalEndpointsException
@@ -98,7 +98,7 @@ class Account extends Model implements AccountContract
      *
      * @return Transaction
      */
-    public function transferMoney(AccountContract $destination, $amount, array $payload = null): Transaction
+    public function transferMoney(AccountContract $destination, Money $amount, array $payload = null): Transaction
     {
         return TransactionManager::create($this, $destination, $amount, $payload);
     }

@@ -5,16 +5,27 @@ namespace Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
+use Money\Currency;
 use Money\Money;
 
 interface TransactionManager
 {
     /**
+     * Choose default currency for transaction.
+     *
+     * @param Account $origin
+     * @param Account $destination
+     *
+     * @return Currency
+     */
+    public function currency(Account $origin, Account $destination): Currency;
+
+    /**
      * Create new transaction.
      *
-     * @param Account|string $origin
-     * @param Account|string $destination
-     * @param Money|string $amount
+     * @param Account $origin
+     * @param Account $destination
+     * @param Money $amount
      * @param array|null $payload
      *
      * @throws TransactionIdenticalEndpointsException
@@ -22,7 +33,7 @@ interface TransactionManager
      *
      * @return Transaction
      */
-    public function create($origin, $destination, $amount, array $payload = null): Transaction;
+    public function create(Account $origin, Account $destination, Money $amount, array $payload = null): Transaction;
 
     /**
      * Retrieve transaction by its Universally Unique Identifier (UUID).

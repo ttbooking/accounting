@@ -46,9 +46,9 @@ trait ForwardsCallsToAccount
         return $this->getAccount()->isBalanceValid();
     }
 
-    public function transferMoney(Account $recipient, $amount, array $payload = null): Transaction
+    public function transferMoney(Account $destination, Money $amount, array $payload = null): Transaction
     {
-        return $this->getAccount()->transferMoney($recipient, $amount, $payload);
+        return $this->getAccount()->transferMoney($destination, $amount, $payload);
     }
 
     public function __call($method, $parameters)

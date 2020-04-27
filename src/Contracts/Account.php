@@ -25,7 +25,7 @@ interface Account
      * Transfer money to another account.
      *
      * @param Account $destination
-     * @param Money|string $amount
+     * @param Money $amount
      * @param array|null $payload
      *
      * @throws TransactionIdenticalEndpointsException
@@ -33,5 +33,5 @@ interface Account
      *
      * @return Transaction
      */
-    public function transferMoney(self $destination, $amount, array $payload = null): Transaction;
+    public function transferMoney(self $destination, Money $amount, array $payload = null): Transaction;
 }

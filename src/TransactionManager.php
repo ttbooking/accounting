@@ -47,11 +47,28 @@ class TransactionManager implements Contracts\TransactionManager
     }
 
     /**
+     * Choose default currency for transaction.
+     *
+     * @param Account $origin
+     * @param Account $destination
+     *
+     * @return Currency
+     */
+    public function currency(Account $origin, Account $destination): Currency
+    {
+        $currency = $this->config['default_currency'];
+
+        return $$currency instanceof Account
+            ? $$currency->getCurrency()
+            : new Currency($currency);
+    }
+
+    /**
      * Create new transaction.
      *
-     * @param Account|string $origin
-     * @param Account|string $destination
-     * @param Money|string $amount
+     * @param Account $origin
+     * @param Account $destination
+     * @param Money $amount
      * @param array|null $payload
      *
      * @throws TransactionIdenticalEndpointsException
@@ -59,19 +76,10 @@ class TransactionManager implements Contracts\TransactionManager
      *
      * @return Transaction|Model
      */
-    public function create($origin, $destination, $amount, array $payload = null): Transaction
+    public function create(Account $origin, Account $destination, Money $amount, array $payload = null): Transaction
     {
-        $origin = $this->account->locate($origin);
-        $destination = $this->account->locate([$destination, $origin]);
-
         if ($origin->getAccountKey() === $destination->getAccountKey()) {
             throw new TransactionIdenticalEndpointsException('Transaction endpoints are identical.');
-        }
-
-        if (! $amount instanceof Money) {
-            $currency = $this->config['default_currency'];
-            $currency = $$currency instanceof Account ? $$currency->getCurrency() : new Currency($currency);
-            $amount = $this->ledger->parseMoney($amount, $currency);
         }
 
         if (! $this->config['allow_zero_transfers'] && $amount->isZero()) {
