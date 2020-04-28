@@ -13,6 +13,7 @@ use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Facades\Transaction as TransactionManager;
 use Daniser\EntityResolver\Concerns\Resolvable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Money\Currency;
@@ -31,6 +32,8 @@ use Money\Money;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Model|AccountOwner $owner
+ * @property Collection|Transaction[] $outgoingTransactions
+ * @property Collection|Transaction[] $incomingTransactions
  */
 class Account extends Model implements AccountContract
 {
@@ -52,6 +55,22 @@ class Account extends Model implements AccountContract
     public function owner()
     {
         return $this->morphTo();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function outgoingTransactions()
+    {
+        return $this->hasMany(Transaction::class, 'origin_uuid');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function incomingTransactions()
+    {
+        return $this->hasMany(Transaction::class, 'destination_uuid');
     }
 
     public function getAccountKey()
