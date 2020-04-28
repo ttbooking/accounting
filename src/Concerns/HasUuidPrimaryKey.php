@@ -7,10 +7,24 @@ use Illuminate\Support\Str;
 
 trait HasUuidPrimaryKey
 {
+    public function hasOrderedUuid()
+    {
+        return (bool) $this->orderedUuid;
+    }
+
     protected static function bootHasUuidPrimaryKey()
     {
         static::creating(function (Model $model) {
-            $model->setAttribute($model->getKeyName(), $model->orderedUuid ? Str::orderedUuid() : Str::uuid());
+            $uuid = $model->hasOrderedUuid()
+                ? (string) Str::orderedUuid()
+                : (string) Str::uuid();
+
+            $model->setAttribute($model->getKeyName(), $uuid);
         });
+    }
+
+    protected function initializeHasUuidPrimaryKey()
+    {
+        $this->setKeyType('string')->setIncrementing(false);
     }
 }
