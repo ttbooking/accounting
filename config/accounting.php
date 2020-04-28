@@ -30,6 +30,7 @@ return [
         'auto_commit' => env('ACCOUNTING_TRANSACTION_AUTO_COMMIT', false),
         'commit_attempts' => env('ACCOUNTING_TRANSACTION_COMMIT_ATTEMPTS', 1),
         'allow_zero_transfers' => env('ACCOUNTING_TRANSACTION_ALLOW_ZERO_TRANSFERS', false),
+        'handle_negative_amounts' => env('ACCOUNTING_TRANSACTION_HANDLE_NEGATIVE_AMOUNTS', false),
     ],
 
 ];

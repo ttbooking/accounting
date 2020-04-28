@@ -4,6 +4,7 @@ namespace Daniser\Accounting\Contracts;
 
 use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
+use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Money\Currency;
 use Money\Money;
@@ -31,6 +32,7 @@ interface Account
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
+     * @throws TransactionNegativeAmountException
      * @throws TransactionCreateAbortedException
      *
      * @return Transaction

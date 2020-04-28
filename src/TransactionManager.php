@@ -7,6 +7,7 @@ use Daniser\Accounting\Contracts\AccountManager;
 use Daniser\Accounting\Contracts\Ledger;
 use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
+use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Daniser\Accounting\Models\Transaction;
@@ -74,6 +75,7 @@ class TransactionManager implements Contracts\TransactionManager
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
+     * @throws TransactionNegativeAmountException
      * @throws TransactionCreateAbortedException
      *
      * @return Transaction|Model
@@ -84,8 +86,15 @@ class TransactionManager implements Contracts\TransactionManager
             throw new TransactionIdenticalEndpointsException('Transaction endpoints are identical.');
         }
 
-        if (! $this->config['allow_zero_transfers'] && $amount->isZero()) {
+        if ($amount->isZero() && ! $this->config['allow_zero_transfers']) {
             throw new TransactionZeroTransferException('Transaction of zero amount is forbidden.');
+        }
+
+        if ($amount->isNegative()) {
+            if (! $this->config['handle_negative_amounts']) {
+                throw new TransactionNegativeAmountException('Transaction of negative amount is forbidden.');
+            }
+            return $this->create($destination, $origin, $amount->absolute(), $payload);
         }
 
         return tap(Transaction::query()->create([

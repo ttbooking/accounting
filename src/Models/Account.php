@@ -8,6 +8,7 @@ use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
+use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Facades\Transaction as TransactionManager;
@@ -96,6 +97,7 @@ class Account extends Model implements AccountContract
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
+     * @throws TransactionNegativeAmountException
      * @throws TransactionCreateAbortedException
      *
      * @return Transaction
