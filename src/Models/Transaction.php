@@ -59,6 +59,19 @@ class Transaction extends Model implements TransactionContract
 
     protected $fillable = ['origin_uuid', 'destination_uuid', 'currency', 'ot_rate', 'td_rate', 'amount', 'payload', 'status'];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (self $transaction) {
+            return Ledger::fireEvent(new Events\TransactionCreating($transaction));
+        });
+
+        static::created(function (self $transaction) {
+            Ledger::fireEvent(new Events\TransactionCreated($transaction), [], false);
+        });
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

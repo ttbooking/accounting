@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
+use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Daniser\Accounting\Facades\Ledger;
@@ -95,6 +96,7 @@ class Account extends Model implements AccountContract
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
+     * @throws TransactionCreateAbortedException
      *
      * @return Transaction
      */

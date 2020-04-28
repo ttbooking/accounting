@@ -2,6 +2,7 @@
 
 namespace Daniser\Accounting\Contracts;
 
+use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
@@ -30,6 +31,7 @@ interface TransactionManager
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
+     * @throws TransactionCreateAbortedException
      *
      * @return Transaction
      */

@@ -5,6 +5,7 @@ namespace Daniser\Accounting;
 use Daniser\Accounting\Contracts\Account;
 use Daniser\Accounting\Contracts\AccountManager;
 use Daniser\Accounting\Contracts\Ledger;
+use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
@@ -73,6 +74,7 @@ class TransactionManager implements Contracts\TransactionManager
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
+     * @throws TransactionCreateAbortedException
      *
      * @return Transaction|Model
      */
@@ -93,6 +95,10 @@ class TransactionManager implements Contracts\TransactionManager
             'amount' => $this->ledger->serializeMoney($amount),
             'payload' => $payload,
         ]), function (Transaction $transaction) {
+            if (! $transaction->exists) {
+                throw new TransactionCreateAbortedException('Transaction creation aborted.');
+            }
+
             $this->config['auto_commit'] && $transaction->commit();
         });
     }
