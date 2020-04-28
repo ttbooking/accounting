@@ -94,6 +94,7 @@ class TransactionManager implements Contracts\TransactionManager
             if (! $this->config['handle_negative_amounts']) {
                 throw new TransactionNegativeAmountException('Transaction of negative amount is forbidden.');
             }
+
             return $this->create($destination, $origin, $amount->absolute(), $payload);
         }
 
