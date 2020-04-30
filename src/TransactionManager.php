@@ -3,7 +3,6 @@
 namespace Daniser\Accounting;
 
 use Daniser\Accounting\Contracts\Account;
-use Daniser\Accounting\Contracts\AccountManager;
 use Daniser\Accounting\Contracts\Ledger;
 use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
@@ -22,9 +21,6 @@ use Money\Money;
 
 class TransactionManager implements Contracts\TransactionManager
 {
-    /** @var AccountManager */
-    protected AccountManager $account;
-
     /** @var Ledger */
     protected Ledger $ledger;
 
@@ -37,14 +33,12 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * TransactionManager constructor.
      *
-     * @param AccountManager $account
      * @param Ledger $ledger
      * @param EntityResolver $resolver
      * @param array $config
      */
-    public function __construct(AccountManager $account, Ledger $ledger, EntityResolver $resolver, array $config = [])
+    public function __construct(Ledger $ledger, EntityResolver $resolver, array $config = [])
     {
-        $this->account = $account;
         $this->ledger = $ledger;
         $this->resolver = $resolver;
         $this->config = $config;

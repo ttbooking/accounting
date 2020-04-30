@@ -66,4 +66,19 @@ interface AccountManager
     public function delete(Account $account): void;
 
     public function purge($onlyBlank = true): void;
+
+    /**
+     * Check validity of cached balance for all accounts.
+     *
+     * @param bool $aggressive
+     * @param Collection|null $invalid
+     *
+     * @return bool
+     */
+    public function isValid(bool $aggressive = false, Collection $invalid = null): bool;
+
+    /**
+     * Fix cached balance for all accounts.
+     */
+    public function fix(): void;
 }

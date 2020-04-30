@@ -4,6 +4,8 @@ namespace Daniser\Accounting;
 
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
+use Daniser\Accounting\Contracts\Ledger;
+use Daniser\Accounting\Contracts\TransactionManager;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Models\Account;
 use Daniser\EntityResolver\Contracts\EntityResolver;
@@ -11,12 +13,20 @@ use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection as BaseCollection;
 use Money\Currency;
+use Money\Money;
 
 class AccountManager implements Contracts\AccountManager
 {
     /** @var EntityResolver */
     protected EntityResolver $resolver;
+
+    /** @var TransactionManager */
+    protected TransactionManager $transaction;
+
+    /** @var Ledger */
+    protected Ledger $ledger;
 
     /** @var array */
     protected array $config;
@@ -25,11 +35,15 @@ class AccountManager implements Contracts\AccountManager
      * AccountManager constructor.
      *
      * @param EntityResolver $resolver
+     * @param TransactionManager $transaction
+     * @param Ledger $ledger
      * @param array $config
      */
-    public function __construct(EntityResolver $resolver, array $config = [])
+    public function __construct(EntityResolver $resolver, TransactionManager $transaction, Ledger $ledger, array $config = [])
     {
         $this->resolver = $resolver;
+        $this->transaction = $transaction;
+        $this->ledger = $ledger;
         $this->config = $config;
     }
 
@@ -129,6 +143,26 @@ class AccountManager implements Contracts\AccountManager
         // TODO: Implement purge() method.
     }
 
+    public function isValid(bool $aggressive = false, BaseCollection $invalid = null): bool
+    {
+        if (! $aggressive) {
+            return Account::query()->sum('balance') === 0;
+        }
+
+        $totalsFromAccounts = $this->totalPerAccount();
+        $totalsFromTransactions = $this->transaction->totalPerAccount();
+
+        $invalid = $totalsFromAccounts->reject(function (Money $total, string $uuid) use ($totalsFromTransactions) {
+            return $total->equals($totalsFromTransactions[$uuid] ?? $this->ledger->deserializeMoney('0'));
+        });
+
+        return $invalid->isNotEmpty();
+    }
+
+    public function fix(): void
+    {
+    }
+
     /**
      * Prepare model attributes for creation and retrieval methods.
      *
@@ -143,5 +177,18 @@ class AccountManager implements Contracts\AccountManager
             'type' => $type ?? $this->config['default_type'],
             'currency' => isset($currency) ? $currency->getCode() : $this->config['default_currency'],
         ];
+    }
+
+    /**
+     * Money balance per account.
+     *
+     * @return BaseCollection|Money[]
+     */
+    protected function totalPerAccount(): BaseCollection
+    {
+        return Account::query()
+            //->where('balance', '<>', 0)
+            ->pluck('balance', 'uuid')
+            ->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
     }
 }
