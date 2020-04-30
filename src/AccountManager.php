@@ -143,20 +143,26 @@ class AccountManager implements Contracts\AccountManager
         // TODO: Implement purge() method.
     }
 
-    public function isValid(bool $aggressive = false, BaseCollection $invalid = null): bool
+    public function totalPerAccount(): BaseCollection
     {
-        if (! $aggressive) {
-            return Account::query()->sum('balance') === 0;
-        }
+        return Account::query()
+            ->pluck('balance', 'uuid')
+            ->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
+    }
 
+    public function invalidTotalPerAccount(): BaseCollection
+    {
         $totalsFromAccounts = $this->totalPerAccount();
         $totalsFromTransactions = $this->transaction->totalPerAccount();
 
-        $invalid = $totalsFromAccounts->reject(function (Money $total, string $uuid) use ($totalsFromTransactions) {
+        return $totalsFromAccounts->reject(function (Money $total, string $uuid) use ($totalsFromTransactions) {
             return $total->equals($totalsFromTransactions[$uuid] ?? $this->ledger->deserializeMoney('0'));
         });
+    }
 
-        return $invalid->isNotEmpty();
+    public function isValid(bool $aggressive = false): bool
+    {
+        return $aggressive ? $this->invalidTotalPerAccount()->isEmpty() : Account::query()->sum('balance') == 0;
     }
 
     public function fix(): void
@@ -177,18 +183,5 @@ class AccountManager implements Contracts\AccountManager
             'type' => $type ?? $this->config['default_type'],
             'currency' => isset($currency) ? $currency->getCode() : $this->config['default_currency'],
         ];
-    }
-
-    /**
-     * Money balance per account.
-     *
-     * @return BaseCollection|Money[]
-     */
-    protected function totalPerAccount(): BaseCollection
-    {
-        return Account::query()
-            //->where('balance', '<>', 0)
-            ->pluck('balance', 'uuid')
-            ->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
     }
 }

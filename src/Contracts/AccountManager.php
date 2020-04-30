@@ -5,6 +5,7 @@ namespace Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Illuminate\Support\Collection;
 use Money\Currency;
+use Money\Money;
 
 interface AccountManager
 {
@@ -68,14 +69,27 @@ interface AccountManager
     public function purge($onlyBlank = true): void;
 
     /**
+     * Money balance per account.
+     *
+     * @return Collection|Money[]
+     */
+    public function totalPerAccount(): Collection;
+
+    /**
+     * Money balance per account (for accounts which failed validation).
+     *
+     * @return Collection|Money[]
+     */
+    public function invalidTotalPerAccount(): Collection;
+
+    /**
      * Check validity of cached balance for all accounts.
      *
      * @param bool $aggressive
-     * @param Collection|null $invalid
      *
      * @return bool
      */
-    public function isValid(bool $aggressive = false, Collection $invalid = null): bool;
+    public function isValid(bool $aggressive = false): bool;
 
     /**
      * Fix cached balance for all accounts.
