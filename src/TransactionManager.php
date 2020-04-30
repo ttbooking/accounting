@@ -13,8 +13,10 @@ use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Daniser\Accounting\Models\Transaction;
 use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 use Money\Currency;
 use Money\Money;
 
@@ -152,5 +154,65 @@ class TransactionManager implements Contracts\TransactionManager
     public function validate(): void
     {
         // TODO: Implement validate() method.
+    }
+
+    public function total(DateTimeInterface $byDate = null): Money
+    {
+        $query = Transaction::query();
+
+        if (! is_null($byDate)) {
+            $query->where('finished_at', '<=', $byDate);
+        }
+
+        return $this->ledger->deserializeMoney($query->sum('amount'));
+    }
+
+    public function incomePerAccount(DateTimeInterface $byDate = null): Collection
+    {
+        return $this->incomeOrExpensePerAccount(true, $byDate)->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
+    }
+
+    public function expensePerAccount(DateTimeInterface $byDate = null): Collection
+    {
+        return $this->incomeOrExpensePerAccount(false, $byDate)->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
+    }
+
+    public function totalPerAccount(DateTimeInterface $byDate = null): Collection
+    {
+        $incomePerAccount = $this->incomeOrExpensePerAccount(true, $byDate);
+        $expensePerAccount = $this->incomeOrExpensePerAccount(false, $byDate);
+
+        $keys = $incomePerAccount->merge($expensePerAccount)->keys()->mapWithKeys(fn ($key) => [$key => '0']);
+
+        $incomePerAccount = $incomePerAccount->union($keys);
+        $expensePerAccount = $expensePerAccount->union($keys);
+
+        return $incomePerAccount->mergeRecursive($expensePerAccount)->mapSpread(function ($income, $expense) {
+            return $this->ledger->deserializeMoney($income)->subtract($this->ledger->deserializeMoney($expense));
+        });
+    }
+
+    /**
+     * Money amounts debited or credited per account.
+     *
+     * @param bool $income
+     * @param DateTimeInterface|null $byDate
+     *
+     * @return Collection|string[]
+     */
+    protected function incomeOrExpensePerAccount(bool $income, DateTimeInterface $byDate = null): Collection
+    {
+        $key = $income ? 'destination_uuid' : 'origin_uuid';
+
+        $query = Transaction::query()
+            ->selectRaw('sum(amount) as sum, '.$key)
+            ->where('status', Transaction::STATUS_COMMITTED)
+            ->groupBy($key);
+
+        if (! is_null($byDate)) {
+            $query->where('finished_at', '<=', $byDate);
+        }
+
+        return $query->pluck('sum', $key);
     }
 }

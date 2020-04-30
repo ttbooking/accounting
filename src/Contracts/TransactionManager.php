@@ -7,6 +7,8 @@ use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
 use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
+use DateTimeInterface;
+use Illuminate\Support\Collection;
 use Money\Currency;
 use Money\Money;
 
@@ -62,4 +64,40 @@ interface TransactionManager
     public function locate($address): Transaction;
 
     public function validate(): void;
+
+    /**
+     * Total amount of money transfers.
+     *
+     * @param DateTimeInterface|null $byDate
+     *
+     * @return Money
+     */
+    public function total(DateTimeInterface $byDate = null): Money;
+
+    /**
+     * Money amounts debited per account.
+     *
+     * @param DateTimeInterface|null $byDate
+     *
+     * @return Collection|Money[]
+     */
+    public function incomePerAccount(DateTimeInterface $byDate = null): Collection;
+
+    /**
+     * Money amounts credited per account.
+     *
+     * @param DateTimeInterface|null $byDate
+     *
+     * @return Collection|Money[]
+     */
+    public function expensePerAccount(DateTimeInterface $byDate = null): Collection;
+
+    /**
+     * Money balance per account.
+     *
+     * @param DateTimeInterface|null $byDate
+     *
+     * @return Collection|Money[]
+     */
+    public function totalPerAccount(DateTimeInterface $byDate = null): Collection;
 }
