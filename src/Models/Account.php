@@ -136,7 +136,6 @@ class Account extends Model implements AccountContract
 
     public function fixBalance(): void
     {
-        return;
     }
 
     /**
