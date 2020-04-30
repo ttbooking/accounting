@@ -6,6 +6,7 @@ use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
+use DateTimeInterface;
 use Money\Currency;
 use Money\Money;
 
@@ -19,9 +20,15 @@ interface Account
 
     public function getCurrency(): Currency;
 
-    public function getBalance(bool $fix = false): Money;
+    public function getIncome(DateTimeInterface $byDate = null): Money;
+
+    public function getExpense(DateTimeInterface $byDate = null): Money;
+
+    public function getBalance(DateTimeInterface $byDate = null): Money;
 
     public function isBalanceValid(): bool;
+
+    public function fixBalance(): void;
 
     /**
      * Transfer money to another account.

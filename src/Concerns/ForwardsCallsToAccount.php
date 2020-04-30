@@ -6,6 +6,7 @@ use BadMethodCallException;
 use Daniser\Accounting\Contracts\Account;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Contracts\Transaction;
+use DateTimeInterface;
 use Money\Currency;
 use Money\Money;
 
@@ -36,14 +37,29 @@ trait ForwardsCallsToAccount
         return $this->getAccount()->getCurrency();
     }
 
-    public function getBalance(bool $fix = false): Money
+    public function getIncome(DateTimeInterface $byDate = null): Money
     {
-        return $this->getAccount()->getBalance($fix);
+        return $this->getAccount()->getIncome($byDate);
+    }
+
+    public function getExpense(DateTimeInterface $byDate = null): Money
+    {
+        return $this->getAccount()->getExpense($byDate);
+    }
+
+    public function getBalance(DateTimeInterface $byDate = null): Money
+    {
+        return $this->getAccount()->getBalance($byDate);
     }
 
     public function isBalanceValid(): bool
     {
         return $this->getAccount()->isBalanceValid();
+    }
+
+    public function fixBalance(): void
+    {
+        $this->getAccount()->fixBalance();
     }
 
     public function transferMoney(Account $destination, Money $amount, array $payload = null): Transaction

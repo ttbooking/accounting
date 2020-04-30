@@ -13,6 +13,7 @@ use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Facades\Transaction as TransactionManager;
 use Daniser\EntityResolver\Concerns\Resolvable;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -93,14 +94,49 @@ class Account extends Model implements AccountContract
         return new Currency($this->currency);
     }
 
-    public function getBalance(bool $fix = false): Money
+    public function getIncome(DateTimeInterface $byDate = null): Money
     {
-        return Ledger::deserializeMoney($this->balance, $this->getCurrency());
+        $query = $this->incomingTransactions()->where('status', Transaction::STATUS_COMMITTED);
+
+        if (! is_null($byDate)) {
+            $query->where('finished_at', '<=', $byDate);
+        }
+
+        return Ledger::deserializeMoney($query->sum('amount'), $this->getCurrency());
+    }
+
+    public function getExpense(DateTimeInterface $byDate = null): Money
+    {
+        $query = $this->outgoingTransactions()->where('status', Transaction::STATUS_COMMITTED);
+
+        if (! is_null($byDate)) {
+            $query->where('finished_at', '<=', $byDate);
+        }
+
+        return Ledger::deserializeMoney($query->sum('amount'), $this->getCurrency());
+    }
+
+    public function getBalance(DateTimeInterface $byDate = null): Money
+    {
+        if (is_null($byDate)) {
+            return Ledger::deserializeMoney($this->balance, $this->getCurrency());
+        }
+
+        if ($byDate == new \DateTime) {
+            $byDate = null;
+        }
+
+        return $this->getIncome($byDate)->subtract($this->getExpense($byDate));
     }
 
     public function isBalanceValid(): bool
     {
-        return true;
+        return $this->getBalance()->equals($this->getBalance(new \DateTime));
+    }
+
+    public function fixBalance(): void
+    {
+        return;
     }
 
     /**
