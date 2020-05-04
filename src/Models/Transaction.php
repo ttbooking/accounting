@@ -119,7 +119,6 @@ class Transaction extends Model implements TransactionContract
     {
         try {
             Ledger::transaction(function () {
-
                 $this->refreshForUpdate('origin', 'destination');
                 $this->checkStatus(self::STATUS_STARTED);
 
@@ -131,7 +130,6 @@ class Transaction extends Model implements TransactionContract
                 } else {
                     $this->setStatus(self::STATUS_CANCELED);
                 }
-
             });
         } catch (Exceptions\TransactionException $e) {
             throw $e;
@@ -230,7 +228,6 @@ class Transaction extends Model implements TransactionContract
 
             default:
                 throw new Exceptions\TransactionStatusMismatchException('Unknown transaction status.');
-
         }
     }
 }
