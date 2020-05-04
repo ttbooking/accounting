@@ -11,9 +11,9 @@ use Daniser\Accounting\Events;
 use Daniser\Accounting\Exceptions;
 use Daniser\Accounting\Facades\Ledger;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Money\Currency;
 use Money\Money;
+use Throwable;
 
 /**
  * Class Transaction.
@@ -115,60 +115,50 @@ class Transaction extends Model implements TransactionContract
         return $this->status;
     }
 
-    /**
-     * Set transaction status.
-     *
-     * @param int $status
-     */
-    public function setStatus(int $status): void
-    {
-        $this->update(compact('status'));
-    }
-
-    /**
-     * @internal
-     */
-    private function commitInternal(): void
-    {
-        $this->getOrigin()->decrementMoney($this->getAmount());
-        $this->getDestination()->incrementMoney($this->getAmount());
-        $this->setStatus(self::STATUS_COMMITTED);
-    }
-
     public function commit(): self
     {
-        $this->checkStatus(self::STATUS_STARTED);
-
-        if (false === Ledger::fireEvent(new Events\TransactionCommitting($this))) {
-            return $this->cancel();
-        }
-
-        // Let's try and commit given transaction with configured number of attempts.
         try {
-            DB::transaction(fn () => $this->commitInternal(), config('accounting.transaction.commit_attempts'));
+            Ledger::transaction(function () {
+
+                $this->refreshForUpdate('origin', 'destination');
+                $this->checkStatus(self::STATUS_STARTED);
+
+                if (false !== Ledger::fireEvent(new Events\TransactionCommitting($this))) {
+                    $this->checkStatus(self::STATUS_STARTED);
+                    $this->getOrigin()->decrementMoney($this->getAmount());
+                    $this->getDestination()->incrementMoney($this->getAmount());
+                    $this->setStatus(self::STATUS_COMMITTED);
+                } else {
+                    $this->setStatus(self::STATUS_CANCELED);
+                }
+
+            });
+        } catch (Exceptions\TransactionException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            $this->verifyStatus(__FUNCTION__, $e);
         }
 
-        // On failure we'll enter transaction into appropriate state, fire corresponding event
-        // and rethrow higher order exception (except if it's suppressed via one of the listeners).
-        catch (\Throwable $e) {
-            $this->setStatus(self::STATUS_FAILED);
-            if (true !== Ledger::fireEvent(new Events\TransactionFailed($this, $e))) {
-                throw new Exceptions\TransactionCommitFailedException('Transaction commit has failed.', $e->getCode(), $e);
-            }
-        }
-
-        Ledger::fireEvent(new Events\TransactionCommitted($this), [], false);
+        $this->verifyStatus(__FUNCTION__);
 
         return $this;
     }
 
     public function cancel(): self
     {
-        $this->checkStatus(self::STATUS_STARTED);
+        try {
+            Ledger::transaction(function () {
+                $this->refreshForUpdate();
+                $this->checkStatus(self::STATUS_STARTED);
+                $this->setStatus(self::STATUS_CANCELED);
+            });
+        } catch (Exceptions\TransactionException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            $this->verifyStatus(__FUNCTION__, $e);
+        }
 
-        $this->setStatus(self::STATUS_CANCELED);
-
-        Ledger::fireEvent(new Events\TransactionCanceled($this), [], false);
+        $this->verifyStatus(__FUNCTION__);
 
         return $this;
     }
@@ -192,6 +182,16 @@ class Transaction extends Model implements TransactionContract
     }
 
     /**
+     * Set transaction status.
+     *
+     * @param int $status
+     */
+    protected function setStatus(int $status): void
+    {
+        $this->update(compact('status'));
+    }
+
+    /**
      * @param int $status
      *
      * @throws Exceptions\TransactionStatusMismatchException
@@ -200,6 +200,37 @@ class Transaction extends Model implements TransactionContract
     {
         if ($this->getStatus() !== $status) {
             throw new Exceptions\TransactionStatusMismatchException('Incorrect transaction status for this operation.');
+        }
+    }
+
+    /**
+     * @param string $operation
+     * @param Throwable|null $e
+     *
+     * @throws Exceptions\TransactionException
+     */
+    protected function verifyStatus(string $operation, Throwable $e = null): void
+    {
+        switch ($this->getStatus()) {
+
+            case self::STATUS_STARTED:
+                if (true !== Ledger::fireEvent(new Events\TransactionFailed($this, $e))) {
+                    $code = is_null($e) ? 0 : $e->getCode();
+                    throw new Exceptions\TransactionFailedException("Transaction {$operation} has failed.", $code, $e);
+                }
+                break;
+
+            case self::STATUS_COMMITTED:
+                Ledger::fireEvent(new Events\TransactionCommitted($this), [], false);
+                break;
+
+            case self::STATUS_CANCELED:
+                Ledger::fireEvent(new Events\TransactionCanceled($this), [], false);
+                break;
+
+            default:
+                throw new Exceptions\TransactionStatusMismatchException('Unknown transaction status.');
+
         }
     }
 }

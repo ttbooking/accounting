@@ -2,9 +2,11 @@
 
 namespace Daniser\Accounting;
 
+use Closure;
 use Daniser\Accounting\Contracts\SafeMoneyParser;
 use Daniser\Accounting\Support\FallbackMoneyParser;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\DatabaseManager;
 use Money\Converter;
 use Money\Currency;
 use Money\Money;
@@ -15,6 +17,9 @@ class Ledger implements Contracts\Ledger
 {
     /** @var array */
     protected array $config;
+
+    /** @var DatabaseManager */
+    protected DatabaseManager $db;
 
     /** @var Dispatcher|null */
     protected ?Dispatcher $dispatcher;
@@ -38,6 +43,7 @@ class Ledger implements Contracts\Ledger
      * Ledger constructor.
      *
      * @param array $config
+     * @param DatabaseManager $db
      * @param Dispatcher|null $dispatcher
      * @param MoneyFormatter|null $serializer
      * @param MoneyParser|null $deserializer
@@ -46,7 +52,8 @@ class Ledger implements Contracts\Ledger
      * @param Converter|null $converter
      */
     public function __construct(
-        array $config = [],
+        array $config,
+        DatabaseManager $db,
         Dispatcher $dispatcher = null,
         MoneyFormatter $serializer = null,
         MoneyParser $deserializer = null,
@@ -55,12 +62,18 @@ class Ledger implements Contracts\Ledger
         Converter $converter = null
     ) {
         $this->config = $config;
+        $this->db = $db;
         $this->dispatcher = $dispatcher;
         $this->serializer = $serializer;
         $this->deserializer = self::decorateParser($deserializer);
         $this->formatter = $formatter ?? $serializer;
         $this->parser = self::decorateParser($parser ?? $deserializer);
         $this->converter = $converter;
+    }
+
+    public function transaction(Closure $callback, $attempts = null)
+    {
+        return $this->db->transaction($callback, $attempts ?? $this->config['transaction']['commit_attempts']);
     }
 
     public function fireEvent($event, $payload = [], $halt = true)

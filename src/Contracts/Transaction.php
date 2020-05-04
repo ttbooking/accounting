@@ -11,7 +11,6 @@ interface Transaction
     const STATUS_STARTED = 0;
     const STATUS_COMMITTED = 1;
     const STATUS_CANCELED = 2;
-    const STATUS_FAILED = 3;
 
     public function getOrigin(): Account;
 

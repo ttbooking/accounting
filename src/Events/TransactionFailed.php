@@ -7,16 +7,16 @@ use Throwable;
 
 class TransactionFailed extends TransactionEvent
 {
-    /** @var Throwable */
-    public Throwable $exception;
+    /** @var Throwable|null */
+    public ?Throwable $exception;
 
     /**
      * Create a new event instance.
      *
      * @param Transaction $transaction
-     * @param Throwable $exception
+     * @param Throwable|null $exception
      */
-    public function __construct(Transaction $transaction, Throwable $exception)
+    public function __construct(Transaction $transaction, Throwable $exception = null)
     {
         parent::__construct($transaction);
         $this->exception = $exception;

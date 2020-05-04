@@ -2,11 +2,25 @@
 
 namespace Daniser\Accounting\Contracts;
 
+use Closure;
 use Money\Currency;
 use Money\Money;
+use Throwable;
 
 interface Ledger
 {
+    /**
+     * Execute a Closure within a transaction.
+     *
+     * @param Closure $callback
+     * @param int|null $attempts
+     *
+     * @throws Throwable
+     *
+     * @return mixed
+     */
+    public function transaction(Closure $callback, $attempts = null);
+
     /**
      * @param string|object $event
      * @param mixed $payload
