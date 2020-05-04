@@ -3,16 +3,14 @@
 namespace Daniser\Accounting\Concerns;
 
 use Daniser\Accounting\Support\Builder;
-use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
 trait Lockable
 {
     /**
-     * Eager load relations on the model.
+     * Eager load relations on the model and lock them.
      *
-     * @param bool|null $lock
+     * @param bool $lock
      * @param mixed ...$relations
      *
      * @return $this
@@ -31,7 +29,7 @@ trait Lockable
     }
 
     /**
-     * Create a new Eloquent query builder for the model.
+     * Create a new custom Eloquent query builder for the model.
      *
      * @param QueryBuilder $query
      *
@@ -43,14 +41,14 @@ trait Lockable
     }
 
     /**
-     * Reload the current model instance with fresh attributes from the database.
+     * Reload the current model instance with fresh attributes from the database and lock it and its chosen relations.
      *
-     * @param bool|null $lock
+     * @param bool $lock
      * @param mixed ...$with
      *
      * @return $this
      */
-    public function refresh($lock = null, ...$with)
+    public function refreshLocked($lock = true, ...$with)
     {
         if (! $this->exists) {
             return $this;
@@ -64,11 +62,6 @@ trait Lockable
             static::newQueryWithoutScopes()->lock($lock)->findOrFail($this->getKey())->attributes
         );
 
-        $this->load(collect($this->relations)->reject(function ($relation) {
-            return $relation instanceof Pivot
-                || (is_object($relation) && in_array(AsPivot::class, class_uses_recursive($relation), true));
-        })->keys()->all());
-
         $this->loadLocked($lock, $with);
 
         $this->syncOriginal();
@@ -77,7 +70,7 @@ trait Lockable
     }
 
     /**
-     * Lock the selected rows in the table for updating.
+     * Reload the current model and its chosen relations and lock them for updating.
      *
      * @param mixed ...$with
      *
@@ -85,11 +78,11 @@ trait Lockable
      */
     public function refreshForUpdate(...$with)
     {
-        return $this->refresh(true, $with);
+        return $this->refreshLocked(true, $with);
     }
 
     /**
-     * Share lock the selected rows in the table.
+     * Reload and share lock the current model and its chosen relations.
      *
      * @param mixed ...$with
      *
@@ -97,6 +90,6 @@ trait Lockable
      */
     public function refreshShared(...$with)
     {
-        return $this->refresh(false, $with);
+        return $this->refreshLocked(false, $with);
     }
 }

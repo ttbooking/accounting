@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 class Builder extends EloquentBuilder
 {
     /**
-     * Set the relationships that should be eager loaded.
+     * Set the relationships that should be eager loaded and locked.
      *
-     * @param bool|null $lock
+     * @param bool $lock
      * @param mixed ...$relations
      *
      * @return $this
@@ -22,7 +22,7 @@ class Builder extends EloquentBuilder
 
         $eagerLoad = $this->parseWithRelations($relations);
 
-        array_walk($eagerLoad, fn ($constraints) => fn ($query) => tap($query, $constraints)->lock($lock));
+        $eagerLoad = array_map(fn ($constraints) => fn ($query) => tap($query, $constraints)->lock($lock), $eagerLoad);
 
         $this->eagerLoad = array_merge($this->eagerLoad, $eagerLoad);
 
