@@ -220,7 +220,7 @@ class Transaction extends Model implements TransactionContract
                 );
             }
 
-            return $this;
+            throw new Exceptions\TransactionCreateAbortedException('Reverting transaction creation aborted.');
         });
     }
 

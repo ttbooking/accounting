@@ -54,7 +54,9 @@ interface Transaction
     /**
      * @param Money|null $amount
      *
-     * @return static|$this
+     * @throws TransactionException
+     *
+     * @return static
      */
     public function revert(Money $amount = null): self;
 }
