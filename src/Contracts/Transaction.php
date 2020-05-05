@@ -3,6 +3,7 @@
 namespace Daniser\Accounting\Contracts;
 
 use Daniser\Accounting\Exceptions\TransactionException;
+use Illuminate\Support\Collection;
 use Money\Currency;
 use Money\Money;
 
@@ -16,7 +17,7 @@ interface Transaction
 
     public function getParent(): ?self;
 
-    public function getChild(): ?self;
+    public function getChildren(): Collection;
 
     public function getOrigin(): Account;
 
@@ -29,6 +30,10 @@ interface Transaction
     public function getPayload(): ?array;
 
     public function getStatus(): int;
+
+    public function getRevertedAmount(): Money;
+
+    public function getRemainingAmount(): Money;
 
     public function isReverted(): bool;
 
@@ -47,7 +52,9 @@ interface Transaction
     public function cancel(): self;
 
     /**
+     * @param Money|null $amount
+     *
      * @return static|$this
      */
-    public function revert(): self;
+    public function revert(Money $amount = null): self;
 }

@@ -15,7 +15,7 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('accounting_transactions', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
-            $table->uuid('parent_uuid')->nullable()->unique();
+            $table->uuid('parent_uuid')->nullable()->index();
             $table->uuid('origin_uuid')->index();
             $table->uuid('destination_uuid')->index();
             $table->char('currency', 3)->index();

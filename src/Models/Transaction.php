@@ -11,6 +11,7 @@ use Daniser\Accounting\Events;
 use Daniser\Accounting\Exceptions;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Facades\Transaction as TransactionManager;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Money\Currency;
 use Money\Money;
@@ -32,7 +33,7 @@ use Throwable;
  * @property Carbon $created_at
  * @property Carbon $finished_at
  * @property Transaction|null $parent
- * @property Transaction|null $child
+ * @property Collection|Transaction[] $children
  * @property Account $origin
  * @property Account $destination
  */
@@ -92,11 +93,11 @@ class Transaction extends Model implements TransactionContract
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function child()
+    public function children()
     {
-        return $this->hasOne(__CLASS__, 'parent_id');
+        return $this->hasMany(__CLASS__, 'parent_id');
     }
 
     /**
@@ -120,9 +121,9 @@ class Transaction extends Model implements TransactionContract
         return $this->parent;
     }
 
-    public function getChild(): ?self
+    public function getChildren(): Collection
     {
-        return $this->child;
+        return $this->children;
     }
 
     public function getOrigin(): Account
@@ -155,9 +156,20 @@ class Transaction extends Model implements TransactionContract
         return $this->status;
     }
 
+    public function getRevertedAmount(): Money
+    {
+        $revertedAmount = $this->children()->where('status', self::STATUS_COMMITTED)->sum('amount');
+        return Ledger::deserializeMoney($revertedAmount, $this->getCurrency());
+    }
+
+    public function getRemainingAmount(): Money
+    {
+        return $this->getAmount()->subtract($this->getRevertedAmount());
+    }
+
     public function isReverted(): bool
     {
-        return $this->child()->exists();
+        return $this->getRevertedAmount()->equals($this->getAmount());
     }
 
     public function isRevertTransaction(): bool
@@ -191,7 +203,7 @@ class Transaction extends Model implements TransactionContract
         });
     }
 
-    public function revert(): self
+    public function revert(Money $amount = null): self
     {
         return $this->transact(function () {
             $this->refreshForUpdate();
@@ -199,7 +211,11 @@ class Transaction extends Model implements TransactionContract
 
             if (false !== Ledger::fireEvent(new Events\TransactionReverting($this))) {
                 return TransactionManager::create(
-                    $this->getDestination(), $this->getOrigin(), $this->getAmount(), $this->getPayload(), $this
+                    $this->getDestination(),
+                    $this->getOrigin(),
+                    $amount ?? $this->getRemainingAmount(),
+                    $this->getPayload(),
+                    $this
                 );
             }
 
