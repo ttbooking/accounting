@@ -159,6 +159,7 @@ class Transaction extends Model implements TransactionContract
     public function getRevertedAmount(): Money
     {
         $revertedAmount = $this->children()->where('status', self::STATUS_COMMITTED)->sum('amount');
+
         return Ledger::deserializeMoney($revertedAmount, $this->getCurrency());
     }
 

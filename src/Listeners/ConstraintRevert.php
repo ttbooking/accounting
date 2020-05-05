@@ -23,7 +23,5 @@ class ConstraintRevert
 
             return $fullyReverted || $exceedingRemainder ? false : null;
         }
-
-        return null;
     }
 }
