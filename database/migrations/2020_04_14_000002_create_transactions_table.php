@@ -15,7 +15,7 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('accounting_transactions', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
-            $table->uuid('parent_uuid')->unique();
+            $table->uuid('parent_uuid')->nullable()->unique();
             $table->uuid('origin_uuid')->index();
             $table->uuid('destination_uuid')->index();
             $table->char('currency', 3)->index();
@@ -27,7 +27,9 @@ class CreateTransactionsTable extends Migration
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
             $table->string('hash')->nullable();
+        });
 
+        Schema::table('accounting_transactions', function (Blueprint $table) {
             $table->foreign('parent_uuid')->references('uuid')->on('accounting_transactions');
             $table->foreign('origin_uuid')->references('uuid')->on('accounting_accounts');
             $table->foreign('destination_uuid')->references('uuid')->on('accounting_accounts');
