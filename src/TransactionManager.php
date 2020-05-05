@@ -3,6 +3,7 @@
 namespace Daniser\Accounting;
 
 use Daniser\Accounting\Contracts\Account;
+use Daniser\Accounting\Contracts\Transaction as TransactionContract;
 use Daniser\Accounting\Contracts\Ledger;
 use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
@@ -68,6 +69,7 @@ class TransactionManager implements Contracts\TransactionManager
      * @param Account $destination
      * @param Money $amount
      * @param array|null $payload
+     * @param TransactionContract|null $parent
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
@@ -76,8 +78,13 @@ class TransactionManager implements Contracts\TransactionManager
      *
      * @return Transaction|Model
      */
-    public function create(Account $origin, Account $destination, Money $amount, array $payload = null): Transaction
-    {
+    public function create(
+        Account $origin,
+        Account $destination,
+        Money $amount,
+        array $payload = null,
+        TransactionContract $parent = null
+    ): Transaction {
         if ($origin->getAccountKey() === $destination->getAccountKey()) {
             throw new TransactionIdenticalEndpointsException('Transaction endpoints are identical.');
         }
@@ -91,10 +98,11 @@ class TransactionManager implements Contracts\TransactionManager
                 throw new TransactionNegativeAmountException('Transaction of negative amount is forbidden.');
             }
 
-            return $this->create($destination, $origin, $amount->absolute(), $payload);
+            return $this->create($destination, $origin, $amount->absolute(), $payload, $parent);
         }
 
         return tap(Transaction::query()->create([
+            'parent_uuid' => isset($parent) ? $parent->getKey() : null,
             'origin_uuid' => $origin->getAccountKey(),
             'destination_uuid' => $destination->getAccountKey(),
             'currency' => $amount->getCurrency()->getCode(),

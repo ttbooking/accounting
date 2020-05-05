@@ -10,6 +10,7 @@ use Daniser\Accounting\Contracts\Transaction as TransactionContract;
 use Daniser\Accounting\Events;
 use Daniser\Accounting\Exceptions;
 use Daniser\Accounting\Facades\Ledger;
+use Daniser\Accounting\Facades\Transaction as TransactionManager;
 use Illuminate\Database\Eloquent\Model;
 use Money\Currency;
 use Money\Money;
@@ -19,6 +20,7 @@ use Throwable;
  * Class Transaction.
  *
  * @property string $uuid
+ * @property string $parent_uuid
  * @property string $origin_uuid
  * @property string $destination_uuid
  * @property string $currency
@@ -29,6 +31,8 @@ use Throwable;
  * @property int $status
  * @property Carbon $created_at
  * @property Carbon $finished_at
+ * @property Transaction|null $parent
+ * @property Transaction|null $child
  * @property Account $origin
  * @property Account $destination
  */
@@ -54,7 +58,17 @@ class Transaction extends Model implements TransactionContract
         'payload' => 'array',
     ];
 
-    protected $fillable = ['origin_uuid', 'destination_uuid', 'currency', 'ot_rate', 'td_rate', 'amount', 'payload', 'status'];
+    protected $fillable = [
+        'parent_uuid',
+        'origin_uuid',
+        'destination_uuid',
+        'currency',
+        'ot_rate',
+        'td_rate',
+        'amount',
+        'payload',
+        'status',
+    ];
 
     public static function boot()
     {
@@ -72,6 +86,22 @@ class Transaction extends Model implements TransactionContract
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    public function parent()
+    {
+        return $this->belongsTo(__CLASS__);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function child()
+    {
+        return $this->hasOne(__CLASS__, 'parent_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function origin()
     {
         return $this->belongsTo(Account::class);
@@ -83,6 +113,16 @@ class Transaction extends Model implements TransactionContract
     public function destination()
     {
         return $this->belongsTo(Account::class);
+    }
+
+    public function getParent(): ?Transaction
+    {
+        return $this->parent;
+    }
+
+    public function getChild(): ?Transaction
+    {
+        return $this->child;
     }
 
     public function getOrigin(): Account
@@ -113,6 +153,16 @@ class Transaction extends Model implements TransactionContract
     public function getStatus(): int
     {
         return $this->status;
+    }
+
+    public function isReverted(): bool
+    {
+        return $this->child()->exists();
+    }
+
+    public function isRevertTransaction(): bool
+    {
+        return $this->parent()->exists();
     }
 
     public function commit(): self
@@ -148,7 +198,9 @@ class Transaction extends Model implements TransactionContract
             $this->checkStatus(self::STATUS_COMMITTED);
 
             if (false !== Ledger::fireEvent(new Events\TransactionReverting($this))) {
-                return $this->getDestination()->transferMoney($this->getOrigin(), $this->getAmount(), $this->getPayload());
+                return TransactionManager::create(
+                    $this->getDestination(), $this->getOrigin(), $this->getAmount(), $this->getPayload(), $this
+                );
             }
 
             return $this;

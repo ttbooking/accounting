@@ -12,6 +12,12 @@ interface Transaction
     const STATUS_COMMITTED = 1;
     const STATUS_CANCELED = 2;
 
+    public function getKey();
+
+    public function getParent(): ?Transaction;
+
+    public function getChild(): ?Transaction;
+
     public function getOrigin(): Account;
 
     public function getDestination(): Account;
@@ -23,6 +29,10 @@ interface Transaction
     public function getPayload(): ?array;
 
     public function getStatus(): int;
+
+    public function isReverted(): bool;
+
+    public function isRevertTransaction(): bool;
 
     /**
      * @throws TransactionException

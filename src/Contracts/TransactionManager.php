@@ -31,6 +31,7 @@ interface TransactionManager
      * @param Account $destination
      * @param Money $amount
      * @param array|null $payload
+     * @param Transaction|null $parent
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
@@ -39,7 +40,13 @@ interface TransactionManager
      *
      * @return Transaction
      */
-    public function create(Account $origin, Account $destination, Money $amount, array $payload = null): Transaction;
+    public function create(
+        Account $origin,
+        Account $destination,
+        Money $amount,
+        array $payload = null,
+        Transaction $parent = null
+    ): Transaction;
 
     /**
      * Retrieve transaction by its Universally Unique Identifier (UUID).
