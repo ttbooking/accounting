@@ -3,9 +3,9 @@
 namespace Daniser\Accounting\Models;
 
 use Carbon\Carbon;
+use Closure;
 use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Concerns\Lockable;
-use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\Transaction as TransactionContract;
 use Daniser\Accounting\Events;
 use Daniser\Accounting\Exceptions;
@@ -85,12 +85,12 @@ class Transaction extends Model implements TransactionContract
         return $this->belongsTo(Account::class);
     }
 
-    public function getOrigin(): AccountContract
+    public function getOrigin(): Account
     {
         return $this->origin;
     }
 
-    public function getDestination(): AccountContract
+    public function getDestination(): Account
     {
         return $this->destination;
     }
@@ -117,66 +117,62 @@ class Transaction extends Model implements TransactionContract
 
     public function commit(): self
     {
-        try {
-            Ledger::transaction(function () {
-                $this->refreshForUpdate('origin', 'destination');
+        return $this->transact(function () {
+            $this->refreshForUpdate('origin', 'destination');
+            $this->checkStatus(self::STATUS_STARTED);
+
+            if (false !== Ledger::fireEvent(new Events\TransactionCommitting($this))) {
                 $this->checkStatus(self::STATUS_STARTED);
-
-                if (false !== Ledger::fireEvent(new Events\TransactionCommitting($this))) {
-                    $this->checkStatus(self::STATUS_STARTED);
-                    $this->getOrigin()->decrementMoney($this->getAmount());
-                    $this->getDestination()->incrementMoney($this->getAmount());
-                    $this->setStatus(self::STATUS_COMMITTED);
-                } else {
-                    $this->setStatus(self::STATUS_CANCELED);
-                }
-            });
-        } catch (Exceptions\TransactionException $e) {
-            throw $e;
-        } catch (Throwable $e) {
-            $this->verifyStatus(__FUNCTION__, $e);
-        }
-
-        $this->verifyStatus(__FUNCTION__);
-
-        return $this;
+                $this->getOrigin()->decrementMoney($this->getAmount());
+                $this->getDestination()->incrementMoney($this->getAmount());
+                $this->setStatus(self::STATUS_COMMITTED);
+            } else {
+                $this->setStatus(self::STATUS_CANCELED);
+            }
+        });
     }
 
     public function cancel(): self
     {
-        try {
-            Ledger::transaction(function () {
-                $this->refreshForUpdate();
-                $this->checkStatus(self::STATUS_STARTED);
-                $this->setStatus(self::STATUS_CANCELED);
-            });
-        } catch (Exceptions\TransactionException $e) {
-            throw $e;
-        } catch (Throwable $e) {
-            $this->verifyStatus(__FUNCTION__, $e);
-        }
-
-        $this->verifyStatus(__FUNCTION__);
-
-        return $this;
+        return $this->transact(function () {
+            $this->refreshForUpdate();
+            $this->checkStatus(self::STATUS_STARTED);
+            $this->setStatus(self::STATUS_CANCELED);
+        });
     }
 
     public function revert(): self
     {
-        $this->checkStatus(self::STATUS_COMMITTED);
+        return $this->transact(function () {
+            $this->refreshForUpdate();
+            $this->checkStatus(self::STATUS_COMMITTED);
 
-        if (false === Ledger::fireEvent(new Events\TransactionReverting($this))) {
+            if (false !== Ledger::fireEvent(new Events\TransactionReverting($this))) {
+                return $this->getDestination()->transferMoney($this->getOrigin(), $this->getAmount(), $this->getPayload());
+            }
+
             return $this;
-        }
-
-        return $this->getDestination()->transferMoney($this->getOrigin(), $this->getAmount(), $this->getPayload());
+        });
     }
 
-    public function rollback()
+    /**
+     * @param Closure $callback
+     *
+     * @return mixed
+     */
+    protected function transact(Closure $callback)
     {
-        $this->checkStatus(self::STATUS_COMMITTED);
+        try {
+            $result = Ledger::transaction($callback);
+        } catch (Exceptions\TransactionException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            $this->verifyStatus($e);
+        }
 
-        // TODO: implement
+        $this->verifyStatus();
+
+        return $result ?? $this;
     }
 
     /**
@@ -190,6 +186,8 @@ class Transaction extends Model implements TransactionContract
     }
 
     /**
+     * Check transaction status before operation.
+     *
      * @param int $status
      *
      * @throws Exceptions\TransactionStatusMismatchException
@@ -202,13 +200,17 @@ class Transaction extends Model implements TransactionContract
     }
 
     /**
-     * @param string $operation
+     * Verify transaction status after operation.
+     *
      * @param Throwable|null $e
      *
      * @throws Exceptions\TransactionException
      */
-    protected function verifyStatus(string $operation, Throwable $e = null): void
+    protected function verifyStatus(Throwable $e = null): void
     {
+        [ , , $caller] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+        $operation = $caller['function'];
+
         switch ($this->getStatus()) {
 
             case self::STATUS_STARTED:

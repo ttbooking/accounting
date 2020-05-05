@@ -40,6 +40,4 @@ interface Transaction
      * @return static|$this
      */
     public function revert(): self;
-
-    public function rollback();
 }
