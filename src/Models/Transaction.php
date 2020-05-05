@@ -97,7 +97,7 @@ class Transaction extends Model implements TransactionContract
      */
     public function children()
     {
-        return $this->hasMany(__CLASS__, 'parent_id');
+        return $this->hasMany(__CLASS__, 'parent_uuid');
     }
 
     /**
@@ -206,7 +206,7 @@ class Transaction extends Model implements TransactionContract
 
     public function revert(Money $amount = null): self
     {
-        return $this->transact(function () {
+        return $this->transact(function () use ($amount) {
             $this->refreshForUpdate();
             $this->checkStatus(self::STATUS_COMMITTED);
 
