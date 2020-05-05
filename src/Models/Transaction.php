@@ -115,12 +115,12 @@ class Transaction extends Model implements TransactionContract
         return $this->belongsTo(Account::class);
     }
 
-    public function getParent(): ?Transaction
+    public function getParent(): ?self
     {
         return $this->parent;
     }
 
-    public function getChild(): ?Transaction
+    public function getChild(): ?self
     {
         return $this->child;
     }

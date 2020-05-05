@@ -14,9 +14,9 @@ interface Transaction
 
     public function getKey();
 
-    public function getParent(): ?Transaction;
+    public function getParent(): ?self;
 
-    public function getChild(): ?Transaction;
+    public function getChild(): ?self;
 
     public function getOrigin(): Account;
 

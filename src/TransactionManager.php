@@ -3,8 +3,8 @@
 namespace Daniser\Accounting;
 
 use Daniser\Accounting\Contracts\Account;
-use Daniser\Accounting\Contracts\Transaction as TransactionContract;
 use Daniser\Accounting\Contracts\Ledger;
+use Daniser\Accounting\Contracts\Transaction as TransactionContract;
 use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
