@@ -43,10 +43,6 @@ class TransactionRevertCommand extends Command
         $transaction = $manager->get($this->argument('uuid'));
         $revertTransaction = $transaction->revert($amount);
 
-        if ($commit && $revertTransaction->getStatus() === Transaction::STATUS_STARTED) {
-            $revertTransaction->commit();
-        }
-
         $lines = [
             'Revert transaction <comment>%s</comment> for transaction <comment>%s</comment> successfully created.',
             'Going to revert <comment>%s</comment> of remaining <comment>%s</comment> (<comment>%s</comment> total).',
@@ -60,6 +56,10 @@ class TransactionRevertCommand extends Command
             $ledger->formatMoney($transaction->getRemainingAmount()),
             $ledger->formatMoney($transaction->getAmount()),
         ));
+
+        if ($commit && $revertTransaction->getStatus() === Transaction::STATUS_STARTED) {
+            $revertTransaction->commit();
+        }
 
         if ($revertTransaction->getStatus() !== Transaction::STATUS_STARTED) {
             $this->info(sprintf($lines[2],
