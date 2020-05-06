@@ -71,7 +71,7 @@ class Transaction extends Model implements TransactionContract
         'status',
     ];
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 

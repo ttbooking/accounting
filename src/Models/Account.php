@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
+use Daniser\Accounting\Events;
 use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
 use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
@@ -49,6 +50,19 @@ class Account extends Model implements AccountContract
     ];
 
     protected $fillable = ['owner_type', 'owner_id', 'type', 'currency', 'balance', 'context'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (self $account) {
+            return Ledger::fireEvent(new Events\AccountCreating($account));
+        });
+
+        static::created(function (self $account) {
+            Ledger::fireEvent(new Events\AccountCreated($account), [], false);
+        });
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo

@@ -2,6 +2,7 @@
 
 namespace Daniser\Accounting\Contracts;
 
+use Daniser\Accounting\Exceptions\AccountCreateAbortedException;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Illuminate\Support\Collection;
 use Money\Currency;
@@ -15,6 +16,8 @@ interface AccountManager
      * @param AccountOwner $owner
      * @param string|null $type
      * @param Currency|null $currency
+     *
+     * @throws AccountCreateAbortedException
      *
      * @return Account
      */
@@ -38,6 +41,7 @@ interface AccountManager
      *
      * @param string $uuid
      *
+     * @throws AccountCreateAbortedException
      * @throws AccountNotFoundException
      *
      * @return Account

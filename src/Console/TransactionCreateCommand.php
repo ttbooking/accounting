@@ -6,7 +6,9 @@ use Daniser\Accounting\Contracts\AccountManager;
 use Daniser\Accounting\Contracts\Ledger;
 use Daniser\Accounting\Contracts\Transaction;
 use Daniser\Accounting\Contracts\TransactionManager;
+use Daniser\Accounting\Events\AccountCreated;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Events\Dispatcher;
 
 class TransactionCreateCommand extends Command
 {
@@ -34,11 +36,16 @@ class TransactionCreateCommand extends Command
      * @param TransactionManager $transaction
      * @param AccountManager $account
      * @param Ledger $ledger
+     * @param Dispatcher|null $dispatcher
      *
      * @return void
      */
-    public function handle(TransactionManager $transaction, AccountManager $account, Ledger $ledger)
+    public function handle(TransactionManager $transaction, AccountManager $account, Ledger $ledger, Dispatcher $dispatcher = null)
     {
+        $dispatcher && $dispatcher->listen(AccountCreated::class, function (AccountCreated $event) {
+            $this->info(sprintf('Account <comment>%s</comment> successfully created.', $event->account->getAccountKey()));
+        });
+
         $transfer = $transaction->create(
             $origin = $account->locate($from = $this->argument('from')),
             $destination = $account->locate([$to = $this->argument('to'), $from]),

@@ -6,6 +6,7 @@ use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Contracts\Ledger;
 use Daniser\Accounting\Contracts\TransactionManager;
+use Daniser\Accounting\Exceptions\AccountCreateAbortedException;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Models\Account;
 use Daniser\EntityResolver\Contracts\EntityResolver;
@@ -54,11 +55,20 @@ class AccountManager implements Contracts\AccountManager
      * @param string|null $type
      * @param Currency|null $currency
      *
+     * @throws AccountCreateAbortedException
+     *
      * @return Account|Model
      */
     public function create(AccountOwner $owner, string $type = null, Currency $currency = null): Account
     {
-        return $owner->accounts()->firstOrCreate($this->prepareAttributes($type, $currency));
+        return tap(
+            $owner->accounts()->firstOrCreate($this->prepareAttributes($type, $currency)),
+            function (Account $account) {
+                if (! $account->exists) {
+                    throw new AccountCreateAbortedException('Account creation aborted.');
+                }
+            }
+        );
     }
 
     /**
@@ -68,6 +78,7 @@ class AccountManager implements Contracts\AccountManager
      * @param string|null $type
      * @param Currency|null $currency
      *
+     * @throws AccountCreateAbortedException
      * @throws AccountNotFoundException
      *
      * @return Account|Model
