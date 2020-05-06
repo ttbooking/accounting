@@ -40,7 +40,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
             $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
             $this->commands([
-                Console\LedgerTransferCommand::class,
+                Console\TransactionCreateCommand::class,
                 Console\TransactionCommitCommand::class,
                 Console\TransactionCancelCommand::class,
                 Console\TransactionRevertCommand::class,
