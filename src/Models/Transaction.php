@@ -11,6 +11,7 @@ use Daniser\Accounting\Events;
 use Daniser\Accounting\Exceptions;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Facades\Transaction as TransactionManager;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Money\Currency;
@@ -36,6 +37,10 @@ use Throwable;
  * @property Collection|Transaction[] $children
  * @property Account $origin
  * @property Account $destination
+ *
+ * @method static Builder uncommitted
+ * @method static Builder committed
+ * @method static Builder canceled
  */
 class Transaction extends Model implements TransactionContract
 {
@@ -114,6 +119,42 @@ class Transaction extends Model implements TransactionContract
     public function destination()
     {
         return $this->belongsTo(Account::class);
+    }
+
+    /**
+     * Scope all uncommitted transactions.
+     *
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeUncommitted(Builder $query)
+    {
+        return $query->where('status', self::STATUS_STARTED);
+    }
+
+    /**
+     * Scope all committed transactions.
+     *
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeCommitted(Builder $query)
+    {
+        return $query->where('status', self::STATUS_COMMITTED);
+    }
+
+    /**
+     * Scope all canceled transactions.
+     *
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeCanceled(Builder $query)
+    {
+        return $query->where('status', self::STATUS_CANCELED);
     }
 
     public function getParent(): ?self

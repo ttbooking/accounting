@@ -143,7 +143,7 @@ class TransactionManager implements Contracts\TransactionManager
      */
     public function uncommitted(): Collection
     {
-        return Transaction::query()->where('status', Transaction::STATUS_STARTED)->get();
+        return Transaction::uncommitted()->get();
     }
 
     /**
