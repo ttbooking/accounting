@@ -60,6 +60,13 @@ interface TransactionManager
     public function get(string $uuid): Transaction;
 
     /**
+     * Retrieve all uncommitted transactions.
+     *
+     * @return Collection|Transaction[]
+     */
+    public function uncommitted(): Collection;
+
+    /**
      * Retrieve transaction by its address.
      *
      * @param mixed $address

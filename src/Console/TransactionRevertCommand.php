@@ -14,7 +14,8 @@ class TransactionRevertCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'transaction:revert {uuid : Transaction UUID}
+    protected $signature = 'transaction:revert
+        {uuid : Transaction UUID}
         {amount? : Money amount to revert (reverts all remains if omitted)}
         {--c|commit : Commit transaction afterwards}';
 

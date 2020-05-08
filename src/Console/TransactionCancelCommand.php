@@ -12,14 +12,15 @@ class TransactionCancelCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'transaction:cancel {uuid : Transaction UUID}';
+    protected $signature = 'transaction:cancel
+        {uuid : Transaction UUID or "all" to cancel all uncommitted transactions}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Cancel ongoing financial transaction';
+    protected $description = 'Cancel ongoing financial transaction(s)';
 
     /**
      * Execute the console command.
@@ -30,8 +31,13 @@ class TransactionCancelCommand extends Command
      */
     public function handle(TransactionManager $manager)
     {
-        $manager->get($uuid = $this->argument('uuid'))->cancel();
+        $uuid = $this->argument('uuid');
 
-        $this->info("Transaction <comment>{$uuid}</comment> successfully canceled.");
+        $transactions = $uuid === 'all' ? $manager->uncommitted() : collect([$manager->get($uuid)]);
+
+        foreach ($transactions as $transaction) {
+            $transaction->cancel();
+            $this->info(sprintf('Transaction <comment>%s</comment> successfully canceled.', $transaction->getKey()));
+        }
     }
 }

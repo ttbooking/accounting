@@ -13,14 +13,15 @@ class TransactionCommitCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'transaction:commit {uuid : Transaction UUID}';
+    protected $signature = 'transaction:commit
+        {uuid : Transaction UUID or "all" to commit all uncommitted transactions}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Commit ongoing financial transaction';
+    protected $description = 'Commit ongoing financial transaction(s)';
 
     /**
      * Execute the console command.
@@ -31,12 +32,17 @@ class TransactionCommitCommand extends Command
      */
     public function handle(TransactionManager $manager)
     {
-        $transaction = $manager->get($this->argument('uuid'))->commit();
+        $uuid = $this->argument('uuid');
 
-        $this->info(sprintf('Transaction <comment>%s</comment> %s.',
-            $transaction->getKey(),
-            $transaction->getStatus() === Transaction::STATUS_COMMITTED
-                ? 'successfully committed' : 'canceled',
-        ));
+        $transactions = $uuid === 'all' ? $manager->uncommitted() : collect([$manager->get($uuid)]);
+
+        foreach ($transactions as $transaction) {
+            $transaction->commit();
+            $this->info(sprintf('Transaction <comment>%s</comment> %s.',
+                $transaction->getKey(),
+                $transaction->getStatus() === Transaction::STATUS_COMMITTED
+                    ? 'successfully committed' : 'canceled',
+            ));
+        }
     }
 }

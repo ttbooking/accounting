@@ -14,9 +14,10 @@ use Daniser\Accounting\Models\Transaction;
 use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 use Money\Currency;
 use Money\Money;
 
@@ -136,6 +137,16 @@ class TransactionManager implements Contracts\TransactionManager
     }
 
     /**
+     * Retrieve all uncommitted transactions.
+     *
+     * @return Collection|Transaction[]
+     */
+    public function uncommitted(): Collection
+    {
+        return Transaction::query()->where('status', Transaction::STATUS_STARTED)->get();
+    }
+
+    /**
      * Retrieve transaction by its address.
      *
      * @param mixed $address
@@ -169,17 +180,17 @@ class TransactionManager implements Contracts\TransactionManager
         return $this->ledger->deserializeMoney($query->sum('amount'));
     }
 
-    public function incomePerAccount(DateTimeInterface $byDate = null): Collection
+    public function incomePerAccount(DateTimeInterface $byDate = null): BaseCollection
     {
         return $this->incomeOrExpensePerAccount(true, $byDate)->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
     }
 
-    public function expensePerAccount(DateTimeInterface $byDate = null): Collection
+    public function expensePerAccount(DateTimeInterface $byDate = null): BaseCollection
     {
         return $this->incomeOrExpensePerAccount(false, $byDate)->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
     }
 
-    public function totalPerAccount(DateTimeInterface $byDate = null): Collection
+    public function totalPerAccount(DateTimeInterface $byDate = null): BaseCollection
     {
         $incomePerAccount = $this->incomeOrExpensePerAccount(true, $byDate);
         $expensePerAccount = $this->incomeOrExpensePerAccount(false, $byDate);
@@ -200,9 +211,9 @@ class TransactionManager implements Contracts\TransactionManager
      * @param bool $income
      * @param DateTimeInterface|null $byDate
      *
-     * @return Collection|string[]
+     * @return BaseCollection|string[]
      */
-    protected function incomeOrExpensePerAccount(bool $income, DateTimeInterface $byDate = null): Collection
+    protected function incomeOrExpensePerAccount(bool $income, DateTimeInterface $byDate = null): BaseCollection
     {
         $key = $income ? 'destination_uuid' : 'origin_uuid';
 
