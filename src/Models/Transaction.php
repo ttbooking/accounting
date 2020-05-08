@@ -42,6 +42,7 @@ use Throwable;
  * @method static Builder uncommitted(string $direction = 'asc')
  * @method static Builder committed(string $direction = 'asc')
  * @method static Builder canceled(string $direction = 'asc')
+ * @method static Builder revertable(string $direction = 'asc')
  */
 class Transaction extends Model implements TransactionContract
 {
@@ -173,6 +174,19 @@ class Transaction extends Model implements TransactionContract
     public function scopeCanceled(Builder $query, string $direction = 'asc')
     {
         return $this->scopeWithStatus($query, self::STATUS_CANCELED, $direction);
+    }
+
+    /**
+     * Scope all revertable transactions.
+     *
+     * @param Builder $query
+     * @param string $direction
+     *
+     * @return Builder
+     */
+    public function scopeRevertable(Builder $query, string $direction = 'asc')
+    {
+        return $this->scopeCommitted($query, $direction)->whereDoesntHave('children');
     }
 
     public function getParent(): ?self

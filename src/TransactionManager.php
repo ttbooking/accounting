@@ -173,6 +173,18 @@ class TransactionManager implements Contracts\TransactionManager
     }
 
     /**
+     * Retrieve all revertable transactions.
+     *
+     * @param bool $descending
+     *
+     * @return Collection|Transaction[]
+     */
+    public function revertable(bool $descending = false): Collection
+    {
+        return Transaction::revertable($descending ? 'desc' : 'asc')->get();
+    }
+
+    /**
      * Retrieve transaction by its address.
      *
      * @param mixed $address

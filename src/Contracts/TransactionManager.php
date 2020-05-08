@@ -87,6 +87,15 @@ interface TransactionManager
     public function canceled(bool $descending = false): Collection;
 
     /**
+     * Retrieve all revertable transactions.
+     *
+     * @param bool $descending
+     *
+     * @return Collection|Transaction[]
+     */
+    public function revertable(bool $descending = false): Collection;
+
+    /**
      * Retrieve transaction by its address.
      *
      * @param mixed $address

@@ -42,7 +42,7 @@ class TransactionRevertCommand extends Command
 
         $amount = $uuid !== 'all' && isset($amount) ? $ledger->parseMoney($amount) : null;
 
-        $transactions = $uuid === 'all' ? $manager->committed(true) : collect([$manager->get($uuid)]);
+        $transactions = $uuid === 'all' ? $manager->revertable(true) : collect([$manager->get($uuid)]);
 
         if ($transactions->isEmpty()) {
             $this->info('Nothing to revert.');
