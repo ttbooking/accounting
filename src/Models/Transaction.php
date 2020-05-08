@@ -56,7 +56,7 @@ class Transaction extends Model implements TransactionContract
 
     const CREATED_AT = 'started_at';
 
-    const UPDATED_AT = 'finished_at';
+    const UPDATED_AT = null;
 
     protected $attributes = [
         'status' => self::STATUS_STARTED,
@@ -65,6 +65,8 @@ class Transaction extends Model implements TransactionContract
     protected $casts = [
         'payload' => 'array',
     ];
+
+    protected $dates = ['finished_at'];
 
     protected $fillable = [
         'parent_uuid',
@@ -88,6 +90,10 @@ class Transaction extends Model implements TransactionContract
 
         static::created(function (self $transaction) {
             Ledger::fireEvent(new Events\TransactionCreated($transaction), [], false);
+        });
+
+        static::updating(function (self $transaction) {
+            $transaction->setAttribute('finished_at', $transaction->freshTimestamp());
         });
     }
 
