@@ -147,6 +147,26 @@ class TransactionManager implements Contracts\TransactionManager
     }
 
     /**
+     * Retrieve all committed transactions.
+     *
+     * @return Collection|Transaction[]
+     */
+    public function committed(): Collection
+    {
+        return Transaction::committed()->get();
+    }
+
+    /**
+     * Retrieve all canceled transactions.
+     *
+     * @return Collection|Transaction[]
+     */
+    public function canceled(): Collection
+    {
+        return Transaction::canceled()->get();
+    }
+
+    /**
      * Retrieve transaction by its address.
      *
      * @param mixed $address

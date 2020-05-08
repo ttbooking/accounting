@@ -67,6 +67,20 @@ interface TransactionManager
     public function uncommitted(): Collection;
 
     /**
+     * Retrieve all committed transactions.
+     *
+     * @return Collection|Transaction[]
+     */
+    public function committed(): Collection;
+
+    /**
+     * Retrieve all canceled transactions.
+     *
+     * @return Collection|Transaction[]
+     */
+    public function canceled(): Collection;
+
+    /**
      * Retrieve transaction by its address.
      *
      * @param mixed $address
