@@ -15,7 +15,7 @@ class TransactionRevertCommand extends Command
      * @var string
      */
     protected $signature = 'transaction:revert
-        {uuid : Transaction UUID}
+        {uuid : Transaction UUID or "all" to revert all committed transactions}
         {amount? : Money amount to revert (reverts all remains if omitted)}
         {--c|commit : Commit transaction afterwards}';
 
@@ -40,7 +40,7 @@ class TransactionRevertCommand extends Command
         $amount = $this->argument('amount');
         $commit = $this->option('commit');
 
-        $amount = isset($amount) ? $ledger->parseMoney($amount) : null;
+        $amount = $uuid !== 'all' && isset($amount) ? $ledger->parseMoney($amount) : null;
 
         $transactions = $uuid === 'all' ? $manager->committed() : collect([$manager->get($uuid)]);
 
