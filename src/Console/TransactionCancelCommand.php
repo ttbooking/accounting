@@ -35,6 +35,10 @@ class TransactionCancelCommand extends Command
 
         $transactions = $uuid === 'all' ? $manager->uncommitted() : collect([$manager->get($uuid)]);
 
+        if ($transactions->isEmpty()) {
+            $this->info('Nothing to cancel.');
+        }
+
         foreach ($transactions as $transaction) {
             $transaction->cancel();
             $this->info(sprintf('Transaction <comment>%s</comment> successfully canceled.', $transaction->getKey()));

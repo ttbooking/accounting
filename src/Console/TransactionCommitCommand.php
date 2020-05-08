@@ -36,6 +36,10 @@ class TransactionCommitCommand extends Command
 
         $transactions = $uuid === 'all' ? $manager->uncommitted() : collect([$manager->get($uuid)]);
 
+        if ($transactions->isEmpty()) {
+            $this->info('Nothing to commit.');
+        }
+
         foreach ($transactions as $transaction) {
             $transaction->commit();
             $this->info(sprintf('Transaction <comment>%s</comment> %s.',
