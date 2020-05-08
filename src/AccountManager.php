@@ -11,10 +11,10 @@ use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Models\Account;
 use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use Money\Currency;
 use Money\Money;
 
@@ -119,11 +119,11 @@ class AccountManager implements Contracts\AccountManager
      *
      * @param AccountOwner|null $owner
      *
-     * @return Collection|Account[]
+     * @return LazyCollection|Account[]
      */
-    public function all(AccountOwner $owner = null): Collection
+    public function all(AccountOwner $owner = null): LazyCollection
     {
-        return is_null($owner) ? Account::all() : $owner->accounts()->get();
+        return is_null($owner) ? Account::query()->cursor() : $owner->accounts()->cursor();
     }
 
     /**
@@ -154,14 +154,14 @@ class AccountManager implements Contracts\AccountManager
         // TODO: Implement purge() method.
     }
 
-    public function totalPerAccount(): BaseCollection
+    public function totalPerAccount(): Collection
     {
         return Account::query()
             ->pluck('balance', 'uuid')
             ->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
     }
 
-    public function invalidTotalPerAccount(): BaseCollection
+    public function invalidTotalPerAccount(): Collection
     {
         $totalsFromAccounts = $this->totalPerAccount();
         $totalsFromTransactions = $this->transaction->totalPerAccount();

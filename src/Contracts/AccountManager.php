@@ -5,6 +5,7 @@ namespace Daniser\Accounting\Contracts;
 use Daniser\Accounting\Exceptions\AccountCreateAbortedException;
 use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Enumerable;
 use Money\Currency;
 use Money\Money;
 
@@ -53,9 +54,9 @@ interface AccountManager
      *
      * @param AccountOwner|null $owner
      *
-     * @return Collection|Account[]
+     * @return Enumerable|Account[]
      */
-    public function all(AccountOwner $owner = null): Collection;
+    public function all(AccountOwner $owner = null): Enumerable;
 
     /**
      * Retrieve account by its address.

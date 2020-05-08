@@ -9,6 +9,7 @@ use Daniser\Accounting\Exceptions\TransactionNotFoundException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Enumerable;
 use Money\Currency;
 use Money\Money;
 
@@ -60,40 +61,49 @@ interface TransactionManager
     public function get(string $uuid): Transaction;
 
     /**
+     * Retrieve all transactions.
+     *
+     * @param bool $descending
+     *
+     * @return Enumerable|Transaction[]
+     */
+    public function all(bool $descending = false): Enumerable;
+
+    /**
      * Retrieve all uncommitted transactions.
      *
      * @param bool $descending
      *
-     * @return Collection|Transaction[]
+     * @return Enumerable|Transaction[]
      */
-    public function uncommitted(bool $descending = false): Collection;
+    public function uncommitted(bool $descending = false): Enumerable;
 
     /**
      * Retrieve all committed transactions.
      *
      * @param bool $descending
      *
-     * @return Collection|Transaction[]
+     * @return Enumerable|Transaction[]
      */
-    public function committed(bool $descending = false): Collection;
+    public function committed(bool $descending = false): Enumerable;
 
     /**
      * Retrieve all canceled transactions.
      *
      * @param bool $descending
      *
-     * @return Collection|Transaction[]
+     * @return Enumerable|Transaction[]
      */
-    public function canceled(bool $descending = false): Collection;
+    public function canceled(bool $descending = false): Enumerable;
 
     /**
      * Retrieve all revertable transactions.
      *
      * @param bool $descending
      *
-     * @return Collection|Transaction[]
+     * @return Enumerable|Transaction[]
      */
-    public function revertable(bool $descending = false): Collection;
+    public function revertable(bool $descending = false): Enumerable;
 
     /**
      * Retrieve transaction by its address.

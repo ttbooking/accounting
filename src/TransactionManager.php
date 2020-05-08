@@ -14,10 +14,10 @@ use Daniser\Accounting\Models\Transaction;
 use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
 use DateTimeInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use Money\Currency;
 use Money\Money;
 
@@ -137,15 +137,27 @@ class TransactionManager implements Contracts\TransactionManager
     }
 
     /**
+     * Retrieve all transactions.
+     *
+     * @param bool $descending
+     *
+     * @return LazyCollection|Transaction[]
+     */
+    public function all(bool $descending = false): LazyCollection
+    {
+        return Transaction::query()->orderBy((new Transaction)->getKeyName(), $descending ? 'desc' : 'asc')->cursor();
+    }
+
+    /**
      * Retrieve all uncommitted transactions.
      *
      * @param bool $descending
      *
-     * @return Collection|Transaction[]
+     * @return LazyCollection|Transaction[]
      */
-    public function uncommitted(bool $descending = false): Collection
+    public function uncommitted(bool $descending = false): LazyCollection
     {
-        return Transaction::uncommitted($descending ? 'desc' : 'asc')->get();
+        return Transaction::uncommitted($descending ? 'desc' : 'asc')->cursor();
     }
 
     /**
@@ -153,11 +165,11 @@ class TransactionManager implements Contracts\TransactionManager
      *
      * @param bool $descending
      *
-     * @return Collection|Transaction[]
+     * @return LazyCollection|Transaction[]
      */
-    public function committed(bool $descending = false): Collection
+    public function committed(bool $descending = false): LazyCollection
     {
-        return Transaction::committed($descending ? 'desc' : 'asc')->get();
+        return Transaction::committed($descending ? 'desc' : 'asc')->cursor();
     }
 
     /**
@@ -165,11 +177,11 @@ class TransactionManager implements Contracts\TransactionManager
      *
      * @param bool $descending
      *
-     * @return Collection|Transaction[]
+     * @return LazyCollection|Transaction[]
      */
-    public function canceled(bool $descending = false): Collection
+    public function canceled(bool $descending = false): LazyCollection
     {
-        return Transaction::canceled($descending ? 'desc' : 'asc')->get();
+        return Transaction::canceled($descending ? 'desc' : 'asc')->cursor();
     }
 
     /**
@@ -177,11 +189,11 @@ class TransactionManager implements Contracts\TransactionManager
      *
      * @param bool $descending
      *
-     * @return Collection|Transaction[]
+     * @return LazyCollection|Transaction[]
      */
-    public function revertable(bool $descending = false): Collection
+    public function revertable(bool $descending = false): LazyCollection
     {
-        return Transaction::revertable($descending ? 'desc' : 'asc')->get();
+        return Transaction::revertable($descending ? 'desc' : 'asc')->cursor();
     }
 
     /**
@@ -218,17 +230,17 @@ class TransactionManager implements Contracts\TransactionManager
         return $this->ledger->deserializeMoney($query->sum('amount'));
     }
 
-    public function incomePerAccount(DateTimeInterface $byDate = null): BaseCollection
+    public function incomePerAccount(DateTimeInterface $byDate = null): Collection
     {
         return $this->incomeOrExpensePerAccount(true, $byDate)->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
     }
 
-    public function expensePerAccount(DateTimeInterface $byDate = null): BaseCollection
+    public function expensePerAccount(DateTimeInterface $byDate = null): Collection
     {
         return $this->incomeOrExpensePerAccount(false, $byDate)->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
     }
 
-    public function totalPerAccount(DateTimeInterface $byDate = null): BaseCollection
+    public function totalPerAccount(DateTimeInterface $byDate = null): Collection
     {
         $incomePerAccount = $this->incomeOrExpensePerAccount(true, $byDate);
         $expensePerAccount = $this->incomeOrExpensePerAccount(false, $byDate);
@@ -249,9 +261,9 @@ class TransactionManager implements Contracts\TransactionManager
      * @param bool $income
      * @param DateTimeInterface|null $byDate
      *
-     * @return BaseCollection|string[]
+     * @return Collection|string[]
      */
-    protected function incomeOrExpensePerAccount(bool $income, DateTimeInterface $byDate = null): BaseCollection
+    protected function incomeOrExpensePerAccount(bool $income, DateTimeInterface $byDate = null): Collection
     {
         $key = $income ? 'destination_uuid' : 'origin_uuid';
 

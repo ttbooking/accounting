@@ -24,7 +24,7 @@ class TransactionRevertCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Revert committed financial transaction';
+    protected $description = 'Revert committed financial transaction(s)';
 
     /**
      * Execute the console command.
