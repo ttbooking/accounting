@@ -139,31 +139,37 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve all uncommitted transactions.
      *
+     * @param bool $descending
+     *
      * @return Collection|Transaction[]
      */
-    public function uncommitted(): Collection
+    public function uncommitted(bool $descending = false): Collection
     {
-        return Transaction::uncommitted()->get();
+        return Transaction::uncommitted($descending ? 'desc' : 'asc')->get();
     }
 
     /**
      * Retrieve all committed transactions.
      *
+     * @param bool $descending
+     *
      * @return Collection|Transaction[]
      */
-    public function committed(): Collection
+    public function committed(bool $descending = false): Collection
     {
-        return Transaction::committed()->get();
+        return Transaction::committed($descending ? 'desc' : 'asc')->get();
     }
 
     /**
      * Retrieve all canceled transactions.
      *
+     * @param bool $descending
+     *
      * @return Collection|Transaction[]
      */
-    public function canceled(): Collection
+    public function canceled(bool $descending = false): Collection
     {
-        return Transaction::canceled()->get();
+        return Transaction::canceled($descending ? 'desc' : 'asc')->get();
     }
 
     /**

@@ -38,9 +38,10 @@ use Throwable;
  * @property Account $origin
  * @property Account $destination
  *
- * @method static Builder uncommitted
- * @method static Builder committed
- * @method static Builder canceled
+ * @method static Builder withStatus(int $status, string $direction = 'asc')
+ * @method static Builder uncommitted(string $direction = 'asc')
+ * @method static Builder committed(string $direction = 'asc')
+ * @method static Builder canceled(string $direction = 'asc')
  */
 class Transaction extends Model implements TransactionContract
 {
@@ -122,39 +123,56 @@ class Transaction extends Model implements TransactionContract
     }
 
     /**
-     * Scope all uncommitted transactions.
+     * Scope all transactions with given status.
      *
      * @param Builder $query
+     * @param int $status
+     * @param string $direction
      *
      * @return Builder
      */
-    public function scopeUncommitted(Builder $query)
+    public function scopeWithStatus(Builder $query, int $status, string $direction = 'asc')
     {
-        return $query->where('status', self::STATUS_STARTED);
+        return $query->where('status', $status)->orderBy($this->getKeyName(), $direction);
+    }
+
+    /**
+     * Scope all uncommitted transactions.
+     *
+     * @param Builder $query
+     * @param string $direction
+     *
+     * @return Builder
+     */
+    public function scopeUncommitted(Builder $query, string $direction = 'asc')
+    {
+        return $this->scopeWithStatus($query, self::STATUS_STARTED, $direction);
     }
 
     /**
      * Scope all committed transactions.
      *
      * @param Builder $query
+     * @param string $direction
      *
      * @return Builder
      */
-    public function scopeCommitted(Builder $query)
+    public function scopeCommitted(Builder $query, string $direction = 'asc')
     {
-        return $query->where('status', self::STATUS_COMMITTED);
+        return $this->scopeWithStatus($query, self::STATUS_COMMITTED, $direction);
     }
 
     /**
      * Scope all canceled transactions.
      *
      * @param Builder $query
+     * @param string $direction
      *
      * @return Builder
      */
-    public function scopeCanceled(Builder $query)
+    public function scopeCanceled(Builder $query, string $direction = 'asc')
     {
-        return $query->where('status', self::STATUS_CANCELED);
+        return $this->scopeWithStatus($query, self::STATUS_CANCELED, $direction);
     }
 
     public function getParent(): ?self

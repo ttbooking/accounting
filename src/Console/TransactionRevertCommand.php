@@ -42,20 +42,20 @@ class TransactionRevertCommand extends Command
 
         $amount = $uuid !== 'all' && isset($amount) ? $ledger->parseMoney($amount) : null;
 
-        $transactions = $uuid === 'all' ? $manager->committed() : collect([$manager->get($uuid)]);
+        $transactions = $uuid === 'all' ? $manager->committed(true) : collect([$manager->get($uuid)]);
 
         if ($transactions->isEmpty()) {
             $this->info('Nothing to revert.');
         }
 
+        $lines = [
+            'Revert transaction <comment>%s</comment> for transaction <comment>%s</comment> successfully created.',
+            'Going to revert <comment>%s</comment> of remaining <comment>%s</comment> (<comment>%s</comment> total).',
+            'Transaction <comment>%s</comment> %s.',
+        ];
+
         foreach ($transactions as $transaction) {
             $revertTransaction = $transaction->revert($amount);
-
-            $lines = [
-                'Revert transaction <comment>%s</comment> for transaction <comment>%s</comment> successfully created.',
-                'Going to revert <comment>%s</comment> of remaining <comment>%s</comment> (<comment>%s</comment> total).',
-                'Transaction <comment>%s</comment> %s.',
-            ];
 
             $this->info(sprintf($lines[0], $revertTransaction->getKey(), $transaction->getKey()));
 

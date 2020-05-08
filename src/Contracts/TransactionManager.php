@@ -62,23 +62,29 @@ interface TransactionManager
     /**
      * Retrieve all uncommitted transactions.
      *
+     * @param bool $descending
+     *
      * @return Collection|Transaction[]
      */
-    public function uncommitted(): Collection;
+    public function uncommitted(bool $descending = false): Collection;
 
     /**
      * Retrieve all committed transactions.
      *
+     * @param bool $descending
+     *
      * @return Collection|Transaction[]
      */
-    public function committed(): Collection;
+    public function committed(bool $descending = false): Collection;
 
     /**
      * Retrieve all canceled transactions.
      *
+     * @param bool $descending
+     *
      * @return Collection|Transaction[]
      */
-    public function canceled(): Collection;
+    public function canceled(bool $descending = false): Collection;
 
     /**
      * Retrieve transaction by its address.
