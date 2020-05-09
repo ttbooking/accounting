@@ -3,11 +3,12 @@
 namespace Daniser\Accounting\Contracts;
 
 use Daniser\Accounting\Exceptions\TransactionException;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Collection;
 use Money\Currency;
 use Money\Money;
 
-interface Transaction
+interface Transaction extends Jsonable
 {
     const STATUS_STARTED = 0;
     const STATUS_COMMITTED = 1;
@@ -30,6 +31,8 @@ interface Transaction
     public function getPayload(): ?array;
 
     public function getStatus(): int;
+
+    public function getDigest(): string;
 
     public function getRevertedAmount(): Money;
 

@@ -31,6 +31,10 @@ return [
         'commit_attempts' => env('ACCOUNTING_TRANSACTION_COMMIT_ATTEMPTS', 1),
         'allow_zero_transfers' => env('ACCOUNTING_TRANSACTION_ALLOW_ZERO_TRANSFERS', false),
         'handle_negative_amounts' => env('ACCOUNTING_TRANSACTION_HANDLE_NEGATIVE_AMOUNTS', false),
+        'blockchain' => [
+            'algorithm' => env('ACCOUNTING_TRANSACTION_BLOCKCHAIN_ALGORITHM', 'sha256'),
+            'key' => env('ACCOUNTING_TRANSACTION_BLOCKCHAIN_KEY', ''),
+        ],
     ],
 
 ];

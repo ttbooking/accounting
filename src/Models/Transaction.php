@@ -22,6 +22,7 @@ use Throwable;
  * Class Transaction.
  *
  * @property string $uuid
+ * @property string $previous_uuid
  * @property string $parent_uuid
  * @property string $origin_uuid
  * @property string $destination_uuid
@@ -33,6 +34,9 @@ use Throwable;
  * @property int $status
  * @property Carbon $created_at
  * @property Carbon $finished_at
+ * @property string $digest
+ * @property Transaction|null $previous
+ * @property Transaction|null $next
  * @property Transaction|null $parent
  * @property Collection|Transaction[] $children
  * @property Account $origin
@@ -68,7 +72,10 @@ class Transaction extends Model implements TransactionContract
 
     protected $dates = ['finished_at'];
 
+    protected $hidden = ['digest'];
+
     protected $fillable = [
+        'previous_uuid',
         'parent_uuid',
         'origin_uuid',
         'destination_uuid',
@@ -78,6 +85,7 @@ class Transaction extends Model implements TransactionContract
         'amount',
         'payload',
         'status',
+        'digest',
     ];
 
     protected static function boot()
@@ -95,6 +103,22 @@ class Transaction extends Model implements TransactionContract
         static::updating(function (self $transaction) {
             $transaction->setAttribute('finished_at', $transaction->freshTimestamp());
         });
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function previous()
+    {
+        return $this->belongsTo(__CLASS__);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function next()
+    {
+        return $this->hasOne(__CLASS__, 'previous_uuid');
     }
 
     /**
@@ -166,7 +190,7 @@ class Transaction extends Model implements TransactionContract
      */
     public function scopeCommitted(Builder $query, string $direction = 'asc')
     {
-        return $this->scopeWithStatus($query, self::STATUS_COMMITTED, $direction);
+        return $query->where('status', self::STATUS_COMMITTED)->orderBy('previous_uuid', $direction);
     }
 
     /**
@@ -235,6 +259,11 @@ class Transaction extends Model implements TransactionContract
         return $this->status;
     }
 
+    public function getDigest(): string
+    {
+        return $this->digest;
+    }
+
     public function getRevertedAmount(): Money
     {
         $revertedAmount = $this->children()->where('status', self::STATUS_COMMITTED)->sum('amount');
@@ -260,6 +289,7 @@ class Transaction extends Model implements TransactionContract
     public function commit(): self
     {
         return $this->transact(function () {
+            $latest = static::committed('desc')->lockForUpdate()->first();
             $this->refreshForUpdate('origin', 'destination');
             $this->checkStatus(self::STATUS_STARTED);
 
@@ -267,7 +297,7 @@ class Transaction extends Model implements TransactionContract
                 $this->checkStatus(self::STATUS_STARTED);
                 $this->getOrigin()->decrementMoney($this->getAmount());
                 $this->getDestination()->incrementMoney($this->getAmount());
-                $this->setStatus(self::STATUS_COMMITTED);
+                $this->chain($latest);
             } else {
                 $this->setStatus(self::STATUS_CANCELED);
             }
@@ -321,6 +351,21 @@ class Transaction extends Model implements TransactionContract
         $this->verifyStatus();
 
         return $result ?? $this;
+    }
+
+    /**
+     * Enchain current transaction to the last committed one.
+     *
+     * @param static|null $previous
+     */
+    protected function chain(self $previous = null): void
+    {
+        $link = $previous ? ['previous_uuid' => $previous->getKey()] : [];
+
+        $this->update($link + [
+            'status' => self::STATUS_COMMITTED,
+            'digest' => TransactionManager::digest($this, $previous),
+        ]);
     }
 
     /**

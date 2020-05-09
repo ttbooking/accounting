@@ -26,6 +26,16 @@ interface TransactionManager
     public function currency(Account $origin, Account $destination): Currency;
 
     /**
+     * Calculate digest for the current transaction.
+     *
+     * @param Transaction $current
+     * @param Transaction|null $previous
+     *
+     * @return string
+     */
+    public function digest(Transaction $current, Transaction $previous = null): string;
+
+    /**
      * Create new transaction.
      *
      * @param Account $origin

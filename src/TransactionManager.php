@@ -63,6 +63,15 @@ class TransactionManager implements Contracts\TransactionManager
             : new Currency($currency);
     }
 
+    public function digest(TransactionContract $current, TransactionContract $previous = null): string
+    {
+        $previousDigest = $previous ? $previous->getDigest() : null;
+        $algorithm = $this->config['blockchain.algorithm'];
+        $key = $this->config['blockchain.key'];
+
+        return hash_hmac($algorithm, $previousDigest.$current->toJson(), $key);
+    }
+
     /**
      * Create new transaction.
      *
