@@ -72,7 +72,15 @@ class Transaction extends Model implements TransactionContract
 
     protected $dates = ['finished_at'];
 
-    protected $hidden = ['digest'];
+    protected $hidden = [
+        'digest',
+        'previous',
+        'next',
+        'parent',
+        'children',
+        'origin',
+        'destination',
+    ];
 
     protected $fillable = [
         'previous_uuid',
@@ -102,6 +110,10 @@ class Transaction extends Model implements TransactionContract
 
         static::updating(function (self $transaction) {
             $transaction->setAttribute('finished_at', $transaction->freshTimestamp());
+
+            if ($transaction->getStatus() === self::STATUS_COMMITTED) {
+                $transaction->setAttribute('digest', TransactionManager::digest($transaction, $transaction->previous));
+            }
         });
     }
 
@@ -297,7 +309,8 @@ class Transaction extends Model implements TransactionContract
                 $this->checkStatus(self::STATUS_STARTED);
                 $this->getOrigin()->decrementMoney($this->getAmount());
                 $this->getDestination()->incrementMoney($this->getAmount());
-                $this->chain($latest);
+                $this->previous()->associate($latest);
+                $this->setStatus(self::STATUS_COMMITTED);
             } else {
                 $this->setStatus(self::STATUS_CANCELED);
             }
@@ -351,21 +364,6 @@ class Transaction extends Model implements TransactionContract
         $this->verifyStatus();
 
         return $result ?? $this;
-    }
-
-    /**
-     * Enchain current transaction to the last committed one.
-     *
-     * @param static|null $previous
-     */
-    protected function chain(self $previous = null): void
-    {
-        $link = $previous ? ['previous_uuid' => $previous->getKey()] : [];
-
-        $this->update($link + [
-            'status' => self::STATUS_COMMITTED,
-            'digest' => TransactionManager::digest($this, $previous),
-        ]);
     }
 
     /**

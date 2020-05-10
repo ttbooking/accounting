@@ -66,8 +66,8 @@ class TransactionManager implements Contracts\TransactionManager
     public function digest(TransactionContract $current, TransactionContract $previous = null): string
     {
         $previousDigest = $previous ? $previous->getDigest() : null;
-        $algorithm = $this->config['blockchain.algorithm'];
-        $key = $this->config['blockchain.key'];
+        $algorithm = $this->config['blockchain']['algorithm'];
+        $key = $this->config['blockchain']['key'];
 
         return hash_hmac($algorithm, $previousDigest.$current->toJson(), $key);
     }
