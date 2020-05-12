@@ -27,8 +27,7 @@ class CreateTransactionsTable extends Migration
             $table->unsignedTinyInteger('status')->default(0)->index();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
-            $table->string('digest', 64)->nullable();
-            //$table->binary('digest')->nullable();
+            $table->char('digest', 64)->nullable();
         });
 
         Schema::table('accounting_transactions', function (Blueprint $table) {
