@@ -18,7 +18,7 @@ class CreateAccountsTable extends Migration
             $table->morphs('owner');
             $table->string('type', 36)->index();
             $table->char('currency', 3)->index();
-            $table->decimal('balance', 15, 5)->default(0);
+            $table->decimal('balance', 14, 4)->default(0);
             $table->json('context')->nullable();
             $table->timestamps();
             $table->unique(['owner_type', 'owner_id', 'type', 'currency']);

@@ -20,9 +20,10 @@ class CreateTransactionsTable extends Migration
             $table->uuid('origin_uuid')->index();
             $table->uuid('destination_uuid')->index();
             $table->char('currency', 3)->index();
-            $table->unsignedDecimal('ot_rate', 15, 5)->default(1);
-            $table->unsignedDecimal('td_rate', 15, 5)->default(1);
-            $table->unsignedDecimal('amount', 15, 5);
+            $table->unsignedDecimal('amount', 13, 4);
+            $table->unsignedDecimal('base_amount', 13, 4)->nullable();
+            $table->unsignedDecimal('origin_amount', 13, 4)->nullable();
+            $table->unsignedDecimal('destination_amount', 13, 4)->nullable();
             $table->json('payload')->nullable();
             $table->unsignedTinyInteger('status')->default(0)->index();
             $table->timestamp('started_at')->nullable();

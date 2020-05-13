@@ -16,6 +16,13 @@ use Money\Money;
 interface TransactionManager
 {
     /**
+     * Get base currency configured for the ledger.
+     *
+     * @return Currency
+     */
+    public function baseCurrency(): Currency;
+
+    /**
      * Choose default currency for transaction.
      *
      * @param Account $origin

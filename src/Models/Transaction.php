@@ -27,9 +27,10 @@ use Throwable;
  * @property string $origin_uuid
  * @property string $destination_uuid
  * @property string $currency
- * @property string $ot_rate
- * @property string $td_rate
  * @property string $amount
+ * @property string|null $base_amount
+ * @property string|null $origin_amount
+ * @property string|null $destination_amount
  * @property array|null $payload
  * @property int $status
  * @property Carbon $created_at
@@ -88,9 +89,10 @@ class Transaction extends Model implements TransactionContract
         'origin_uuid',
         'destination_uuid',
         'currency',
-        'ot_rate',
-        'td_rate',
         'amount',
+        'base_amount',
+        'origin_amount',
+        'destination_amount',
         'payload',
         'status',
         'digest',
@@ -109,6 +111,7 @@ class Transaction extends Model implements TransactionContract
         });
 
         static::updating(function (self $transaction) {
+            $transaction->fixAmounts();
             $transaction->setAttribute('finished_at', $transaction->freshTimestamp());
 
             if ($transaction->getStatus() === self::STATUS_COMMITTED) {
@@ -261,6 +264,39 @@ class Transaction extends Model implements TransactionContract
         return Ledger::deserializeMoney($this->amount, $this->getCurrency());
     }
 
+    public function getBaseAmount(): Money
+    {
+        $baseCurrency = TransactionManager::baseCurrency();
+
+        if (is_null($this->base_amount)) {
+            return Ledger::convertMoney($this->getAmount(), $baseCurrency);
+        }
+
+        return Ledger::deserializeMoney($this->base_amount, $baseCurrency);
+    }
+
+    public function getOriginAmount(): Money
+    {
+        $originCurrency = $this->getOrigin()->getCurrency();
+
+        if (is_null($this->origin_amount)) {
+            return Ledger::convertMoney($this->getAmount(), $originCurrency);
+        }
+
+        return Ledger::deserializeMoney($this->origin_amount, $originCurrency);
+    }
+
+    public function getDestinationAmount(): Money
+    {
+        $destinationCurrency = $this->getDestination()->getCurrency();
+
+        if (is_null($this->destination_amount)) {
+            return Ledger::convertMoney($this->getAmount(), $destinationCurrency);
+        }
+
+        return Ledger::deserializeMoney($this->destination_amount, $destinationCurrency);
+    }
+
     public function getPayload(): ?array
     {
         return $this->payload;
@@ -304,12 +340,13 @@ class Transaction extends Model implements TransactionContract
             static::uncommitted()->lockForUpdate()->get();
             $latest = static::committed('desc')->first();
             $this->refreshForUpdate('origin', 'destination');
+            $this->fixAmounts();
             $this->checkStatus(self::STATUS_STARTED);
 
             if (false !== Ledger::fireEvent(new Events\TransactionCommitting($this))) {
                 $this->checkStatus(self::STATUS_STARTED);
-                $this->getOrigin()->decrementMoney($this->getAmount());
-                $this->getDestination()->incrementMoney($this->getAmount());
+                $this->getOrigin()->decrementMoney($this->getOriginAmount());
+                $this->getDestination()->incrementMoney($this->getDestinationAmount());
                 $this->previous()->associate($latest);
                 $this->setStatus(self::STATUS_COMMITTED);
             } else {
@@ -345,6 +382,34 @@ class Transaction extends Model implements TransactionContract
 
             throw new Exceptions\TransactionCreateAbortedException('Reverting transaction creation aborted.');
         });
+    }
+
+    protected function fixAmounts(): void
+    {
+        $this->fixBaseAmount();
+        $this->fixOriginAmount();
+        $this->fixDestinationAmount();
+    }
+
+    protected function fixBaseAmount(): void
+    {
+        if (is_null($this->base_amount)) {
+            $this->base_amount = Ledger::serializeMoney($this->getBaseAmount());
+        }
+    }
+
+    protected function fixOriginAmount(): void
+    {
+        if (is_null($this->origin_amount)) {
+            $this->origin_amount = Ledger::serializeMoney($this->getOriginAmount());
+        }
+    }
+
+    protected function fixDestinationAmount(): void
+    {
+        if (is_null($this->destination_amount)) {
+            $this->destination_amount = Ledger::serializeMoney($this->getDestinationAmount());
+        }
     }
 
     /**

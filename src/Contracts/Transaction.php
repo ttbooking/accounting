@@ -28,6 +28,12 @@ interface Transaction extends Jsonable
 
     public function getAmount(): Money;
 
+    public function getBaseAmount(): Money;
+
+    public function getOriginAmount(): Money;
+
+    public function getDestinationAmount(): Money;
+
     public function getPayload(): ?array;
 
     public function getStatus(): int;

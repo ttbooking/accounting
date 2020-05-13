@@ -47,6 +47,16 @@ class TransactionManager implements Contracts\TransactionManager
     }
 
     /**
+     * Get base currency configured for the ledger.
+     *
+     * @return Currency
+     */
+    public function baseCurrency(): Currency
+    {
+        return new Currency($this->config['base_currency']);
+    }
+
+    /**
      * Choose default currency for transaction.
      *
      * @param Account $origin
@@ -56,11 +66,15 @@ class TransactionManager implements Contracts\TransactionManager
      */
     public function currency(Account $origin, Account $destination): Currency
     {
+        $base = $this->baseCurrency();
         $currency = $this->config['default_currency'];
 
-        return isset($$currency) && $$currency instanceof Account
-            ? $$currency->getCurrency()
-            : new Currency($currency);
+        switch (true) {
+            case ! isset($$currency): return new Currency($currency);
+            case $$currency instanceof Currency: return $$currency;
+            case $$currency instanceof Account: return $$currency->getCurrency();
+            default: throw new Exceptions\TransactionException('Default currency misconfiguration.');
+        }
     }
 
     public function digest(TransactionContract $current, TransactionContract $previous = null): string
@@ -68,8 +82,9 @@ class TransactionManager implements Contracts\TransactionManager
         $previousDigest = $previous ? $previous->getDigest() : null;
         $algorithm = $this->config['blockchain']['algorithm'];
         $key = $this->config['blockchain']['key'];
+        $baseCurrency = $this->config['base_currency'];
 
-        return hash_hmac($algorithm, $previousDigest.$current->toJson(), $key);
+        return hash_hmac($algorithm, $previousDigest.$baseCurrency.$current->toJson(), $key);
     }
 
     /**
@@ -111,6 +126,11 @@ class TransactionManager implements Contracts\TransactionManager
             return $this->create($destination, $origin, $amount->absolute(), $payload, $parent);
         }
 
+        $addendum = ! $this->config['origin_forward_conversion'] ? []
+            : ['origin_amount' => $this->ledger->serializeMoney(
+                $this->ledger->convertMoney($amount, $origin->getCurrency())
+            )];
+
         return tap(Transaction::query()->create([
             'parent_uuid' => isset($parent) ? $parent->getKey() : null,
             'origin_uuid' => $origin->getAccountKey(),
@@ -118,7 +138,7 @@ class TransactionManager implements Contracts\TransactionManager
             'currency' => $amount->getCurrency()->getCode(),
             'amount' => $this->ledger->serializeMoney($amount),
             'payload' => $payload,
-        ]), function (Transaction $transaction) {
+        ] + $addendum), function (Transaction $transaction) {
             if (! $transaction->exists) {
                 throw new TransactionCreateAbortedException('Transaction creation aborted.');
             }
