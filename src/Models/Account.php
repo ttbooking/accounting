@@ -116,7 +116,7 @@ class Account extends Model implements AccountContract
             $query->where('finished_at', '<=', $byDate);
         }
 
-        return Ledger::deserializeMoney($query->sum('amount'), $this->getCurrency());
+        return Ledger::deserializeMoney($query->sum('destination_amount'), $this->getCurrency());
     }
 
     public function getExpense(DateTimeInterface $byDate = null): Money
@@ -127,7 +127,7 @@ class Account extends Model implements AccountContract
             $query->where('finished_at', '<=', $byDate);
         }
 
-        return Ledger::deserializeMoney($query->sum('amount'), $this->getCurrency());
+        return Ledger::deserializeMoney($query->sum('origin_amount'), $this->getCurrency());
     }
 
     public function getBalance(DateTimeInterface $byDate = null): Money

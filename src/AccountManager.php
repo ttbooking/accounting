@@ -156,9 +156,8 @@ class AccountManager implements Contracts\AccountManager
 
     public function totalPerAccount(): Collection
     {
-        return Account::query()
-            ->pluck('balance', 'uuid')
-            ->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
+        return Account::all('uuid', 'currency', 'balance')
+            ->mapWithKeys(fn (Account $account) => [$account->getKey() => $account->getBalance()]);
     }
 
     public function invalidTotalPerAccount(): Collection
@@ -166,9 +165,9 @@ class AccountManager implements Contracts\AccountManager
         $totalsFromAccounts = $this->totalPerAccount();
         $totalsFromTransactions = $this->transaction->totalPerAccount();
 
-        return $totalsFromAccounts->reject(function (Money $total, string $uuid) use ($totalsFromTransactions) {
-            return $total->equals($totalsFromTransactions[$uuid] ?? $this->ledger->deserializeMoney('0'));
-        });
+        return $totalsFromAccounts->reject(fn (Money $total, string $uuid) =>
+            isset($totalsFromTransactions[$uuid]) ? $total->equals($totalsFromTransactions[$uuid]) : $total->isZero()
+        );
     }
 
     public function isValid(bool $aggressive = false): bool

@@ -14,6 +14,7 @@ use Daniser\Accounting\Models\Transaction;
 use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
 use DateTimeInterface;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
@@ -23,6 +24,9 @@ use Money\Money;
 
 class TransactionManager implements Contracts\TransactionManager
 {
+    /** @var DatabaseManager */
+    protected DatabaseManager $db;
+
     /** @var Ledger */
     protected Ledger $ledger;
 
@@ -35,12 +39,14 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * TransactionManager constructor.
      *
+     * @param DatabaseManager $db
      * @param Ledger $ledger
      * @param EntityResolver $resolver
      * @param array $config
      */
-    public function __construct(Ledger $ledger, EntityResolver $resolver, array $config = [])
+    public function __construct(DatabaseManager $db, Ledger $ledger, EntityResolver $resolver, array $config = [])
     {
+        $this->db = $db;
         $this->ledger = $ledger;
         $this->resolver = $resolver;
         $this->config = $config;
@@ -250,38 +256,36 @@ class TransactionManager implements Contracts\TransactionManager
 
     public function total(DateTimeInterface $byDate = null): Money
     {
-        $query = Transaction::query();
+        $query = Transaction::query()->where('status', Transaction::STATUS_COMMITTED);
 
         if (! is_null($byDate)) {
             $query->where('finished_at', '<=', $byDate);
         }
 
-        return $this->ledger->deserializeMoney($query->sum('amount'));
+        return $this->ledger->deserializeMoney($query->sum('base_amount'), $this->baseCurrency());
     }
 
     public function incomePerAccount(DateTimeInterface $byDate = null): Collection
     {
-        return $this->incomeOrExpensePerAccount(true, $byDate)->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
+        return $this->incomeOrExpensePerAccount(true, $byDate);
     }
 
     public function expensePerAccount(DateTimeInterface $byDate = null): Collection
     {
-        return $this->incomeOrExpensePerAccount(false, $byDate)->map(fn ($sum) => $this->ledger->deserializeMoney($sum));
+        return $this->incomeOrExpensePerAccount(false, $byDate);
     }
 
     public function totalPerAccount(DateTimeInterface $byDate = null): Collection
     {
-        $incomePerAccount = $this->incomeOrExpensePerAccount(true, $byDate);
-        $expensePerAccount = $this->incomeOrExpensePerAccount(false, $byDate);
+        $incomePerAccount = $this->incomePerAccount($byDate);
+        $expensePerAccount = $this->expensePerAccount($byDate);
 
-        $keys = $incomePerAccount->merge($expensePerAccount)->keys()->mapWithKeys(fn ($key) => [$key => '0']);
-
-        $incomePerAccount = $incomePerAccount->union($keys);
-        $expensePerAccount = $expensePerAccount->union($keys);
-
-        return $incomePerAccount->mergeRecursive($expensePerAccount)->mapSpread(function ($income, $expense) {
-            return $this->ledger->deserializeMoney($income)->subtract($this->ledger->deserializeMoney($expense));
-        });
+        return $incomePerAccount->merge($expensePerAccount)->map(
+            function (Money $money, string $key) use ($incomePerAccount, $expensePerAccount) {
+                $zero = new Money(0, $money->getCurrency());
+                return ($incomePerAccount[$key] ?? $zero)->subtract($expensePerAccount[$key] ?? $zero);
+            }
+        );
     }
 
     /**
@@ -290,21 +294,27 @@ class TransactionManager implements Contracts\TransactionManager
      * @param bool $income
      * @param DateTimeInterface|null $byDate
      *
-     * @return Collection|string[]
+     * @return Collection|Money[]
      */
     protected function incomeOrExpensePerAccount(bool $income, DateTimeInterface $byDate = null): Collection
     {
         $key = $income ? 'destination_uuid' : 'origin_uuid';
+        $amount = $income ? 'destination_amount' : 'origin_amount';
 
-        $query = Transaction::query()
-            ->selectRaw('sum(amount) as sum, '.$key)
+        $query = $this->db->query()
+            ->selectRaw("$key as uuid, accounting_accounts.currency, sum($amount) as sum")
+            ->from('accounting_transactions')
+            ->join('accounting_accounts', 'accounting_accounts.uuid', 'accounting_transactions.'.$key)
             ->where('status', Transaction::STATUS_COMMITTED)
-            ->groupBy($key);
+            ->groupBy('uuid');
 
         if (! is_null($byDate)) {
             $query->where('finished_at', '<=', $byDate);
         }
 
-        return $query->pluck('sum', $key);
+        return $query->get()->mapWithKeys(function ($row) {
+            settype($row, 'object');
+            return [$row->uuid => $this->ledger->deserializeMoney($row->sum, new Currency($row->currency))];
+        });
     }
 }
