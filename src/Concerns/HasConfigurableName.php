@@ -14,6 +14,8 @@ trait HasConfigurableName
 
     protected function initializeHasConfigurableName()
     {
-        $this->setTable(Ledger::config($this->getNameSource(), $this->getTable()));
+        if ($table = Ledger::config($this->getNameSource())) {
+            $this->setTable($table);
+        }
     }
 }

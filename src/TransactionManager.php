@@ -303,13 +303,16 @@ class TransactionManager implements Contracts\TransactionManager
      */
     protected function incomeOrExpensePerAccount(bool $income, DateTimeInterface $byDate = null): Collection
     {
+        $accounts = (new Models\Account)->getTable();
+        $transactions = $this->getTable();
+
         $key = $income ? 'destination_uuid' : 'origin_uuid';
         $amount = $income ? 'destination_amount' : 'origin_amount';
 
         $query = $this->db->query()
-            ->selectRaw("$key as uuid, accounting_accounts.currency, sum($amount) as sum")
-            ->from('accounting_transactions')
-            ->join('accounting_accounts', 'accounting_accounts.uuid', 'accounting_transactions.'.$key)
+            ->selectRaw("$key as uuid, $accounts.currency, sum($amount) as sum")
+            ->from($transactions)
+            ->join($accounts, "$accounts.uuid", "$transactions.$key")
             ->where('status', Transaction::STATUS_COMMITTED)
             ->groupBy('uuid');
 
