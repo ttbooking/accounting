@@ -165,8 +165,7 @@ class AccountManager implements Contracts\AccountManager
         $totalsFromAccounts = $this->totalPerAccount();
         $totalsFromTransactions = $this->transaction->totalPerAccount();
 
-        return $totalsFromAccounts->reject(fn (Money $total, string $uuid) =>
-            isset($totalsFromTransactions[$uuid]) ? $total->equals($totalsFromTransactions[$uuid]) : $total->isZero()
+        return $totalsFromAccounts->reject(fn (Money $total, string $uuid) => isset($totalsFromTransactions[$uuid]) ? $total->equals($totalsFromTransactions[$uuid]) : $total->isZero()
         );
     }
 

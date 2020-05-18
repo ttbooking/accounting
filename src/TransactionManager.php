@@ -283,6 +283,7 @@ class TransactionManager implements Contracts\TransactionManager
         return $incomePerAccount->merge($expensePerAccount)->map(
             function (Money $money, string $key) use ($incomePerAccount, $expensePerAccount) {
                 $zero = new Money(0, $money->getCurrency());
+
                 return ($incomePerAccount[$key] ?? $zero)->subtract($expensePerAccount[$key] ?? $zero);
             }
         );
@@ -314,6 +315,7 @@ class TransactionManager implements Contracts\TransactionManager
 
         return $query->get()->mapWithKeys(function ($row) {
             settype($row, 'object');
+
             return [$row->uuid => $this->ledger->deserializeMoney($row->sum, new Currency($row->currency))];
         });
     }
