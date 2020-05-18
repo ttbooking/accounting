@@ -16,6 +16,13 @@ use Money\Money;
 interface TransactionManager
 {
     /**
+     * Get table name for transaction storage.
+     *
+     * @return string
+     */
+    public function getTable(): string;
+
+    /**
      * Get base currency configured for the ledger.
      *
      * @return Currency

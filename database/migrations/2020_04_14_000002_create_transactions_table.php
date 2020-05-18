@@ -1,5 +1,7 @@
 <?php
 
+use Daniser\Accounting\Facades\Account;
+use Daniser\Accounting\Facades\Transaction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ class CreateTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('accounting_transactions', function (Blueprint $table) {
+        Schema::create(Transaction::getTable(), function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->uuid('previous_uuid')->nullable()->unique();
             $table->uuid('parent_uuid')->nullable()->index();
@@ -31,11 +33,11 @@ class CreateTransactionsTable extends Migration
             $table->char('digest', 64)->nullable();
         });
 
-        Schema::table('accounting_transactions', function (Blueprint $table) {
-            $table->foreign('previous_uuid')->references('uuid')->on('accounting_transactions');
-            $table->foreign('parent_uuid')->references('uuid')->on('accounting_transactions');
-            $table->foreign('origin_uuid')->references('uuid')->on('accounting_accounts');
-            $table->foreign('destination_uuid')->references('uuid')->on('accounting_accounts');
+        Schema::table(Transaction::getTable(), function (Blueprint $table) {
+            $table->foreign('previous_uuid')->references('uuid')->on(Transaction::getTable());
+            $table->foreign('parent_uuid')->references('uuid')->on(Transaction::getTable());
+            $table->foreign('origin_uuid')->references('uuid')->on(Account::getTable());
+            $table->foreign('destination_uuid')->references('uuid')->on(Account::getTable());
         });
     }
 
@@ -46,6 +48,6 @@ class CreateTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accounting_transactions');
+        Schema::dropIfExists(Transaction::getTable());
     }
 }

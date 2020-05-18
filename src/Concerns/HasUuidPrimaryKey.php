@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 trait HasUuidPrimaryKey
 {
-    public function hasOrderedUuid()
+    public function hasOrderedUuid(): bool
     {
         return (bool) $this->orderedUuid;
     }

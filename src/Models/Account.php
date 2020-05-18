@@ -3,6 +3,7 @@
 namespace Daniser\Accounting\Models;
 
 use Carbon\Carbon;
+use Daniser\Accounting\Concerns\HasConfigurableName;
 use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
@@ -39,7 +40,7 @@ use Money\Money;
  */
 class Account extends Model implements AccountContract
 {
-    use HasUuidPrimaryKey, Resolvable;
+    use HasConfigurableName, HasUuidPrimaryKey, Resolvable;
 
     protected $table = 'accounting_accounts';
 

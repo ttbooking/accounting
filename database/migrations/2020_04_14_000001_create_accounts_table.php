@@ -1,5 +1,6 @@
 <?php
 
+use Daniser\Accounting\Facades\Account;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ class CreateAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('accounting_accounts', function (Blueprint $table) {
+        Schema::create(Account::getTable(), function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->morphs('owner');
             $table->string('type', 36)->index();
@@ -32,6 +33,6 @@ class CreateAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accounting_accounts');
+        Schema::dropIfExists(Account::getTable());
     }
 }

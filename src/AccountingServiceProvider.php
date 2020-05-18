@@ -68,7 +68,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
 
         $this->app->singleton(Contracts\Ledger::class, function () {
             return $this->app->make(Ledger::class, [
-                'config' => $this->app['config']['accounting'],
+                'config' => $this->app['config'],
                 'serializer' => $this->app->make(DecimalMoneyFormatter::class),
                 'deserializer' => $this->app->make(DecimalMoneyParser::class),
             ]);

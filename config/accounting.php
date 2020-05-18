@@ -13,6 +13,7 @@ return [
     ],
 
     'account' => [
+        'table' => 'accounting_accounts',
         'default_type' => env('ACCOUNTING_ACCOUNT_DEFAULT_TYPE', 'default'),
         'default_currency' => env('ACCOUNTING_ACCOUNT_DEFAULT_CURRENCY', 'USD'),
         'auto_create' => env('ACCOUNTING_ACCOUNT_AUTO_CREATE', false),
@@ -26,6 +27,7 @@ return [
     ],
 
     'transaction' => [
+        'table' => 'accounting_transactions',
         'base_currency' => env('ACCOUNTING_TRANSACTION_BASE_CURRENCY', 'USD'),
         'default_currency' => env('ACCOUNTING_TRANSACTION_DEFAULT_CURRENCY', 'origin'),
         'auto_commit' => env('ACCOUNTING_TRANSACTION_AUTO_COMMIT', false),

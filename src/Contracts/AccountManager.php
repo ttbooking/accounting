@@ -12,6 +12,13 @@ use Money\Money;
 interface AccountManager
 {
     /**
+     * Get table name for account storage.
+     *
+     * @return string
+     */
+    public function getTable(): string;
+
+    /**
      * Create new account or retrieve one if it exists.
      *
      * @param AccountOwner $owner

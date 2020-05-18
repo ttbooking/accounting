@@ -48,6 +48,11 @@ class AccountManager implements Contracts\AccountManager
         $this->config = $config;
     }
 
+    public function getTable(): string
+    {
+        return (new Account)->getTable();
+    }
+
     /**
      * Create new account or retrieve one if it exists.
      *

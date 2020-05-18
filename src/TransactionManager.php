@@ -52,6 +52,11 @@ class TransactionManager implements Contracts\TransactionManager
         $this->config = $config;
     }
 
+    public function getTable(): string
+    {
+        return (new Transaction)->getTable();
+    }
+
     /**
      * Get base currency configured for the ledger.
      *

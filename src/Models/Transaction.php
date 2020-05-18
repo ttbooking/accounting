@@ -4,6 +4,7 @@ namespace Daniser\Accounting\Models;
 
 use Carbon\Carbon;
 use Closure;
+use Daniser\Accounting\Concerns\HasConfigurableName;
 use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Concerns\Lockable;
 use Daniser\Accounting\Contracts\Transaction as TransactionContract;
@@ -51,7 +52,7 @@ use Throwable;
  */
 class Transaction extends Model implements TransactionContract
 {
-    use HasUuidPrimaryKey, Lockable;
+    use HasConfigurableName, HasUuidPrimaryKey, Lockable;
 
     protected $table = 'accounting_transactions';
 

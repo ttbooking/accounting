@@ -5,6 +5,7 @@ namespace Daniser\Accounting;
 use Closure;
 use Daniser\Accounting\Contracts\SafeMoneyParser;
 use Daniser\Accounting\Support\FallbackMoneyParser;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\DatabaseManager;
 use Money\Converter;
@@ -15,8 +16,8 @@ use Money\MoneyParser;
 
 class Ledger implements Contracts\Ledger
 {
-    /** @var array */
-    protected array $config;
+    /** @var Repository */
+    protected Repository $config;
 
     /** @var DatabaseManager */
     protected DatabaseManager $db;
@@ -42,7 +43,7 @@ class Ledger implements Contracts\Ledger
     /**
      * Ledger constructor.
      *
-     * @param array $config
+     * @param Repository $config
      * @param DatabaseManager $db
      * @param Dispatcher|null $dispatcher
      * @param MoneyFormatter|null $serializer
@@ -52,7 +53,7 @@ class Ledger implements Contracts\Ledger
      * @param Converter|null $converter
      */
     public function __construct(
-        array $config,
+        Repository $config,
         DatabaseManager $db,
         Dispatcher $dispatcher = null,
         MoneyFormatter $serializer = null,
@@ -71,9 +72,14 @@ class Ledger implements Contracts\Ledger
         $this->converter = $converter;
     }
 
+    public function config(string $key = null, $default = null)
+    {
+        return is_null($key) ? $this->config['accounting'] : ($this->config['accounting.'.$key] ?? $default);
+    }
+
     public function transaction(Closure $callback, $attempts = null)
     {
-        return $this->db->transaction($callback, $attempts ?? $this->config['transaction']['commit_attempts']);
+        return $this->db->transaction($callback, $attempts ?? $this->config('transaction.commit_attempts'));
     }
 
     public function fireEvent($event, $payload = [], $halt = true)
@@ -99,7 +105,7 @@ class Ledger implements Contracts\Ledger
 
     public function deserializeMoney(string $money, Currency $fallbackCurrency = null): Money
     {
-        $fallbackCurrency ??= new Currency($this->config['account']['default_currency']);
+        $fallbackCurrency ??= new Currency($this->config('account.default_currency'));
 
         if (! $this->deserializer) {
             return new Money($money, $fallbackCurrency);
@@ -119,7 +125,7 @@ class Ledger implements Contracts\Ledger
 
     public function parseMoney(string $money, Currency $fallbackCurrency = null): Money
     {
-        $fallbackCurrency ??= new Currency($this->config['account']['default_currency']);
+        $fallbackCurrency ??= new Currency($this->config('account.default_currency'));
 
         if (! $this->parser) {
             return new Money($money, $fallbackCurrency);
@@ -136,7 +142,7 @@ class Ledger implements Contracts\Ledger
         if (! $this->converter) {
             throw new \RuntimeException("Can't convert money: no converter available.");
         }
-        $roundingMode ??= $this->config['rounding_mode'];
+        $roundingMode ??= $this->config('rounding_mode');
 
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
     }
