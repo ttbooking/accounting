@@ -1,1 +1,5 @@
 preset: laravel
+
+disabled:
+  - blank_line_before_return
+  - no_multiline_whitespace_around_double_arrow
