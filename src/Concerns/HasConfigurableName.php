@@ -7,24 +7,31 @@ use Illuminate\Support\Str;
 
 trait HasConfigurableName
 {
-    public function getNameSource(): string
+    public function getNameSource(): ?string
     {
-        return $this->nameSource ?? self::suggestNameSource();
+        return $this->nameSource ?? null;
     }
 
     protected function initializeHasConfigurableName(): void
     {
-        if ($table = Config::get($this->getNameSource())) {
-            $this->setTable($table);
+        foreach ($this->suggestNameSources() as $nameSource) {
+            if ($table = Config::get($nameSource)) {
+                $this->setTable($table);
+                return;
+            }
         }
     }
 
-    private static function suggestNameSource(): string
+    private function suggestNameSources(): array
     {
-        $components = explode('\\', __CLASS__);
-        $package = count($components) < 3 || $components[0] === 'App' ? 'App' : $components[1];
-        $basename = end($components);
+        $suggestions = ['database.model_table_mapping.'.__CLASS__];
 
-        return sprintf('%s.%s_table', Str::kebab($package), Str::snake($basename));
+        if ($nameSource = $this->getNameSource()) {
+            $suggestions[] = $nameSource;
+        } elseif (count($components = explode('\\', __CLASS__)) > 2 || $components[0] !== 'App') {
+            $suggestions[] = Str::kebab($components[1]).'.'.Str::snake(end($components).'_table');
+        }
+
+        return $suggestions;
     }
 }
