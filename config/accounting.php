@@ -2,6 +2,10 @@
 
 return [
 
+    'account_table' => 'accounting_accounts',
+
+    'transaction_table' => 'accounting_transactions',
+
     'rounding_mode' => Money\Money::ROUND_HALF_UP,
 
     'owner' => [
@@ -13,7 +17,6 @@ return [
     ],
 
     'account' => [
-        'table' => 'accounting_accounts',
         'default_type' => env('ACCOUNTING_ACCOUNT_DEFAULT_TYPE', 'default'),
         'default_currency' => env('ACCOUNTING_ACCOUNT_DEFAULT_CURRENCY', 'USD'),
         'auto_create' => env('ACCOUNTING_ACCOUNT_AUTO_CREATE', false),
@@ -27,7 +30,6 @@ return [
     ],
 
     'transaction' => [
-        'table' => 'accounting_transactions',
         'base_currency' => env('ACCOUNTING_TRANSACTION_BASE_CURRENCY', 'USD'),
         'default_currency' => env('ACCOUNTING_TRANSACTION_DEFAULT_CURRENCY', 'origin'),
         'auto_commit' => env('ACCOUNTING_TRANSACTION_AUTO_COMMIT', false),

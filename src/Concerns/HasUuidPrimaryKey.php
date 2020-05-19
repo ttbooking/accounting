@@ -12,7 +12,7 @@ trait HasUuidPrimaryKey
         return (bool) $this->orderedUuid;
     }
 
-    protected static function bootHasUuidPrimaryKey()
+    protected static function bootHasUuidPrimaryKey(): void
     {
         static::creating(function (Model $model) {
             $uuid = $model->hasOrderedUuid()
@@ -23,7 +23,7 @@ trait HasUuidPrimaryKey
         });
     }
 
-    protected function initializeHasUuidPrimaryKey()
+    protected function initializeHasUuidPrimaryKey(): void
     {
         $this->setKeyType('string')->setIncrementing(false);
     }

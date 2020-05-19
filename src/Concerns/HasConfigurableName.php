@@ -2,20 +2,29 @@
 
 namespace Daniser\Accounting\Concerns;
 
-use Daniser\Accounting\Facades\Ledger;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 trait HasConfigurableName
 {
     public function getNameSource(): string
     {
-        return $this->nameSource ?? Str::snake(class_basename($this)).'.table';
+        return $this->nameSource ?? self::suggestNameSource();
     }
 
-    protected function initializeHasConfigurableName()
+    protected function initializeHasConfigurableName(): void
     {
-        if ($table = Ledger::config($this->getNameSource())) {
+        if ($table = Config::get($this->getNameSource())) {
             $this->setTable($table);
         }
+    }
+
+    private static function suggestNameSource(): string
+    {
+        $components = explode('\\', __CLASS__);
+        $package = count($components) < 3 || $components[0] === 'App' ? 'App' : $components[1];
+        $basename = end($components);
+
+        return sprintf('%s.%s_table', Str::kebab($package), Str::snake($basename));
     }
 }
