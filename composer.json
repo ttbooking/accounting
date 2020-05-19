@@ -16,10 +16,11 @@
     ],
     "require": {
         "php": "^7.4",
-        "illuminate/contracts": "^6.0|^7.0",
-        "illuminate/support": "^6.0|^7.0",
-        "illuminate/database": "^6.0|^7.0",
         "daniser/entity-resolver": "*",
+        "daniser/model-extensions": "^1.0",
+        "illuminate/contracts": "^6.0|^7.0",
+        "illuminate/database": "^6.0|^7.0",
+        "illuminate/support": "^6.0|^7.0",
         "moneyphp/money": "^3.2",
         "ramsey/uuid": "^3.7|^4.0"
     },

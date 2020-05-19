@@ -4,14 +4,14 @@ namespace Daniser\Accounting\Models;
 
 use Carbon\Carbon;
 use Closure;
-use Daniser\Accounting\Concerns\HasConfigurableName;
-use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Concerns\Lockable;
 use Daniser\Accounting\Contracts\Transaction as TransactionContract;
 use Daniser\Accounting\Events;
 use Daniser\Accounting\Exceptions;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Facades\Transaction as TransactionManager;
+use Daniser\ModelExtensions\Concerns\HasConfigurableName;
+use Daniser\ModelExtensions\Concerns\HasUuidPrimaryKey;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

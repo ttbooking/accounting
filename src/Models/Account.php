@@ -3,8 +3,6 @@
 namespace Daniser\Accounting\Models;
 
 use Carbon\Carbon;
-use Daniser\Accounting\Concerns\HasConfigurableName;
-use Daniser\Accounting\Concerns\HasUuidPrimaryKey;
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Events;
@@ -14,6 +12,8 @@ use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
 use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Facades\Transaction as TransactionManager;
+use Daniser\ModelExtensions\Concerns\HasConfigurableName;
+use Daniser\ModelExtensions\Concerns\HasUuidPrimaryKey;
 use Daniser\EntityResolver\Concerns\Resolvable;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
