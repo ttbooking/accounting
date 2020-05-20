@@ -14,6 +14,7 @@ use Daniser\Accounting\Models\Transaction;
 use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
 use DateTimeInterface;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -33,8 +34,8 @@ class TransactionManager implements Contracts\TransactionManager
     /** @var EntityResolver */
     protected EntityResolver $resolver;
 
-    /** @var array */
-    protected array $config;
+    /** @var Repository */
+    protected Repository $config;
 
     /**
      * TransactionManager constructor.
@@ -42,9 +43,9 @@ class TransactionManager implements Contracts\TransactionManager
      * @param DatabaseManager $db
      * @param Ledger $ledger
      * @param EntityResolver $resolver
-     * @param array $config
+     * @param Repository $config
      */
-    public function __construct(DatabaseManager $db, Ledger $ledger, EntityResolver $resolver, array $config = [])
+    public function __construct(DatabaseManager $db, Ledger $ledger, EntityResolver $resolver, Repository $config)
     {
         $this->db = $db;
         $this->ledger = $ledger;
@@ -64,7 +65,7 @@ class TransactionManager implements Contracts\TransactionManager
      */
     public function baseCurrency(): Currency
     {
-        return new Currency($this->config['base_currency']);
+        return new Currency($this->config->get('accounting.base_transaction_currency'));
     }
 
     /**
@@ -78,7 +79,7 @@ class TransactionManager implements Contracts\TransactionManager
     public function currency(Account $origin, Account $destination): Currency
     {
         $base = $this->baseCurrency();
-        $currency = $this->config['default_currency'];
+        $currency = $this->config->get('accounting.default_transaction_currency');
 
         switch (true) {
             case ! isset($$currency): return new Currency($currency);
@@ -91,9 +92,9 @@ class TransactionManager implements Contracts\TransactionManager
     public function digest(TransactionContract $current, TransactionContract $previous = null): string
     {
         $previousDigest = $previous ? $previous->getDigest() : null;
-        $algorithm = $this->config['blockchain']['algorithm'];
-        $key = $this->config['blockchain']['key'];
-        $baseCurrency = $this->config['base_currency'];
+        $algorithm = $this->config->get('accounting.blockchain.algorithm');
+        $key = $this->config->get('accounting.blockchain.key');
+        $baseCurrency = $this->config->get('accounting.base_transaction_currency');
 
         return hash_hmac($algorithm, $previousDigest.$baseCurrency.$current->toJson(), $key);
     }
@@ -125,19 +126,19 @@ class TransactionManager implements Contracts\TransactionManager
             throw new TransactionIdenticalEndpointsException('Transaction endpoints are identical.');
         }
 
-        if ($amount->isZero() && ! $this->config['allow_zero_transfers']) {
+        if ($amount->isZero() && ! $this->config->get('accounting.allow_zero_transfers')) {
             throw new TransactionZeroTransferException('Transaction of zero amount is forbidden.');
         }
 
         if ($amount->isNegative()) {
-            if (! $this->config['handle_negative_amounts']) {
+            if (! $this->config->get('accounting.handle_negative_amounts')) {
                 throw new TransactionNegativeAmountException('Transaction of negative amount is forbidden.');
             }
 
             return $this->create($destination, $origin, $amount->absolute(), $payload, $parent);
         }
 
-        $addendum = ! $this->config['origin_forward_conversion'] ? []
+        $addendum = ! $this->config->get('accounting.origin_forward_conversion') ? []
             : ['origin_amount' => $this->ledger->serializeMoney(
                 $this->ledger->convertMoney($amount, $origin->getCurrency())
             )];
@@ -154,7 +155,7 @@ class TransactionManager implements Contracts\TransactionManager
                 throw new TransactionCreateAbortedException('Transaction creation aborted.');
             }
 
-            $this->config['auto_commit'] && $transaction->commit();
+            $this->config->get('accounting.auto_commit_transactions') && $transaction->commit();
         });
     }
 

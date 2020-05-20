@@ -1,13 +1,14 @@
 <?php
 
-use Daniser\Accounting\Facades\Account;
-use Daniser\Accounting\Facades\Transaction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class CreateTransactionsTable extends Migration
 {
+    const TRANSACTION_TABLE = 'accounting_transactions';
+    const ACCOUNT_TABLE = 'accounting_accounts';
+
     /**
      * Run the migrations.
      *
@@ -15,7 +16,7 @@ class CreateTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create(Transaction::getTable(), function (Blueprint $table) {
+        Schema::create(self::TRANSACTION_TABLE, function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->uuid('previous_uuid')->nullable()->unique();
             $table->uuid('parent_uuid')->nullable()->index();
@@ -33,11 +34,11 @@ class CreateTransactionsTable extends Migration
             $table->char('digest', 64)->nullable();
         });
 
-        Schema::table(Transaction::getTable(), function (Blueprint $table) {
-            $table->foreign('previous_uuid')->references('uuid')->on(Transaction::getTable());
-            $table->foreign('parent_uuid')->references('uuid')->on(Transaction::getTable());
-            $table->foreign('origin_uuid')->references('uuid')->on(Account::getTable());
-            $table->foreign('destination_uuid')->references('uuid')->on(Account::getTable());
+        Schema::table(self::TRANSACTION_TABLE, function (Blueprint $table) {
+            $table->foreign('previous_uuid')->references('uuid')->on(self::TRANSACTION_TABLE);
+            $table->foreign('parent_uuid')->references('uuid')->on(self::TRANSACTION_TABLE);
+            $table->foreign('origin_uuid')->references('uuid')->on(self::ACCOUNT_TABLE);
+            $table->foreign('destination_uuid')->references('uuid')->on(self::ACCOUNT_TABLE);
         });
     }
 
@@ -48,6 +49,6 @@ class CreateTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(Transaction::getTable());
+        Schema::dropIfExists(self::TRANSACTION_TABLE);
     }
 }

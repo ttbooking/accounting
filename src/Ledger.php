@@ -72,17 +72,14 @@ class Ledger implements Contracts\Ledger
         $this->converter = $converter;
     }
 
-    public function config(string $key = null, $default = null)
+    public function transaction(Closure $callback, int $attempts = null)
     {
-        return is_null($key) ? $this->config['accounting'] : ($this->config['accounting.'.$key] ?? $default);
+        $attempts ??= $this->config->get('accounting.transaction_commit_attempts');
+
+        return $this->db->transaction($callback, $attempts);
     }
 
-    public function transaction(Closure $callback, $attempts = null)
-    {
-        return $this->db->transaction($callback, $attempts ?? $this->config('transaction.commit_attempts'));
-    }
-
-    public function fireEvent($event, $payload = [], $halt = true)
+    public function fireEvent($event, $payload = [], bool $halt = true)
     {
         if (! $this->dispatcher) {
             return $halt ? null : [];
@@ -105,7 +102,7 @@ class Ledger implements Contracts\Ledger
 
     public function deserializeMoney(string $money, Currency $fallbackCurrency = null): Money
     {
-        $fallbackCurrency ??= new Currency($this->config('account.default_currency'));
+        $fallbackCurrency ??= new Currency($this->config->get('accounting.default_account_currency'));
 
         if (! $this->deserializer) {
             return new Money($money, $fallbackCurrency);
@@ -125,7 +122,7 @@ class Ledger implements Contracts\Ledger
 
     public function parseMoney(string $money, Currency $fallbackCurrency = null): Money
     {
-        $fallbackCurrency ??= new Currency($this->config('account.default_currency'));
+        $fallbackCurrency ??= new Currency($this->config->get('accounting.default_account_currency'));
 
         if (! $this->parser) {
             return new Money($money, $fallbackCurrency);
@@ -134,7 +131,7 @@ class Ledger implements Contracts\Ledger
         return $this->parser->parse($money, $fallbackCurrency);
     }
 
-    public function convertMoney(Money $money, Currency $counterCurrency, $roundingMode = null): Money
+    public function convertMoney(Money $money, Currency $counterCurrency, int $roundingMode = null): Money
     {
         if ($money->getCurrency()->getCode() === $counterCurrency->getCode()) {
             return $money;
@@ -142,7 +139,7 @@ class Ledger implements Contracts\Ledger
         if (! $this->converter) {
             throw new \RuntimeException("Can't convert money: no converter available.");
         }
-        $roundingMode ??= $this->config('rounding_mode');
+        $roundingMode ??= $this->config->get('accounting.rounding_mode');
 
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
     }

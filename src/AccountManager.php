@@ -11,6 +11,7 @@ use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Daniser\Accounting\Models\Account;
 use Daniser\EntityResolver\Contracts\EntityResolver;
 use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
@@ -29,8 +30,8 @@ class AccountManager implements Contracts\AccountManager
     /** @var Ledger */
     protected Ledger $ledger;
 
-    /** @var array */
-    protected array $config;
+    /** @var Repository */
+    protected Repository $config;
 
     /**
      * AccountManager constructor.
@@ -38,10 +39,14 @@ class AccountManager implements Contracts\AccountManager
      * @param EntityResolver $resolver
      * @param TransactionManager $transaction
      * @param Ledger $ledger
-     * @param array $config
+     * @param Repository $config
      */
-    public function __construct(EntityResolver $resolver, TransactionManager $transaction, Ledger $ledger, array $config = [])
-    {
+    public function __construct(
+        EntityResolver $resolver,
+        TransactionManager $transaction,
+        Ledger $ledger,
+        Repository $config
+    ) {
         $this->resolver = $resolver;
         $this->transaction = $transaction;
         $this->ledger = $ledger;
@@ -90,7 +95,7 @@ class AccountManager implements Contracts\AccountManager
      */
     public function find(AccountOwner $owner, string $type = null, Currency $currency = null): Account
     {
-        if ($this->config['auto_create']) {
+        if ($this->config->get('accounting.auto_create_accounts')) {
             return $this->create($owner, $type, $currency);
         }
 
@@ -195,8 +200,10 @@ class AccountManager implements Contracts\AccountManager
     protected function prepareAttributes(string $type = null, Currency $currency = null)
     {
         return [
-            'type' => $type ?? $this->config['default_type'],
-            'currency' => isset($currency) ? $currency->getCode() : $this->config['default_currency'],
+            'type' => $type ?? $this->config->get('accounting.default_account_type'),
+            'currency' => isset($currency)
+                ? $currency->getCode()
+                : $this->config->get('accounting.default_account_currency'),
         ];
     }
 }

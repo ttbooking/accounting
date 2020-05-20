@@ -18,6 +18,7 @@ use Daniser\ModelExtensions\Concerns\HasUuidPrimaryKey;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Money\Currency;
 use Money\Money;
@@ -175,7 +176,7 @@ class Account extends Model implements AccountContract
     public function incrementMoney(Money $amount): void
     {
         $amount = Ledger::convertMoney($amount, $this->getCurrency());
-        config('accounting.account.use_money_calculator')
+        Config::get('accounting.prefer_money_calculator')
             ? $this->update(['balance' => Ledger::serializeMoney($this->getBalance()->add($amount))])
             : $this->increment('balance', Ledger::serializeMoney($amount));
     }
@@ -183,7 +184,7 @@ class Account extends Model implements AccountContract
     public function decrementMoney(Money $amount): void
     {
         $amount = Ledger::convertMoney($amount, $this->getCurrency());
-        config('accounting.account.use_money_calculator')
+        Config::get('accounting.prefer_money_calculator')
             ? $this->update(['balance' => Ledger::serializeMoney($this->getBalance()->subtract($amount))])
             : $this->decrement('balance', Ledger::serializeMoney($amount));
     }

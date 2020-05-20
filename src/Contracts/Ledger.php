@@ -10,14 +10,6 @@ use Throwable;
 interface Ledger
 {
     /**
-     * @param string|null $key
-     * @param mixed $default
-     *
-     * @return mixed
-     */
-    public function config(string $key = null, $default = null);
-
-    /**
      * Execute a Closure within a transaction.
      *
      * @param Closure $callback
@@ -27,7 +19,7 @@ interface Ledger
      *
      * @return mixed
      */
-    public function transaction(Closure $callback, $attempts = null);
+    public function transaction(Closure $callback, int $attempts = null);
 
     /**
      * @param string|object $event
@@ -36,7 +28,7 @@ interface Ledger
      *
      * @return mixed
      */
-    public function fireEvent($event, $payload = [], $halt = true);
+    public function fireEvent($event, $payload = [], bool $halt = true);
 
     /**
      * @param Money $money
@@ -75,5 +67,5 @@ interface Ledger
      *
      * @return Money
      */
-    public function convertMoney(Money $money, Currency $counterCurrency, $roundingMode = null): Money;
+    public function convertMoney(Money $money, Currency $counterCurrency, int $roundingMode = null): Money;
 }
