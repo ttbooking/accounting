@@ -16,7 +16,6 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
      * @var array
      */
     public array $singletons = [
-        Contracts\Ledger::class => Ledger::class,
         Contracts\AccountManager::class => AccountManager::class,
         Contracts\TransactionManager::class => TransactionManager::class,
     ];
@@ -67,8 +66,12 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
             );
         });
 
-        $this->app->when(Ledger::class)->needs('$serializer')->give(DecimalMoneyFormatter::class);
-        $this->app->when(Ledger::class)->needs('$deserializer')->give(DecimalMoneyParser::class);
+        $this->app->singleton(Contracts\Ledger::class, function () {
+            return $this->app->make(Ledger::class, [
+                'serializer' => $this->app->make(DecimalMoneyFormatter::class),
+                'deserializer' => $this->app->make(DecimalMoneyParser::class),
+            ]);
+        });
     }
 
     /**
@@ -78,6 +81,6 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
      */
     public function provides()
     {
-        return array_merge(array_keys($this->singletons), [Support\AccountResolver::class]);
+        return array_merge(array_keys($this->singletons), [Support\AccountResolver::class, Contracts\Ledger::class]);
     }
 }
