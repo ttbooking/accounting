@@ -2,11 +2,11 @@
 
 namespace Daniser\Accounting\Facades;
 
+use Daniser\Accounting\Contracts\Account as AccountContract;
+use Daniser\Accounting\Contracts\AccountOwner;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Facades\Facade;
-use Daniser\Accounting\Contracts\Account as AccountContract;
-use Daniser\Accounting\Contracts\AccountOwner;
 use Money\Currency;
 use Money\Money;
 
