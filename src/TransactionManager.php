@@ -151,10 +151,6 @@ class TransactionManager implements Contracts\TransactionManager
             'amount' => $this->ledger->serializeMoney($amount),
             'payload' => $payload,
         ] + $addendum), function (Transaction $transaction) {
-            if (! $transaction->exists) {
-                throw new TransactionCreateAbortedException('Transaction creation aborted.');
-            }
-
             $this->config->get('accounting.auto_commit_transactions') && $transaction->commit();
         });
     }

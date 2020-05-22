@@ -104,7 +104,9 @@ class Transaction extends Model implements TransactionContract
                 throw new Exceptions\TransactionCreateAbortedException("Can't create transaction in finished state.");
             }
 
-            return Ledger::fireEvent(new Events\TransactionCreating($transaction));
+            if (false === Ledger::fireEvent(new Events\TransactionCreating($transaction))) {
+                throw new Exceptions\TransactionCreateAbortedException('Transaction creation aborted by event listener.');
+            }
         });
 
         static::created(function (self $transaction) {
