@@ -18,7 +18,6 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create(self::TRANSACTION_TABLE, function (Blueprint $table) {
             $table->uuid('uuid')->primary();
-            $table->uuid('previous_uuid')->nullable()->unique();
             $table->uuid('parent_uuid')->nullable()->index();
             $table->uuid('origin_uuid')->index();
             $table->uuid('destination_uuid')->index();
@@ -29,13 +28,12 @@ class CreateTransactionsTable extends Migration
             $table->unsignedDecimal('destination_amount', 13, 4)->nullable();
             $table->json('payload')->nullable();
             $table->unsignedTinyInteger('status')->default(0)->index();
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('finished_at')->nullable();
+            $table->timestamp('started_at', 6)->nullable()->index();
+            $table->timestamp('finished_at', 6)->nullable()->index();
             $table->char('digest', 64)->nullable();
         });
 
         Schema::table(self::TRANSACTION_TABLE, function (Blueprint $table) {
-            $table->foreign('previous_uuid')->references('uuid')->on(self::TRANSACTION_TABLE);
             $table->foreign('parent_uuid')->references('uuid')->on(self::TRANSACTION_TABLE);
             $table->foreign('origin_uuid')->references('uuid')->on(self::ACCOUNT_TABLE);
             $table->foreign('destination_uuid')->references('uuid')->on(self::ACCOUNT_TABLE);

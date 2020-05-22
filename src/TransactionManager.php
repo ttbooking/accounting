@@ -89,9 +89,8 @@ class TransactionManager implements Contracts\TransactionManager
         }
     }
 
-    public function digest(TransactionContract $current, TransactionContract $previous = null): string
+    public function digest(TransactionContract $current, string $previousDigest = null): string
     {
-        $previousDigest = $previous ? $previous->getDigest() : null;
         $algorithm = $this->config->get('accounting.blockchain.algorithm');
         $key = $this->config->get('accounting.blockchain.key');
         $baseCurrency = $this->config->get('accounting.base_transaction_currency');

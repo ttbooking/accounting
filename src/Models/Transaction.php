@@ -23,7 +23,6 @@ use Throwable;
  * Class Transaction.
  *
  * @property string $uuid
- * @property string $previous_uuid
  * @property string $parent_uuid
  * @property string $origin_uuid
  * @property string $destination_uuid
@@ -37,8 +36,6 @@ use Throwable;
  * @property Carbon $created_at
  * @property Carbon $finished_at
  * @property string $digest
- * @property Transaction|null $previous
- * @property Transaction|null $next
  * @property Transaction|null $parent
  * @property Collection|Transaction[] $children
  * @property Account $origin
@@ -74,10 +71,10 @@ class Transaction extends Model implements TransactionContract
 
     protected $dates = ['finished_at'];
 
+    protected $dateFormat = 'Y-m-d H:i:s.u';
+
     protected $hidden = [
         'digest',
-        'previous',
-        'next',
         'parent',
         'children',
         'origin',
@@ -85,7 +82,6 @@ class Transaction extends Model implements TransactionContract
     ];
 
     protected $fillable = [
-        'previous_uuid',
         'parent_uuid',
         'origin_uuid',
         'destination_uuid',
@@ -128,25 +124,11 @@ class Transaction extends Model implements TransactionContract
             }
 
             if ($transaction->status === self::STATUS_COMMITTED && is_null($transaction->digest)) {
-                $transaction->digest = TransactionManager::digest($transaction, $transaction->previous);
+                $transaction->digest = TransactionManager::digest($transaction,
+                    static::committed('desc')->where('finished_at', '<', $transaction->finished_at)->value('digest')
+                );
             }
         });
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function previous()
-    {
-        return $this->belongsTo(__CLASS__);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function next()
-    {
-        return $this->hasOne(__CLASS__, 'previous_uuid');
     }
 
     /**
@@ -218,7 +200,7 @@ class Transaction extends Model implements TransactionContract
      */
     public function scopeCommitted(Builder $query, string $direction = 'asc')
     {
-        return $query->where('status', self::STATUS_COMMITTED)->orderBy('previous_uuid', $direction);
+        return $query->where('status', self::STATUS_COMMITTED)->orderBy('finished_at', $direction);
     }
 
     /**
@@ -358,7 +340,6 @@ class Transaction extends Model implements TransactionContract
     {
         return $this->transact(function () {
             static::uncommitted()->lockForUpdate()->get();
-            $latest = static::committed('desc')->first();
             $this->refreshForUpdate('origin', 'destination');
             $this->fixAmounts();
             $this->checkStatus(self::STATUS_STARTED);
@@ -367,7 +348,6 @@ class Transaction extends Model implements TransactionContract
                 $this->checkStatus(self::STATUS_STARTED);
                 $this->getOrigin()->decrementMoney($this->getOriginAmount());
                 $this->getDestination()->incrementMoney($this->getDestinationAmount());
-                $this->previous()->associate($latest);
                 $this->setStatus(self::STATUS_COMMITTED);
             } else {
                 $this->setStatus(self::STATUS_CANCELED);

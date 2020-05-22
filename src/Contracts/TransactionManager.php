@@ -43,11 +43,11 @@ interface TransactionManager
      * Calculate digest for the current transaction.
      *
      * @param Transaction $current
-     * @param Transaction|null $previous
+     * @param string|null $previousDigest
      *
      * @return string
      */
-    public function digest(Transaction $current, Transaction $previous = null): string;
+    public function digest(Transaction $current, string $previousDigest = null): string;
 
     /**
      * Create new transaction.

@@ -2,8 +2,10 @@
 
 namespace Daniser\Accounting\Console;
 
-use Daniser\Accounting\Contracts\TransactionManager;
+use Carbon\Carbon;
+use Daniser\Accounting\Models\Transaction;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class TransactionRehashCommand extends Command
 {
@@ -12,7 +14,8 @@ class TransactionRehashCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'transaction:rehash';
+    protected $signature = 'transaction:rehash
+        {--from= : Transaction UUID or timestamp from which to rehash}';
 
     /**
      * The console command description.
@@ -24,15 +27,20 @@ class TransactionRehashCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param TransactionManager $manager
-     *
      * @return void
      */
-    public function handle(TransactionManager $manager)
+    public function handle()
     {
-        $transactions = $manager->committed();
-        $bar = $this->output->createProgressBar(count($transactions));
+        if ($from = $this->option('from')) {
+            $from = Str::isUuid($from)
+                ? Transaction::query()->findOrFail($from, 'finished_at')->getAttribute('finished_at')
+                : Carbon::parse($from);
+            $transactions = Transaction::committed()->where('finished_at', '>=', $from)->cursor();
+        } else {
+            $transactions = Transaction::committed()->cursor();
+        }
 
+        $bar = $this->output->createProgressBar(count($transactions));
         $this->info('Rehashing transaction ledger...');
         $bar->start();
         foreach ($transactions as $transaction) {

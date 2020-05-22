@@ -14,7 +14,7 @@ use Money\Money;
  * @method static string getTable()
  * @method static Currency baseCurrency()
  * @method static Currency currency(Account $origin, Account $destination)
- * @method static string digest(TransactionContract $current, TransactionContract $previous = null)
+ * @method static string digest(TransactionContract $current, string $previousDigest = null)
  * @method static TransactionContract create(Account $origin, Account $destination, Money $amount, array $payload = null, TransactionContract $parent = null)
  * @method static TransactionContract get(string $uuid)
  * @method static Enumerable|TransactionContract[] all(bool $descending = false)
