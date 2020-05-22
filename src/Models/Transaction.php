@@ -91,12 +91,8 @@ class Transaction extends Model implements TransactionContract
         'destination_uuid',
         'currency',
         'amount',
-        'base_amount',
         'origin_amount',
-        'destination_amount',
         'payload',
-        'status',
-        'digest',
     ];
 
     protected static function boot()
@@ -104,6 +100,10 @@ class Transaction extends Model implements TransactionContract
         parent::boot();
 
         static::creating(function (self $transaction) {
+            if ($transaction->status !== self::STATUS_STARTED) {
+                throw new Exceptions\TransactionCreateAbortedException("Can't create transaction in finished state.");
+            }
+
             return Ledger::fireEvent(new Events\TransactionCreating($transaction));
         });
 
@@ -112,11 +112,21 @@ class Transaction extends Model implements TransactionContract
         });
 
         static::updating(function (self $transaction) {
-            $transaction->fixAmounts();
-            $transaction->setAttribute('finished_at', $transaction->freshTimestamp());
+            if (array_keys($transaction->getDirty()) !== ['digest']) {
+                if ($transaction->getOriginal('status') !== self::STATUS_STARTED) {
+                    throw new Exceptions\TransactionUpdateAbortedException("Can't update already finished transaction.");
+                }
 
-            if ($transaction->getStatus() === self::STATUS_COMMITTED) {
-                $transaction->setAttribute('digest', TransactionManager::digest($transaction, $transaction->previous));
+                if ($transaction->status === self::STATUS_STARTED) {
+                    throw new Exceptions\TransactionUpdateAbortedException('Status must be changed during update.');
+                }
+
+                $transaction->fixAmounts();
+                $transaction->finished_at = $transaction->freshTimestamp();
+            }
+
+            if ($transaction->status === self::STATUS_COMMITTED && is_null($transaction->digest)) {
+                $transaction->digest = TransactionManager::digest($transaction, $transaction->previous);
             }
         });
     }
@@ -313,6 +323,13 @@ class Transaction extends Model implements TransactionContract
         return $this->digest;
     }
 
+    public function updateDigest(): void
+    {
+        $this->checkStatus(self::STATUS_COMMITTED);
+        $this->digest = null;
+        $this->save();
+    }
+
     public function getRevertedAmount(): Money
     {
         $revertedAmount = $this->children()->where('status', self::STATUS_COMMITTED)->sum('amount');
@@ -440,7 +457,8 @@ class Transaction extends Model implements TransactionContract
      */
     protected function setStatus(int $status): void
     {
-        $this->update(compact('status'));
+        $this->status = $status;
+        $this->save();
     }
 
     /**
@@ -452,7 +470,7 @@ class Transaction extends Model implements TransactionContract
      */
     protected function checkStatus(int $status): void
     {
-        if ($this->getStatus() !== $status) {
+        if ($this->status !== $status) {
             throw new Exceptions\TransactionStatusMismatchException('Incorrect transaction status for this operation.');
         }
     }
@@ -469,7 +487,7 @@ class Transaction extends Model implements TransactionContract
         [ , , $caller] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         $operation = $caller['function'];
 
-        switch ($this->getStatus()) {
+        switch ($this->status) {
 
             case self::STATUS_STARTED:
                 if (true !== Ledger::fireEvent(new Events\TransactionFailed($this, $e))) {

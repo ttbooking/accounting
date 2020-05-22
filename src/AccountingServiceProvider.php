@@ -43,6 +43,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
                 Console\TransactionCommitCommand::class,
                 Console\TransactionCancelCommand::class,
                 Console\TransactionRevertCommand::class,
+                Console\TransactionRehashCommand::class,
             ]);
         }
     }

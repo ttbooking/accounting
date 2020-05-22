@@ -40,6 +40,8 @@ interface Transaction extends Jsonable
 
     public function getDigest(): string;
 
+    public function updateDigest(): void;
+
     public function getRevertedAmount(): Money;
 
     public function getRemainingAmount(): Money;
