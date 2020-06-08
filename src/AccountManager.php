@@ -71,14 +71,7 @@ class AccountManager implements Contracts\AccountManager
      */
     public function create(AccountOwner $owner, string $type = null, Currency $currency = null): Account
     {
-        return tap(
-            $owner->accounts()->firstOrCreate($this->prepareAttributes($type, $currency)),
-            function (Account $account) {
-                if (! $account->exists) {
-                    throw new AccountCreateAbortedException('Account creation aborted.');
-                }
-            }
-        );
+        return $owner->accounts()->firstOrCreate($this->prepareAttributes($type, $currency));
     }
 
     /**

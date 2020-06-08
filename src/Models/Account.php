@@ -6,10 +6,7 @@ use Carbon\Carbon;
 use Daniser\Accounting\Contracts\Account as AccountContract;
 use Daniser\Accounting\Contracts\AccountOwner;
 use Daniser\Accounting\Events;
-use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
-use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
-use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
-use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
+use Daniser\Accounting\Exceptions;
 use Daniser\Accounting\Facades\Ledger;
 use Daniser\Accounting\Facades\Transaction as TransactionManager;
 use Daniser\EntityResolver\Concerns\Resolvable;
@@ -58,7 +55,9 @@ class Account extends Model implements AccountContract
         parent::boot();
 
         static::creating(function (self $account) {
-            return Ledger::fireEvent(new Events\AccountCreating($account));
+            if (false === Ledger::fireEvent(new Events\AccountCreating($account))) {
+                throw new Exceptions\AccountCreateAbortedException('Account creation aborted by event listener.');
+            }
         });
 
         static::created(function (self $account) {
@@ -161,10 +160,10 @@ class Account extends Model implements AccountContract
      * @param Money $amount
      * @param array|null $payload
      *
-     * @throws TransactionIdenticalEndpointsException
-     * @throws TransactionZeroTransferException
-     * @throws TransactionNegativeAmountException
-     * @throws TransactionCreateAbortedException
+     * @throws Exceptions\TransactionIdenticalEndpointsException
+     * @throws Exceptions\TransactionZeroTransferException
+     * @throws Exceptions\TransactionNegativeAmountException
+     * @throws Exceptions\TransactionCreateAbortedException
      *
      * @return Transaction
      */
