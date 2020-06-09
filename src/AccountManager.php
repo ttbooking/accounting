@@ -71,7 +71,7 @@ class AccountManager implements Contracts\AccountManager
      */
     public function create(AccountOwner $owner, string $type = null, Currency $currency = null): Account
     {
-        return $owner->accounts()->firstOrCreate($this->prepareAttributes($type, $currency));
+        return $owner->accounts()->firstOrCreate($this->prepareAttributes(true, $owner, $type, $currency));
     }
 
     /**
@@ -93,7 +93,7 @@ class AccountManager implements Contracts\AccountManager
         }
 
         try {
-            return $owner->accounts()->where($this->prepareAttributes($type, $currency))->firstOrFail();
+            return $owner->accounts()->where($this->prepareAttributes(false, $owner, $type, $currency))->firstOrFail();
         } catch (ModelNotFoundException $e) {
             throw new AccountNotFoundException('Account not found.', $e->getCode(), $e);
         }
@@ -185,18 +185,46 @@ class AccountManager implements Contracts\AccountManager
     /**
      * Prepare model attributes for creation and retrieval methods.
      *
+     * @param bool $forCreate
+     * @param AccountOwner $owner
      * @param string|null $type
      * @param Currency|null $currency
      *
      * @return array
      */
-    protected function prepareAttributes(string $type = null, Currency $currency = null)
+    protected function prepareAttributes(bool $forCreate, AccountOwner $owner, string $type = null, Currency $currency = null)
     {
+        $currency = isset($currency) ? $currency->getCode() : null;
+
+        $schema = $this->config->get('accounting.account_schema');
+        $strict = $this->config->get('accounting.account_schema_strict_mode');
+
+        $possible = array_intersect(
+            array_merge([get_class($owner)], class_parents($owner), class_implements($owner)),
+            array_keys($schema)
+        );
+
+        if ($forCreate && $strict && empty($possible)) {
+            throw new AccountCreateAbortedException('Given owner not found in account schema.');
+        }
+
+        $constraints = call_user_func_array('array_merge_recursive', array_map(fn ($key) => $schema[$key], $possible));
+        $types = isset($constraints['types'])
+            ? array_unique(array_filter((array) $constraints['types'])) : [];
+        $currencies = isset($constraints['currencies'])
+            ? array_unique(array_filter((array) $constraints['currencies'])) : [];
+
+        if ($forCreate && $strict && isset($type) && ! empty($types) && ! in_array($type, $types)) {
+            throw new AccountCreateAbortedException('Account type not found in account schema for given owner.');
+        }
+
+        if ($forCreate && $strict && isset($currency) && ! empty($currencies) && ! in_array($currency, $currencies)) {
+            throw new AccountCreateAbortedException('Account currency not found in account schema for given owner.');
+        }
+
         return [
-            'type' => $type ?? $this->config->get('accounting.default_account_type'),
-            'currency' => isset($currency)
-                ? $currency->getCode()
-                : $this->config->get('accounting.default_account_currency'),
+            'type' => $type ?? $types[0] ?? $this->config->get('accounting.default_account_type'),
+            'currency' => $currency ?? $currencies[0] ?? $this->config->get('accounting.default_account_currency'),
         ];
     }
 }

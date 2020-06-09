@@ -220,4 +220,15 @@ return [
 
     'rounding_mode' => env('ACCOUNTING_ROUNDING_MODE', Money\Money::ROUND_HALF_UP),
 
+    'account_schema_strict_mode' => env('ACCOUNTING_ACCOUNT_SCHEMA_STRICT_MODE', false),
+
+    'account_schema' => [
+
+        /*App\User::class => [
+            'types' => ['default'],
+            'currencies' => ['USD'],
+        ],*/
+
+    ],
+
 ];
