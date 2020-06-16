@@ -1,9 +1,9 @@
 <?php
 
-namespace Daniser\Accounting\Console;
+namespace TTBooking\Accounting\Console;
 
-use Daniser\Accounting\Contracts\TransactionManager;
 use Illuminate\Console\Command;
+use TTBooking\Accounting\Contracts\TransactionManager;
 
 class TransactionCancelCommand extends Command
 {

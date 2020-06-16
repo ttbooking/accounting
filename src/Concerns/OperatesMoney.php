@@ -1,6 +1,6 @@
 <?php
 
-namespace Daniser\Accounting\Concerns;
+namespace TTBooking\Accounting\Concerns;
 
 trait OperatesMoney
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Daniser\Accounting\Concerns;
+namespace TTBooking\Accounting\Concerns;
 
-use Daniser\Accounting\Support\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use TTBooking\Accounting\Support\Builder;
 
 trait Lockable
 {

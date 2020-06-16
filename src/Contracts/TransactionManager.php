@@ -1,17 +1,17 @@
 <?php
 
-namespace Daniser\Accounting\Contracts;
+namespace TTBooking\Accounting\Contracts;
 
-use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
-use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
-use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
-use Daniser\Accounting\Exceptions\TransactionNotFoundException;
-use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Exceptions\TransactionCreateAbortedException;
+use TTBooking\Accounting\Exceptions\TransactionIdenticalEndpointsException;
+use TTBooking\Accounting\Exceptions\TransactionNegativeAmountException;
+use TTBooking\Accounting\Exceptions\TransactionNotFoundException;
+use TTBooking\Accounting\Exceptions\TransactionZeroTransferException;
 
 interface TransactionManager
 {

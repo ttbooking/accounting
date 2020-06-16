@@ -1,6 +1,6 @@
 <?php
 
-namespace Daniser\Accounting\Facades;
+namespace TTBooking\Accounting\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use Money\Currency;
@@ -15,12 +15,12 @@ use Money\Money;
  * @method static Money parseMoney(string $money, Currency $fallbackCurrency = null)
  * @method static Money convertMoney(Money $money, Currency $counterCurrency, int $roundingMode = null)
  *
- * @see \Daniser\Accounting\Ledger::class
+ * @see \TTBooking\Accounting\Ledger::class
  */
 class Ledger extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Daniser\Accounting\Contracts\Ledger::class;
+        return \TTBooking\Accounting\Contracts\Ledger::class;
     }
 }

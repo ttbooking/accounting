@@ -1,6 +1,6 @@
 <?php
 
-namespace Daniser\Accounting\Events;
+namespace TTBooking\Accounting\Events;
 
 class TransactionCommitting extends TransactionEvent
 {

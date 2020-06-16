@@ -16,7 +16,7 @@ RDBMS with native JSON field support (recommended).
 ## Installation
 Using Composer:
 ```
-$ composer require daniser/accounting
+$ composer require ttbooking/accounting
 ```
 
 ## Configuration
@@ -26,18 +26,18 @@ After installation you'll need to configure package, in which case you have 2 op
 
 If you choose second option, you'll have to copy configuration file into your app's config directory by issuing following command:
 ```
-$ artisan vendor:publish --provider=Daniser\Accounting\AccountingServiceProvider --tag=config
+$ artisan vendor:publish --provider=TTBooking\Accounting\AccountingServiceProvider --tag=config
 ```
 You can look into `accounting.php` config file if you need to know more about each option and its usage.
 
 If you need to alter database table names or modify schema, you'll also need to issue following command:
 ```
-$ artisan vendor:publish --provider=Daniser\Accounting\AccountingServiceProvider --tag=migrations
+$ artisan vendor:publish --provider=TTBooking\Accounting\AccountingServiceProvider --tag=migrations
 ```
 
 If you need to publish both config file and database migrations, you can omit "--tag" option:
 ```
-$ artisan vendor:publish --provider=Daniser\Accounting\AccountingServiceProvider
+$ artisan vendor:publish --provider=TTBooking\Accounting\AccountingServiceProvider
 ```
 
 After all database-related modifications are done (if needed), you'll need to execute `artisan migrate` command.

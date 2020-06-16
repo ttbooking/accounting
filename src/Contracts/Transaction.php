@@ -1,12 +1,12 @@
 <?php
 
-namespace Daniser\Accounting\Contracts;
+namespace TTBooking\Accounting\Contracts;
 
-use Daniser\Accounting\Exceptions\TransactionException;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Collection;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Exceptions\TransactionException;
 
 interface Transaction extends Jsonable
 {

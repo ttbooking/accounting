@@ -1,9 +1,9 @@
 <?php
 
-namespace Daniser\Accounting\Listeners;
+namespace TTBooking\Accounting\Listeners;
 
-use Daniser\Accounting\Contracts\Ledger;
-use Daniser\Accounting\Events\TransactionCommitting;
+use TTBooking\Accounting\Contracts\Ledger;
+use TTBooking\Accounting\Events\TransactionCommitting;
 
 class CheckBalance
 {

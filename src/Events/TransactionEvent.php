@@ -1,8 +1,8 @@
 <?php
 
-namespace Daniser\Accounting\Events;
+namespace TTBooking\Accounting\Events;
 
-use Daniser\Accounting\Contracts\Transaction;
+use TTBooking\Accounting\Contracts\Transaction;
 
 abstract class TransactionEvent
 {

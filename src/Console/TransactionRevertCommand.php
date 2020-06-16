@@ -1,11 +1,11 @@
 <?php
 
-namespace Daniser\Accounting\Console;
+namespace TTBooking\Accounting\Console;
 
-use Daniser\Accounting\Contracts\Ledger;
-use Daniser\Accounting\Contracts\Transaction;
-use Daniser\Accounting\Contracts\TransactionManager;
 use Illuminate\Console\Command;
+use TTBooking\Accounting\Contracts\Ledger;
+use TTBooking\Accounting\Contracts\Transaction;
+use TTBooking\Accounting\Contracts\TransactionManager;
 
 class TransactionRevertCommand extends Command
 {

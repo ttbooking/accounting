@@ -1,16 +1,7 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace TTBooking\Accounting;
 
-use Daniser\Accounting\Contracts\Account as AccountContract;
-use Daniser\Accounting\Contracts\AccountOwner;
-use Daniser\Accounting\Contracts\Ledger;
-use Daniser\Accounting\Contracts\TransactionManager;
-use Daniser\Accounting\Exceptions\AccountCreateAbortedException;
-use Daniser\Accounting\Exceptions\AccountNotFoundException;
-use Daniser\Accounting\Models\Account;
-use Daniser\EntityResolver\Contracts\EntityResolver;
-use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,11 +9,20 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Contracts\Account as AccountContract;
+use TTBooking\Accounting\Contracts\AccountOwner;
+use TTBooking\Accounting\Contracts\Ledger;
+use TTBooking\Accounting\Contracts\TransactionManager;
+use TTBooking\Accounting\Exceptions\AccountCreateAbortedException;
+use TTBooking\Accounting\Exceptions\AccountNotFoundException;
+use TTBooking\Accounting\Models\Account;
+use TTBooking\EntityLocator\Contracts\EntityLocator;
+use TTBooking\EntityLocator\Exceptions\EntityNotFoundException;
 
 class AccountManager implements Contracts\AccountManager
 {
-    /** @var EntityResolver */
-    protected EntityResolver $resolver;
+    /** @var EntityLocator */
+    protected EntityLocator $locator;
 
     /** @var TransactionManager */
     protected TransactionManager $transaction;
@@ -36,18 +36,18 @@ class AccountManager implements Contracts\AccountManager
     /**
      * AccountManager constructor.
      *
-     * @param EntityResolver $resolver
+     * @param EntityLocator $locator
      * @param TransactionManager $transaction
      * @param Ledger $ledger
      * @param Repository $config
      */
     public function __construct(
-        EntityResolver $resolver,
+        EntityLocator $locator,
         TransactionManager $transaction,
         Ledger $ledger,
         Repository $config
     ) {
-        $this->resolver = $resolver;
+        $this->locator = $locator;
         $this->transaction = $transaction;
         $this->ledger = $ledger;
         $this->config = $config;
@@ -141,7 +141,7 @@ class AccountManager implements Contracts\AccountManager
     public function locate($address): Account
     {
         try {
-            return $this->resolver->resolve(Account::class, $address);
+            return $this->locator->locate(Account::class, $address);
         } catch (EntityNotFoundException $e) {
             throw new AccountNotFoundException('Account not found.', $e->getCode(), $e);
         }

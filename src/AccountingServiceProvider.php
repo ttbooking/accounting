@@ -1,6 +1,6 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace TTBooking\Accounting;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
@@ -57,13 +57,13 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     {
         $this->mergeConfigFrom(__DIR__.'/../config/accounting.php', 'accounting');
 
-        $this->app->bind(Support\AccountResolver::class, function () {
-            return new Support\AccountResolver(
-                $this->app->make(Support\AccountOwnerResolver::class),
+        $this->app->bind(Support\AccountLocator::class, function () {
+            return new Support\AccountLocator(
+                $this->app->make(Support\AccountOwnerLocator::class),
                 $this->app['config']['accounting.default_owner_type'],
                 $this->app['config']['accounting.default_account_type'],
                 new Currency($this->app['config']['accounting.default_account_currency']),
-                $this->app['config']['entity-resolver.composite_delimiter']
+                $this->app['config']['entity-locator.composite_delimiter']
             );
         });
 
@@ -82,6 +82,6 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
      */
     public function provides()
     {
-        return array_merge(array_keys($this->singletons), [Support\AccountResolver::class, Contracts\Ledger::class]);
+        return array_merge(array_keys($this->singletons), [Support\AccountLocator::class, Contracts\Ledger::class]);
     }
 }

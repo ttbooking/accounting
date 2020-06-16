@@ -1,14 +1,14 @@
 <?php
 
-namespace Daniser\Accounting\Facades;
+namespace TTBooking\Accounting\Facades;
 
-use Daniser\Accounting\Contracts\Account;
-use Daniser\Accounting\Contracts\Transaction as TransactionContract;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Facades\Facade;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Contracts\Account;
+use TTBooking\Accounting\Contracts\Transaction as TransactionContract;
 
 /**
  * @method static string getTable()
@@ -28,12 +28,12 @@ use Money\Money;
  * @method static Collection|Money[] expensePerAccount(\DateTimeInterface $byDate = null)
  * @method static Collection|Money[] totalPerAccount(\DateTimeInterface $byDate = null)
  *
- * @see \Daniser\Accounting\TransactionManager::class
+ * @see \TTBooking\Accounting\TransactionManager::class
  */
 class Transaction extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Daniser\Accounting\Contracts\TransactionManager::class;
+        return \TTBooking\Accounting\Contracts\TransactionManager::class;
     }
 }

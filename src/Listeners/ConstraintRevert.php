@@ -1,8 +1,8 @@
 <?php
 
-namespace Daniser\Accounting\Listeners;
+namespace TTBooking\Accounting\Listeners;
 
-use Daniser\Accounting\Events\TransactionCommitting;
+use TTBooking\Accounting\Events\TransactionCommitting;
 
 class ConstraintRevert
 {

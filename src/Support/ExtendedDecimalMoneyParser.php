@@ -1,12 +1,12 @@
 <?php
 
-namespace Daniser\Accounting\Support;
+namespace TTBooking\Accounting\Support;
 
-use Daniser\Accounting\Contracts\SafeMoneyParser;
 use Money\Currencies;
 use Money\Currency;
 use Money\Exception\ParserException;
 use Money\Parser\DecimalMoneyParser;
+use TTBooking\Accounting\Contracts\SafeMoneyParser;
 
 class ExtendedDecimalMoneyParser implements SafeMoneyParser
 {

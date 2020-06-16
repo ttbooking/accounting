@@ -1,10 +1,8 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace TTBooking\Accounting;
 
 use Closure;
-use Daniser\Accounting\Contracts\SafeMoneyParser;
-use Daniser\Accounting\Support\FallbackMoneyParser;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\DatabaseManager;
@@ -13,6 +11,8 @@ use Money\Currency;
 use Money\Money;
 use Money\MoneyFormatter;
 use Money\MoneyParser;
+use TTBooking\Accounting\Contracts\SafeMoneyParser;
+use TTBooking\Accounting\Support\FallbackMoneyParser;
 
 class Ledger implements Contracts\Ledger
 {

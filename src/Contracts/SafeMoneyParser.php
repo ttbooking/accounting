@@ -1,6 +1,6 @@
 <?php
 
-namespace Daniser\Accounting\Contracts;
+namespace TTBooking\Accounting\Contracts;
 
 use Money\Currency;
 use Money\Exception\ParserException;

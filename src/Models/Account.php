@@ -1,17 +1,8 @@
 <?php
 
-namespace Daniser\Accounting\Models;
+namespace TTBooking\Accounting\Models;
 
 use Carbon\Carbon;
-use Daniser\Accounting\Contracts\Account as AccountContract;
-use Daniser\Accounting\Contracts\AccountOwner;
-use Daniser\Accounting\Events;
-use Daniser\Accounting\Exceptions;
-use Daniser\Accounting\Facades\Ledger;
-use Daniser\Accounting\Facades\Transaction as TransactionManager;
-use Daniser\EntityResolver\Concerns\Resolvable;
-use Daniser\ModelExtensions\Concerns\HasConfigurableName;
-use Daniser\ModelExtensions\Concerns\HasUuidPrimaryKey;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +10,15 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Contracts\Account as AccountContract;
+use TTBooking\Accounting\Contracts\AccountOwner;
+use TTBooking\Accounting\Events;
+use TTBooking\Accounting\Exceptions;
+use TTBooking\Accounting\Facades\Ledger;
+use TTBooking\Accounting\Facades\Transaction as TransactionManager;
+use TTBooking\EntityLocator\Concerns\Locatable;
+use TTBooking\ModelExtensions\Concerns\HasConfigurableName;
+use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
 
 /**
  * Class Account.
@@ -38,7 +38,7 @@ use Money\Money;
  */
 class Account extends Model implements AccountContract
 {
-    use HasConfigurableName, HasUuidPrimaryKey, Resolvable;
+    use HasConfigurableName, HasUuidPrimaryKey, Locatable;
 
     protected $table = 'accounting_accounts';
 

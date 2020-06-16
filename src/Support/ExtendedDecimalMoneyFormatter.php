@@ -1,6 +1,6 @@
 <?php
 
-namespace Daniser\Accounting\Support;
+namespace TTBooking\Accounting\Support;
 
 use Money\Currencies;
 use Money\Formatter\DecimalMoneyFormatter;

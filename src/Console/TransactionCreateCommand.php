@@ -1,14 +1,14 @@
 <?php
 
-namespace Daniser\Accounting\Console;
+namespace TTBooking\Accounting\Console;
 
-use Daniser\Accounting\Contracts\AccountManager;
-use Daniser\Accounting\Contracts\Ledger;
-use Daniser\Accounting\Contracts\Transaction;
-use Daniser\Accounting\Contracts\TransactionManager;
-use Daniser\Accounting\Events\AccountCreated;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Events\Dispatcher;
+use TTBooking\Accounting\Contracts\AccountManager;
+use TTBooking\Accounting\Contracts\Ledger;
+use TTBooking\Accounting\Contracts\Transaction;
+use TTBooking\Accounting\Contracts\TransactionManager;
+use TTBooking\Accounting\Events\AccountCreated;
 
 class TransactionCreateCommand extends Command
 {

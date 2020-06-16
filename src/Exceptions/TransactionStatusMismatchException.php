@@ -1,6 +1,6 @@
 <?php
 
-namespace Daniser\Accounting\Exceptions;
+namespace TTBooking\Accounting\Exceptions;
 
 class TransactionStatusMismatchException extends TransactionException
 {

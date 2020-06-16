@@ -1,10 +1,7 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace TTBooking\Accounting;
 
-use Daniser\Accounting\Support\ExtendedDecimalMoneyFormatter;
-use Daniser\Accounting\Support\ExtendedDecimalMoneyParser;
-use Daniser\Accounting\Support\PreciseCurrencies;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Money\Converter;
@@ -12,6 +9,9 @@ use Money\Currencies;
 use Money\Exchange;
 use Money\MoneyFormatter;
 use Money\MoneyParser;
+use TTBooking\Accounting\Support\ExtendedDecimalMoneyFormatter;
+use TTBooking\Accounting\Support\ExtendedDecimalMoneyParser;
+use TTBooking\Accounting\Support\PreciseCurrencies;
 
 class MoneyServiceProvider extends ServiceProvider implements DeferrableProvider
 {

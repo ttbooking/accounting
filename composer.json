@@ -1,23 +1,23 @@
 {
-    "name": "daniser/accounting",
+    "name": "ttbooking/accounting",
     "description": "Accounting library",
     "type": "library",
     "keywords": ["accounting", "ledger"],
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/daniser/accounting/issues",
-        "source": "https://github.com/daniser/accounting"
+        "issues": "https://github.com/ttbooking/accounting/issues",
+        "source": "https://github.com/ttbooking/accounting"
     },
     "authors": [
         {
             "name": "Sergey Danilchenko",
-            "email": "daniser@mail.ru"
+            "email": "s.danilchenko@ttbooking.ru"
         }
     ],
     "require": {
         "php": "^7.4",
-        "daniser/entity-resolver": "*",
-        "daniser/model-extensions": "^1.0",
+        "ttbooking/entity-locator": "*",
+        "ttbooking/model-extensions": "^1.0",
         "illuminate/contracts": "^6.0|^7.0",
         "illuminate/database": "^6.0|^7.0",
         "illuminate/support": "^6.0|^7.0",
@@ -34,7 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Daniser\\Accounting\\": "src/"
+            "TTBooking\\Accounting\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -42,18 +42,18 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Daniser\\Tests\\": "tests/"
+            "TTBooking\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Daniser\\Accounting\\AccountingServiceProvider"
+                "TTBooking\\Accounting\\AccountingServiceProvider"
             ],
             "aliases": {
-                "Ledger": "Daniser\\Accounting\\Facades\\Ledger",
-                "Account": "Daniser\\Accounting\\Facades\\Account",
-                "Transaction": "Daniser\\Accounting\\Facades\\Transaction"
+                "Ledger": "TTBooking\\Accounting\\Facades\\Ledger",
+                "Account": "TTBooking\\Accounting\\Facades\\Account",
+                "Transaction": "TTBooking\\Accounting\\Facades\\Transaction"
             }
         }
     },

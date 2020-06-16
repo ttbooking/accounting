@@ -1,11 +1,11 @@
 <?php
 
-use Daniser\Accounting\Contracts\Account as AccountContract;
-use Daniser\Accounting\Contracts\Transaction as TransactionContract;
-use Daniser\Accounting\Facades\Account;
-use Daniser\Accounting\Facades\Ledger;
-use Daniser\Accounting\Facades\Transaction;
 use Money\Money;
+use TTBooking\Accounting\Contracts\Account as AccountContract;
+use TTBooking\Accounting\Contracts\Transaction as TransactionContract;
+use TTBooking\Accounting\Facades\Account;
+use TTBooking\Accounting\Facades\Ledger;
+use TTBooking\Accounting\Facades\Transaction;
 
 if (! function_exists('transfer_money')) {
     /**

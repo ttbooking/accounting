@@ -1,14 +1,14 @@
 <?php
 
-namespace Daniser\Accounting\Facades;
+namespace TTBooking\Accounting\Facades;
 
-use Daniser\Accounting\Contracts\Account as AccountContract;
-use Daniser\Accounting\Contracts\AccountOwner;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Facades\Facade;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Contracts\Account as AccountContract;
+use TTBooking\Accounting\Contracts\AccountOwner;
 
 /**
  * @method static string getTable()
@@ -21,12 +21,12 @@ use Money\Money;
  * @method static Collection|Money[] invalidTotalPerAccount()
  * @method static bool isValid(bool $aggressive = false)
  *
- * @see \Daniser\Accounting\AccountManager::class
+ * @see \TTBooking\Accounting\AccountManager::class
  */
 class Account extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Daniser\Accounting\Contracts\AccountManager::class;
+        return \TTBooking\Accounting\Contracts\AccountManager::class;
     }
 }

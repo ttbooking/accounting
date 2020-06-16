@@ -1,10 +1,10 @@
 <?php
 
-namespace Daniser\Accounting\Support;
+namespace TTBooking\Accounting\Support;
 
-use Daniser\Accounting\Contracts\SafeMoneyParser;
 use Money\Exception\ParserException;
 use Money\MoneyParser;
+use TTBooking\Accounting\Contracts\SafeMoneyParser;
 
 class FallbackMoneyParser implements SafeMoneyParser
 {

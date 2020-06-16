@@ -1,23 +1,23 @@
 <?php
 
-namespace Daniser\Accounting\Models;
+namespace TTBooking\Accounting\Models;
 
 use Carbon\Carbon;
 use Closure;
-use Daniser\Accounting\Concerns\Lockable;
-use Daniser\Accounting\Contracts\Transaction as TransactionContract;
-use Daniser\Accounting\Events;
-use Daniser\Accounting\Exceptions;
-use Daniser\Accounting\Facades\Ledger;
-use Daniser\Accounting\Facades\Transaction as TransactionManager;
-use Daniser\ModelExtensions\Concerns\HasConfigurableName;
-use Daniser\ModelExtensions\Concerns\HasUuidPrimaryKey;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Money\Currency;
 use Money\Money;
 use Throwable;
+use TTBooking\Accounting\Concerns\Lockable;
+use TTBooking\Accounting\Contracts\Transaction as TransactionContract;
+use TTBooking\Accounting\Events;
+use TTBooking\Accounting\Exceptions;
+use TTBooking\Accounting\Facades\Ledger;
+use TTBooking\Accounting\Facades\Transaction as TransactionManager;
+use TTBooking\ModelExtensions\Concerns\HasConfigurableName;
+use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
 
 /**
  * Class Transaction.

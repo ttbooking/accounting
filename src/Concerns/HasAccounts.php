@@ -1,14 +1,14 @@
 <?php
 
-namespace Daniser\Accounting\Concerns;
+namespace TTBooking\Accounting\Concerns;
 
-use Daniser\Accounting\Exceptions\AccountNotFoundException;
-use Daniser\Accounting\Facades\Account;
-use Daniser\Accounting\Models\Account as AccountModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Money\Currency;
+use TTBooking\Accounting\Exceptions\AccountNotFoundException;
+use TTBooking\Accounting\Facades\Account;
+use TTBooking\Accounting\Models\Account as AccountModel;
 
 /**
  * Trait HasAccounts.

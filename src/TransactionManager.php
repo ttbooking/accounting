@@ -1,18 +1,7 @@
 <?php
 
-namespace Daniser\Accounting;
+namespace TTBooking\Accounting;
 
-use Daniser\Accounting\Contracts\Account;
-use Daniser\Accounting\Contracts\Ledger;
-use Daniser\Accounting\Contracts\Transaction as TransactionContract;
-use Daniser\Accounting\Exceptions\TransactionCreateAbortedException;
-use Daniser\Accounting\Exceptions\TransactionIdenticalEndpointsException;
-use Daniser\Accounting\Exceptions\TransactionNegativeAmountException;
-use Daniser\Accounting\Exceptions\TransactionNotFoundException;
-use Daniser\Accounting\Exceptions\TransactionZeroTransferException;
-use Daniser\Accounting\Models\Transaction;
-use Daniser\EntityResolver\Contracts\EntityResolver;
-use Daniser\EntityResolver\Exceptions\EntityNotFoundException;
 use DateTimeInterface;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\DatabaseManager;
@@ -22,6 +11,17 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Contracts\Account;
+use TTBooking\Accounting\Contracts\Ledger;
+use TTBooking\Accounting\Contracts\Transaction as TransactionContract;
+use TTBooking\Accounting\Exceptions\TransactionCreateAbortedException;
+use TTBooking\Accounting\Exceptions\TransactionIdenticalEndpointsException;
+use TTBooking\Accounting\Exceptions\TransactionNegativeAmountException;
+use TTBooking\Accounting\Exceptions\TransactionNotFoundException;
+use TTBooking\Accounting\Exceptions\TransactionZeroTransferException;
+use TTBooking\Accounting\Models\Transaction;
+use TTBooking\EntityLocator\Contracts\EntityLocator;
+use TTBooking\EntityLocator\Exceptions\EntityNotFoundException;
 
 class TransactionManager implements Contracts\TransactionManager
 {
@@ -31,8 +31,8 @@ class TransactionManager implements Contracts\TransactionManager
     /** @var Ledger */
     protected Ledger $ledger;
 
-    /** @var EntityResolver */
-    protected EntityResolver $resolver;
+    /** @var EntityLocator */
+    protected EntityLocator $locator;
 
     /** @var Repository */
     protected Repository $config;
@@ -42,14 +42,14 @@ class TransactionManager implements Contracts\TransactionManager
      *
      * @param DatabaseManager $db
      * @param Ledger $ledger
-     * @param EntityResolver $resolver
+     * @param EntityLocator $locator
      * @param Repository $config
      */
-    public function __construct(DatabaseManager $db, Ledger $ledger, EntityResolver $resolver, Repository $config)
+    public function __construct(DatabaseManager $db, Ledger $ledger, EntityLocator $locator, Repository $config)
     {
         $this->db = $db;
         $this->ledger = $ledger;
-        $this->resolver = $resolver;
+        $this->locator = $locator;
         $this->config = $config;
     }
 
@@ -244,7 +244,7 @@ class TransactionManager implements Contracts\TransactionManager
     public function locate($address): Transaction
     {
         try {
-            return $this->resolver->resolve(Transaction::class, $address);
+            return $this->locator->locate(Transaction::class, $address);
         } catch (EntityNotFoundException $e) {
             throw new TransactionNotFoundException('Transaction not found.', $e->getCode(), $e);
         }

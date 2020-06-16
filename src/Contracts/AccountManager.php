@@ -1,13 +1,13 @@
 <?php
 
-namespace Daniser\Accounting\Contracts;
+namespace TTBooking\Accounting\Contracts;
 
-use Daniser\Accounting\Exceptions\AccountCreateAbortedException;
-use Daniser\Accounting\Exceptions\AccountNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Exceptions\AccountCreateAbortedException;
+use TTBooking\Accounting\Exceptions\AccountNotFoundException;
 
 interface AccountManager
 {

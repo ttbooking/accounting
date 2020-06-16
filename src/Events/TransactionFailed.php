@@ -1,9 +1,9 @@
 <?php
 
-namespace Daniser\Accounting\Events;
+namespace TTBooking\Accounting\Events;
 
-use Daniser\Accounting\Contracts\Transaction;
 use Throwable;
+use TTBooking\Accounting\Contracts\Transaction;
 
 class TransactionFailed extends TransactionEvent
 {

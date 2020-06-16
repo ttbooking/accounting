@@ -1,19 +1,19 @@
 <?php
 
-namespace Daniser\Accounting\Concerns;
+namespace TTBooking\Accounting\Concerns;
 
 use BadMethodCallException;
-use Daniser\Accounting\Contracts\Account;
-use Daniser\Accounting\Contracts\AccountOwner;
-use Daniser\Accounting\Contracts\Transaction;
 use DateTimeInterface;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Contracts\Account;
+use TTBooking\Accounting\Contracts\AccountOwner;
+use TTBooking\Accounting\Contracts\Transaction;
 
 /**
  * Trait ForwardsCallsToAccount.
  *
- * @mixin \Daniser\Accounting\Contracts\Account
+ * @mixin \TTBooking\Accounting\Contracts\Account
  */
 trait ForwardsCallsToAccount
 {

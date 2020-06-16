@@ -1,11 +1,11 @@
 <?php
 
-namespace Daniser\Accounting\Console;
+namespace TTBooking\Accounting\Console;
 
 use Carbon\Carbon;
-use Daniser\Accounting\Models\Transaction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use TTBooking\Accounting\Models\Transaction;
 
 class TransactionRehashCommand extends Command
 {
