@@ -27,25 +27,23 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
      */
     public function boot()
     {
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../config/accounting.php' => $this->app->configPath('accounting.php'),
-            ], 'config');
+        $this->publishes([
+            __DIR__.'/../config/accounting.php' => $this->app->configPath('accounting.php'),
+        ], 'config');
 
-            $this->publishes([
-                __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
-            ], 'migrations');
+        $this->publishes([
+            __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
+        ], 'migrations');
 
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-            $this->commands([
-                Console\TransactionCreateCommand::class,
-                Console\TransactionCommitCommand::class,
-                Console\TransactionCancelCommand::class,
-                Console\TransactionRevertCommand::class,
-                Console\TransactionRehashCommand::class,
-            ]);
-        }
+        $this->commands([
+            Console\TransactionCreateCommand::class,
+            Console\TransactionCommitCommand::class,
+            Console\TransactionCancelCommand::class,
+            Console\TransactionRevertCommand::class,
+            Console\TransactionRehashCommand::class,
+        ]);
     }
 
     /**
