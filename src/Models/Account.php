@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Concerns\HasBalance;
 use TTBooking\Accounting\Contracts\Account as AccountContract;
 use TTBooking\Accounting\Contracts\AccountOwner;
 use TTBooking\Accounting\Events;
@@ -38,7 +39,9 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  */
 class Account extends Model implements AccountContract
 {
-    use HasConfigurableName, HasUuidPrimaryKey, Locatable;
+    use HasConfigurableName, HasUuidPrimaryKey, HasBalance, Locatable {
+        getBalance as protected getBalanceBase;
+    }
 
     protected $table = 'accounting_accounts';
 
@@ -141,7 +144,12 @@ class Account extends Model implements AccountContract
             $byDate = null;
         }
 
-        return $this->getIncome($byDate)->subtract($this->getExpense($byDate));
+        return $this->getBalanceBase($byDate);
+    }
+
+    public function getContext(string $key = null, $default = null)
+    {
+        return data_get($this->context, $key, $default);
     }
 
     public function isBalanceValid(): bool

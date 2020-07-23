@@ -66,6 +66,14 @@ interface AccountManager
     public function all(AccountOwner $owner = null): Enumerable;
 
     /**
+     * @param Account $origin
+     * @param Account $destination
+     *
+     * @return AccountPair
+     */
+    public function pair(Account $origin, Account $destination): AccountPair;
+
+    /**
      * Retrieve account by its address.
      *
      * @param mixed $address

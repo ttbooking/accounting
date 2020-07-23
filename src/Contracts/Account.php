@@ -2,7 +2,6 @@
 
 namespace TTBooking\Accounting\Contracts;
 
-use DateTimeInterface;
 use Money\Currency;
 use Money\Money;
 use TTBooking\Accounting\Exceptions\TransactionCreateAbortedException;
@@ -10,7 +9,7 @@ use TTBooking\Accounting\Exceptions\TransactionIdenticalEndpointsException;
 use TTBooking\Accounting\Exceptions\TransactionNegativeAmountException;
 use TTBooking\Accounting\Exceptions\TransactionZeroTransferException;
 
-interface Account
+interface Account extends Reportable
 {
     public function getAccountKey();
 
@@ -20,11 +19,7 @@ interface Account
 
     public function getCurrency(): Currency;
 
-    public function getIncome(DateTimeInterface $byDate = null): Money;
-
-    public function getExpense(DateTimeInterface $byDate = null): Money;
-
-    public function getBalance(DateTimeInterface $byDate = null): Money;
+    public function getContext(string $key = null, $default = null);
 
     public function isBalanceValid(): bool;
 

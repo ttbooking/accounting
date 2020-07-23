@@ -16,6 +16,7 @@ use TTBooking\Accounting\Contracts\TransactionManager;
 use TTBooking\Accounting\Exceptions\AccountCreateAbortedException;
 use TTBooking\Accounting\Exceptions\AccountNotFoundException;
 use TTBooking\Accounting\Models\Account;
+use TTBooking\Accounting\Support\AccountPair;
 use TTBooking\EntityLocator\Contracts\EntityLocator;
 use TTBooking\EntityLocator\Exceptions\EntityNotFoundException;
 
@@ -127,6 +128,11 @@ class AccountManager implements Contracts\AccountManager
     public function all(AccountOwner $owner = null): LazyCollection
     {
         return is_null($owner) ? Account::query()->cursor() : $owner->accounts()->cursor();
+    }
+
+    public function pair(AccountContract $origin, AccountContract $destination): AccountPair
+    {
+        return new AccountPair($origin, $destination);
     }
 
     /**

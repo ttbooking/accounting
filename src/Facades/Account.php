@@ -9,6 +9,7 @@ use Money\Currency;
 use Money\Money;
 use TTBooking\Accounting\Contracts\Account as AccountContract;
 use TTBooking\Accounting\Contracts\AccountOwner;
+use TTBooking\Accounting\Contracts\AccountPair;
 
 /**
  * @method static string getTable()
@@ -16,6 +17,7 @@ use TTBooking\Accounting\Contracts\AccountOwner;
  * @method static AccountContract find(AccountOwner $owner, string $type = null, Currency $currency = null)
  * @method static AccountContract get(string $uuid)
  * @method static Enumerable|AccountContract[] all(AccountOwner $owner = null)
+ * @method static AccountPair pair(AccountContract $origin, AccountContract $destination)
  * @method static AccountContract locate(mixed $address)
  * @method static Collection|Money[] totalPerAccount()
  * @method static Collection|Money[] invalidTotalPerAccount()
