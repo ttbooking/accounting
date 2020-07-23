@@ -17,7 +17,7 @@ class AccountPair implements AccountPairContract
     /** @var Account */
     protected Account $origin;
 
-    /** @var Account  */
+    /** @var Account */
     protected Account $destination;
 
     /**
