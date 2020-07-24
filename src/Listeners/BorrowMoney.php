@@ -40,16 +40,18 @@ class BorrowMoney
         $origin = $event->transaction->getOrigin();
         if ($origin->getAccountType() === 'credit') {
             $amountNeeded = $event->transaction->getDestinationAmount();
-            $creditSource = $this->account->locate($origin->getContext('credit.source'));
-            $creditLimit = $this->ledger->deserializeMoney(
-                $origin->getContext('credit.limit', 0),
-                $origin->getCurrency()
-            );
-            $creditBalance = $this->account->pair($origin, $creditSource)->getBalance();
-            $canBorrow = $creditLimit->subtract($creditBalance);
             $needBorrow = $amountNeeded->subtract($origin->getBalance());
-            if ($needBorrow->lessThanOrEqual($canBorrow)) {
-                $creditSource->transferMoney($origin, $needBorrow)->commit();
+            if ($needBorrow->isPositive()) {
+                $creditSource = $this->account->locate($origin->getContext('credit.source'));
+                $creditLimit = $this->ledger->deserializeMoney(
+                    $origin->getContext('credit.limit', 0),
+                    $origin->getCurrency()
+                );
+                $creditBalance = $this->account->pair($origin, $creditSource)->getBalance();
+                $canBorrow = $creditLimit->subtract($creditBalance);
+                if ($needBorrow->lessThanOrEqual($canBorrow)) {
+                    $creditSource->transferMoney($origin, $needBorrow)->commit();
+                }
             }
         }
     }
