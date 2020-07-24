@@ -39,19 +39,24 @@ trait ForwardsCallsToAccount
         return $this->getAccount()->getCurrency();
     }
 
-    public function getIncome(DateTimeInterface $byDate = null): Money
+    public function getContext(string $key = null, $default = null)
     {
-        return $this->getAccount()->getIncome($byDate);
+        return $this->getAccount()->getContext($key, $default);
     }
 
-    public function getExpense(DateTimeInterface $byDate = null): Money
+    public function getIncome(DateTimeInterface $byDate = null, Account $origin = null): Money
     {
-        return $this->getAccount()->getExpense($byDate);
+        return $this->getAccount()->getIncome($byDate, $origin);
     }
 
-    public function getBalance(DateTimeInterface $byDate = null): Money
+    public function getExpense(DateTimeInterface $byDate = null, Account $destination = null): Money
     {
-        return $this->getAccount()->getBalance($byDate);
+        return $this->getAccount()->getExpense($byDate, $destination);
+    }
+
+    public function getBalance(DateTimeInterface $byDate = null, Account $other = null): Money
+    {
+        return $this->getAccount()->getBalance($byDate, $other);
     }
 
     public function isBalanceValid(): bool
