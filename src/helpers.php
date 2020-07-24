@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Money\Money;
 use TTBooking\Accounting\Contracts\Account as AccountContract;
 use TTBooking\Accounting\Contracts\Transaction as TransactionContract;

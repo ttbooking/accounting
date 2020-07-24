@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TTBooking\Accounting\Support;
 
 use TTBooking\Accounting\Contracts\AccountOwner;

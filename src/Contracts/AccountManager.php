@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TTBooking\Accounting\Contracts;
 
 use Illuminate\Support\Collection;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TTBooking\Accounting\Concerns;
 
 use Illuminate\Database\Query\Builder as QueryBuilder;
