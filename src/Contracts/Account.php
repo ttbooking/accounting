@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting\Contracts;
 
+use DateTimeInterface;
 use Money\Currency;
 use Money\Money;
 use TTBooking\Accounting\Exceptions\TransactionCreateAbortedException;
@@ -22,6 +23,12 @@ interface Account extends Reportable
     public function getCurrency(): Currency;
 
     public function getContext(string $key = null, $default = null);
+
+    public function getIncome(DateTimeInterface $byDate = null, self $origin = null): Money;
+
+    public function getExpense(DateTimeInterface $byDate = null, self $destination = null): Money;
+
+    public function getBalance(DateTimeInterface $byDate = null, self $other = null): Money;
 
     public function isBalanceValid(): bool;
 

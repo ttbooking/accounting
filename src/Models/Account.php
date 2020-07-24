@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Money\Currency;
 use Money\Money;
-use TTBooking\Accounting\Concerns\HasBalance;
 use TTBooking\Accounting\Contracts\Account as AccountContract;
 use TTBooking\Accounting\Contracts\AccountOwner;
 use TTBooking\Accounting\Events;
@@ -41,9 +40,7 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  */
 class Account extends Model implements AccountContract
 {
-    use HasConfigurableName, HasUuidPrimaryKey, HasBalance, Locatable {
-        getBalance as protected getBalanceBase;
-    }
+    use HasConfigurableName, HasUuidPrimaryKey, Locatable;
 
     protected $table = 'accounting_accounts';
 
@@ -114,9 +111,13 @@ class Account extends Model implements AccountContract
         return new Currency($this->currency);
     }
 
-    public function getIncome(DateTimeInterface $byDate = null): Money
+    public function getIncome(DateTimeInterface $byDate = null, AccountContract $origin = null): Money
     {
         $query = $this->incomingTransactions()->where('status', Transaction::STATUS_COMMITTED);
+
+        if (! is_null($origin)) {
+            $query->where('origin_uuid', $origin->getAccountKey());
+        }
 
         if (! is_null($byDate)) {
             $query->where('finished_at', '<=', $byDate);
@@ -125,9 +126,13 @@ class Account extends Model implements AccountContract
         return Ledger::deserializeMoney($query->sum('destination_amount'), $this->getCurrency());
     }
 
-    public function getExpense(DateTimeInterface $byDate = null): Money
+    public function getExpense(DateTimeInterface $byDate = null, AccountContract $destination = null): Money
     {
         $query = $this->outgoingTransactions()->where('status', Transaction::STATUS_COMMITTED);
+
+        if (! is_null($destination)) {
+            $query->where('destination_uuid', $destination->getAccountKey());
+        }
 
         if (! is_null($byDate)) {
             $query->where('finished_at', '<=', $byDate);
@@ -136,9 +141,9 @@ class Account extends Model implements AccountContract
         return Ledger::deserializeMoney($query->sum('origin_amount'), $this->getCurrency());
     }
 
-    public function getBalance(DateTimeInterface $byDate = null): Money
+    public function getBalance(DateTimeInterface $byDate = null, AccountContract $other = null): Money
     {
-        if (is_null($byDate)) {
+        if (is_null($byDate) && is_null($other)) {
             return Ledger::deserializeMoney($this->balance, $this->getCurrency());
         }
 
@@ -146,7 +151,7 @@ class Account extends Model implements AccountContract
             $byDate = null;
         }
 
-        return $this->getBalanceBase($byDate);
+        return $this->getIncome($byDate, $other)->subtract($this->getExpense($byDate, $other));
     }
 
     public function getContext(string $key = null, $default = null)

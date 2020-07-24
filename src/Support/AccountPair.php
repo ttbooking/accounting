@@ -7,15 +7,12 @@ namespace TTBooking\Accounting\Support;
 use DateTimeInterface;
 use Illuminate\Support\Enumerable;
 use Money\Money;
-use TTBooking\Accounting\Concerns\HasBalance;
 use TTBooking\Accounting\Contracts\Account;
 use TTBooking\Accounting\Contracts\AccountPair as AccountPairContract;
 use TTBooking\Accounting\Models\Transaction;
 
 class AccountPair implements AccountPairContract
 {
-    use HasBalance;
-
     /** @var Account */
     protected Account $origin;
 
@@ -59,11 +56,16 @@ class AccountPair implements AccountPairContract
 
     public function getIncome(DateTimeInterface $byDate = null): Money
     {
-        // TODO: Implement getIncome() method.
+        return $this->origin->getIncome($byDate, $this->destination);
     }
 
     public function getExpense(DateTimeInterface $byDate = null): Money
     {
-        // TODO: Implement getExpense() method.
+        return $this->origin->getExpense($byDate, $this->destination);
+    }
+
+    public function getBalance(DateTimeInterface $byDate = null): Money
+    {
+        return $this->origin->getBalance($byDate, $this->destination);
     }
 }
