@@ -127,7 +127,9 @@ class Transaction extends Model implements TransactionContract
 
             if ($transaction->status === self::STATUS_COMMITTED && is_null($transaction->digest)) {
                 $transaction->digest = TransactionManager::digest($transaction,
-                    static::committed('desc')->where('finished_at', '<', $transaction->finished_at)->value('digest')
+                    static::committed('desc')
+                        ->where('finished_at', '<', $transaction->fromDateTime($transaction->finished_at))
+                        ->value('digest')
                 );
             }
         });
@@ -342,7 +344,7 @@ class Transaction extends Model implements TransactionContract
     {
         return $this->transact(function () {
             static::uncommitted()->lockForUpdate()->get();
-            $this->refreshForUpdate('origin', 'destination');
+            $this->refreshForUpdate(/*'origin', 'destination'*/);
             $this->fixAmounts();
             $this->checkStatus(self::STATUS_STARTED);
 

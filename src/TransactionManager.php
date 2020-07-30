@@ -151,7 +151,9 @@ class TransactionManager implements Contracts\TransactionManager
             'currency' => $amount->getCurrency()->getCode(),
             'amount' => $this->ledger->serializeMoney($amount),
             'payload' => $payload,
-        ] + $addendum), function (Transaction $transaction) {
+        ] + $addendum), function (Transaction $transaction) use ($origin, $destination) {
+            $origin instanceof Model && $transaction->origin()->associate($origin);
+            $destination instanceof Model && $transaction->destination()->associate($destination);
             $this->config->get('accounting.auto_commit_transactions') && $transaction->commit();
         });
     }
