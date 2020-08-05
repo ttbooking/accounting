@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting\Events;
 
-class TransactionCommitted extends TransactionEvent
+use TTBooking\Accounting\Contracts\Events\TransactionCommitted as TransactionCommittedContract;
+
+class TransactionCommitted extends TransactionEvent implements TransactionCommittedContract
 {
 }

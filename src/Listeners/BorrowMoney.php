@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting\Listeners;
 
+use Illuminate\Support\Str;
 use TTBooking\Accounting\Contracts\AccountManager;
 use TTBooking\Accounting\Contracts\Ledger;
 use TTBooking\Accounting\Events\TransactionCommitting;
@@ -37,9 +38,9 @@ class BorrowMoney
      */
     public function handle(TransactionCommitting $event)
     {
-        $origin = $event->transaction->getOrigin();
-        if ($origin->getAccountType() === 'credit') {
-            $amountNeeded = $event->transaction->getDestinationAmount();
+        $origin = $event->getTransaction()->getOrigin();
+        if (Str::startsWith($origin->getAccountType(), 'credit')) {
+            $amountNeeded = $event->getTransaction()->getDestinationAmount();
             $needBorrow = $amountNeeded->subtract($origin->getBalance());
             if ($needBorrow->isPositive()) {
                 $creditSource = $this->account->locate($origin->getContext('credit.source'));

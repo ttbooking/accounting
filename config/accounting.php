@@ -225,10 +225,16 @@ return [
     'account_schema' => [
 
         /*App\User::class => [
-            'types' => ['default'],
+            'types' => [
+                'default' => DefaultAccount::class,
+            ],
             'currencies' => ['USD'],
         ],*/
 
     ],
+
+    /*'transactions' => [
+        'default' => DefaultTransaction::class,
+    ],*/
 
 ];

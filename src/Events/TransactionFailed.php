@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace TTBooking\Accounting\Events;
 
 use Throwable;
+use TTBooking\Accounting\Contracts\Events\TransactionFailed as TransactionFailedContract;
 use TTBooking\Accounting\Contracts\Transaction;
 
-class TransactionFailed extends TransactionEvent
+class TransactionFailed extends TransactionEvent implements TransactionFailedContract
 {
     /** @var Throwable|null */
-    public ?Throwable $exception;
+    protected ?Throwable $exception;
 
     /**
      * Create a new event instance.
@@ -22,5 +23,10 @@ class TransactionFailed extends TransactionEvent
     {
         parent::__construct($transaction);
         $this->exception = $exception;
+    }
+
+    public function getException(): ?Throwable
+    {
+        return $this->exception;
     }
 }

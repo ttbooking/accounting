@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting\Events;
 
-class TransactionCanceled extends TransactionEvent
+use TTBooking\Accounting\Contracts\Events\TransactionCanceled as TransactionCanceledContract;
+
+class TransactionCanceled extends TransactionEvent implements TransactionCanceledContract
 {
 }

@@ -13,8 +13,8 @@ use Money\Currency;
 use Money\Money;
 use Throwable;
 use TTBooking\Accounting\Concerns\Lockable;
+use TTBooking\Accounting\Concerns\TransactionEventFactory;
 use TTBooking\Accounting\Contracts\Transaction as TransactionContract;
-use TTBooking\Accounting\Events;
 use TTBooking\Accounting\Exceptions;
 use TTBooking\Accounting\Facades\Ledger;
 use TTBooking\Accounting\Facades\Transaction as TransactionManager;
@@ -51,7 +51,7 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  */
 class Transaction extends Model implements TransactionContract
 {
-    use HasConfigurableName, HasUuidPrimaryKey, Lockable;
+    use HasConfigurableName, HasUuidPrimaryKey, Lockable, TransactionEventFactory;
 
     protected $table = 'accounting_transactions';
 
@@ -102,13 +102,13 @@ class Transaction extends Model implements TransactionContract
                 throw new Exceptions\TransactionCreateAbortedException("Can't create transaction in finished state.");
             }
 
-            if (false === Ledger::fireEvent(new Events\TransactionCreating($transaction))) {
+            if (false === Ledger::fireEvent($transaction->newTransactionCreatingEvent())) {
                 throw new Exceptions\TransactionCreateAbortedException('Transaction creation aborted by event listener.');
             }
         });
 
         static::created(function (self $transaction) {
-            Ledger::fireEvent(new Events\TransactionCreated($transaction), [], false);
+            Ledger::fireEvent($transaction->newTransactionCreatedEvent(), [], false);
         });
 
         static::updating(function (self $transaction) {
@@ -348,7 +348,7 @@ class Transaction extends Model implements TransactionContract
             $this->fixAmounts();
             $this->checkStatus(self::STATUS_STARTED);
 
-            if (false !== Ledger::fireEvent(new Events\TransactionCommitting($this))) {
+            if (false !== Ledger::fireEvent($this->newTransactionCommittingEvent())) {
                 $this->checkStatus(self::STATUS_STARTED);
                 $this->getOrigin()->decrementMoney($this->getOriginAmount());
                 $this->getDestination()->incrementMoney($this->getDestinationAmount());
@@ -374,7 +374,7 @@ class Transaction extends Model implements TransactionContract
             $this->refreshForUpdate();
             $this->checkStatus(self::STATUS_COMMITTED);
 
-            if (false !== Ledger::fireEvent(new Events\TransactionReverting($this))) {
+            if (false !== Ledger::fireEvent($this->newTransactionRevertingEvent())) {
                 return TransactionManager::create(
                     $this->getDestination(),
                     $this->getOrigin(),
@@ -476,18 +476,18 @@ class Transaction extends Model implements TransactionContract
         switch ($this->status) {
 
             case self::STATUS_STARTED:
-                if (true !== Ledger::fireEvent(new Events\TransactionFailed($this, $e))) {
+                if (true !== Ledger::fireEvent($this->newTransactionFailedEvent($e))) {
                     $code = is_null($e) ? 0 : $e->getCode();
                     throw new Exceptions\TransactionFailedException("Transaction {$operation} has failed.", $code, $e);
                 }
                 break;
 
             case self::STATUS_COMMITTED:
-                Ledger::fireEvent(new Events\TransactionCommitted($this), [], false);
+                Ledger::fireEvent($this->newTransactionCommittedEvent(), [], false);
                 break;
 
             case self::STATUS_CANCELED:
-                Ledger::fireEvent(new Events\TransactionCanceled($this), [], false);
+                Ledger::fireEvent($this->newTransactionCanceledEvent(), [], false);
                 break;
 
             default:

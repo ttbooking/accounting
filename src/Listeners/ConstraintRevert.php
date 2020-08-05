@@ -17,11 +17,11 @@ class ConstraintRevert
      */
     public function handle(TransactionCommitting $event)
     {
-        $parent = $event->transaction->getParent();
+        $parent = $event->getTransaction()->getParent();
 
         if (! is_null($parent)) {
             $fullyReverted = $parent->isReverted();
-            $exceedingRemainder = $event->transaction->getAmount()->greaterThan($parent->getRemainingAmount());
+            $exceedingRemainder = $event->getTransaction()->getAmount()->greaterThan($parent->getRemainingAmount());
 
             return $fullyReverted || $exceedingRemainder ? false : null;
         }

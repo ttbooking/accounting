@@ -45,7 +45,7 @@ class TransactionCreateCommand extends Command
     public function handle(TransactionManager $transaction, AccountManager $account, Ledger $ledger, Dispatcher $dispatcher = null)
     {
         $dispatcher && $dispatcher->listen(AccountCreated::class, function (AccountCreated $event) {
-            $this->info(sprintf('Account <comment>%s</comment> successfully created.', $event->account->getAccountKey()));
+            $this->info(sprintf('Account <comment>%s</comment> successfully created.', $event->getAccount()->getAccountKey()));
         });
 
         $transfer = $transaction->create(

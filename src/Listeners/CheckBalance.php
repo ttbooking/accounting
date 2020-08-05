@@ -31,8 +31,8 @@ class CheckBalance
      */
     public function handle(TransactionCommitting $event)
     {
-        $balance = $event->transaction->getOrigin()->getBalance();
-        $amount = $this->ledger->convertMoney($event->transaction->getAmount(), $balance->getCurrency());
+        $balance = $event->getTransaction()->getOrigin()->getBalance();
+        $amount = $this->ledger->convertMoney($event->getTransaction()->getAmount(), $balance->getCurrency());
 
         if ($insufficientFunds = $balance->lessThan($amount)) {
             report(new \RuntimeException('Transaction canceled: insufficient funds.'));

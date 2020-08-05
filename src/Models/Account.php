@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Concerns\AccountEventFactory;
 use TTBooking\Accounting\Contracts\Account as AccountContract;
 use TTBooking\Accounting\Contracts\AccountOwner;
-use TTBooking\Accounting\Events;
 use TTBooking\Accounting\Exceptions;
 use TTBooking\Accounting\Facades\Ledger;
 use TTBooking\Accounting\Facades\Transaction as TransactionManager;
@@ -40,7 +40,7 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  */
 class Account extends Model implements AccountContract
 {
-    use HasConfigurableName, HasUuidPrimaryKey, Locatable;
+    use HasConfigurableName, HasUuidPrimaryKey, Locatable, AccountEventFactory;
 
     protected $table = 'accounting_accounts';
 
@@ -57,13 +57,13 @@ class Account extends Model implements AccountContract
         parent::boot();
 
         static::creating(function (self $account) {
-            if (false === Ledger::fireEvent(new Events\AccountCreating($account))) {
+            if (false === Ledger::fireEvent($account->newAccountCreatingEvent())) {
                 throw new Exceptions\AccountCreateAbortedException('Account creation aborted by event listener.');
             }
         });
 
         static::created(function (self $account) {
-            Ledger::fireEvent(new Events\AccountCreated($account), [], false);
+            Ledger::fireEvent($account->newAccountCreatedEvent(), [], false);
         });
     }
 

@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace TTBooking\Accounting\Events;
 
 use TTBooking\Accounting\Contracts\Account;
+use TTBooking\Accounting\Contracts\Events\AccountEvent as AccountEventContract;
 
-abstract class AccountEvent
+abstract class AccountEvent implements AccountEventContract
 {
     /** @var Account */
-    public Account $account;
+    protected Account $account;
 
     /**
      * Create a new event instance.
@@ -19,5 +20,10 @@ abstract class AccountEvent
     public function __construct(Account $account)
     {
         $this->account = $account;
+    }
+
+    public function getAccount(): Account
+    {
+        return $this->account;
     }
 }
