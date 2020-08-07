@@ -4,21 +4,69 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting;
 
-final class ExtensionLoader
+use Illuminate\Support\Str;
+
+class ExtensionLoader
 {
+    /**
+     * The array of events.
+     *
+     * @var array
+     */
+    protected array $events;
+
     /**
      * Indicates if a loader has been registered.
      *
      * @var bool
      */
-    private static bool $registered = false;
+    protected bool $registered = false;
 
     /**
      * The namespace for all real-time events.
      *
      * @var string
      */
-    private static string $eventNamespace = 'TTBooking\\AccountingExtensions\\Events\\';
+    private static string $eventNamespace = __NAMESPACE__.'\\Contracts\\Events\\';
+
+    /**
+     * The singleton instance of the loader.
+     *
+     * @var static
+     */
+    protected static self $instance;
+
+    /**
+     * Create a new ExtensionLoader instance.
+     *
+     * @param array $events
+     *
+     * @return void
+     */
+    private function __construct(array $events)
+    {
+        $this->events = $events;
+    }
+
+    /**
+     * Get or create the singleton event loader instance.
+     *
+     * @param array $events
+     *
+     * @return static
+     */
+    public static function getInstance(array $events = [])
+    {
+        if (is_null(static::$instance)) {
+            return static::$instance = new static($events);
+        }
+
+        $events = array_merge(static::$instance->getEvents(), $events);
+
+        static::$instance->setEvents($events);
+
+        return static::$instance;
+    }
 
     /**
      * Load a class alias if it is registered.
@@ -27,10 +75,10 @@ final class ExtensionLoader
      *
      * @return bool|null
      */
-    public static function load(string $alias): ?bool
+    public function load(string $alias): ?bool
     {
-        if (self::$eventNamespace && strpos($alias, self::$eventNamespace) === 0) {
-            self::loadEvent($alias);
+        if (static::$eventNamespace && strpos($alias, static::$eventNamespace) === 0) {
+            $this->loadEvent($alias);
 
             return true;
         }
@@ -43,9 +91,9 @@ final class ExtensionLoader
      *
      * @return void
      */
-    private static function loadEvent(string $alias): void
+    protected function loadEvent(string $alias): void
     {
-        require self::ensureEventExists($alias);
+        require $this->ensureEventExists($alias);
     }
 
     /**
@@ -55,13 +103,13 @@ final class ExtensionLoader
      *
      * @return string
      */
-    private static function ensureEventExists(string $alias): string
+    protected function ensureEventExists(string $alias): string
     {
         if (file_exists($path = storage_path('framework/cache/event-'.sha1($alias).'.php'))) {
             return $path;
         }
 
-        file_put_contents($path, self::formatEventStub(
+        file_put_contents($path, $this->formatEventStub(
             $alias, file_get_contents(__DIR__.'/stubs/event.stub')
         ));
 
@@ -76,17 +124,31 @@ final class ExtensionLoader
      *
      * @return string
      */
-    private static function formatEventStub(string $alias, string $stub): string
+    protected function formatEventStub(string $alias, string $stub): string
     {
         $replacements = [
             str_replace('/', '\\', dirname(str_replace('\\', '/', $alias))),
-            class_basename($alias),
-            substr($alias, strlen(self::$eventNamespace)),
+            class_basename(Str::studly($alias)),
+            //substr($alias, strlen(static::$eventNamespace)),
+            implode(', ', (array) $this->getEvents()[$alias] ?? []),
         ];
 
         return str_replace(
-            ['DummyNamespace', 'DummyClass', 'DummyTarget'], $replacements, $stub
+            ['DummyNamespace', 'DummyInterface', 'DummyExtends'], $replacements, $stub
         );
+    }
+
+    /**
+     * Add an event to the loader.
+     *
+     * @param string $event
+     * @param string $class
+     *
+     * @return void
+     */
+    public function event($event, $class): void
+    {
+        $this->events[$event] = $class;
     }
 
     /**
@@ -94,13 +156,45 @@ final class ExtensionLoader
      *
      * @return void
      */
-    public static function register(): void
+    public function register(): void
     {
-        if (! self::$registered) {
-            self::appendToLoaderStack();
+        if (! $this->registered) {
+            $this->appendToLoaderStack();
 
-            self::$registered = true;
+            $this->registered = true;
         }
+    }
+
+    /**
+     * Append the load method to the auto-loader stack.
+     *
+     * @return void
+     */
+    protected function appendToLoaderStack(): void
+    {
+        spl_autoload_register([$this, 'load']);
+    }
+
+    /**
+     * Get the registered events.
+     *
+     * @return array
+     */
+    public function getEvents(): array
+    {
+        return $this->events;
+    }
+
+    /**
+     * Set the registered events.
+     *
+     * @param array $events
+     *
+     * @return void
+     */
+    public function setEvents(array $events): void
+    {
+        $this->events = $events;
     }
 
     /**
@@ -108,9 +202,9 @@ final class ExtensionLoader
      *
      * @return bool
      */
-    public static function isRegistered(): bool
+    public function isRegistered(): bool
     {
-        return self::$registered;
+        return $this->registered;
     }
 
     /**
@@ -120,9 +214,9 @@ final class ExtensionLoader
      *
      * @return void
      */
-    public static function setRegistered(bool $value): void
+    public function setRegistered(bool $value): void
     {
-        self::$registered = $value;
+        $this->registered = $value;
     }
 
     /**
@@ -134,16 +228,28 @@ final class ExtensionLoader
      */
     public static function setEventNamespace(string $namespace): void
     {
-        self::$eventNamespace = rtrim($namespace, '\\').'\\';
+        static::$eventNamespace = rtrim($namespace, '\\').'\\';
     }
 
     /**
-     * Append the load method to the auto-loader stack.
+     * Set the value of the singleton event loader.
+     *
+     * @param static $loader
      *
      * @return void
      */
-    private static function appendToLoaderStack(): void
+    public static function setInstance(self $loader): void
     {
-        spl_autoload_register([__CLASS__, 'load']);
+        static::$instance = $loader;
+    }
+
+    /**
+     * Clone method.
+     *
+     * @return void
+     */
+    private function __clone()
+    {
+        //
     }
 }

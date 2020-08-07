@@ -224,17 +224,33 @@ return [
 
     'account_schema' => [
 
-        /*App\User::class => [
+        App\User::class => [
             'types' => [
                 'default' => DefaultAccount::class,
             ],
             'currencies' => ['USD'],
-        ],*/
+        ],
 
     ],
 
-    /*'transactions' => [
+    'transactions' => [
         'default' => DefaultTransaction::class,
-    ],*/
+    ],
+
+    // event interface hierarchy
+    'realtime_event_contracts' => [ // without prefix?
+        /**
+         * namespace ExtensionLoader::$eventNamespace;
+         * interface CompositeEvent implements Event1, Event2 {}
+         */
+        'composite_event' => ['event1', 'event2'],
+    ],
+
+    // account/transaction linking to anonymous event classes, implementing following interfaces
+    'account_types' => [
+        'moneybag' => DefaultAccountEventContract::class,
+        'default' => [DefaultAccountContract::class, AlwaysPositiveContract::class],
+        'credit*' => [DefaultAccountContract::class, AlwaysPositiveContract::class, CreditContract::class],
+    ],
 
 ];

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-namespace TTBooking\Accounting\Contracts\Events;
+namespace DummyNamespace;
 
-interface TransactionCreated extends TransactionEvent
+interface DummyInterface extends DummyExtends
 {
 }
