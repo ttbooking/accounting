@@ -241,7 +241,7 @@ return [
     'realtime_event_contracts' => [ // without prefix?
         /**
          * namespace ExtensionLoader::$eventNamespace;
-         * interface CompositeEvent implements Event1, Event2 {}
+         * interface CompositeEvent implements Event1, Event2 {}.
          */
         'composite_event' => ['event1', 'event2'],
     ],
