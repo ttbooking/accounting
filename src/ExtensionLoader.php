@@ -126,11 +126,13 @@ class ExtensionLoader
      */
     protected function formatEventStub(string $alias, string $stub): string
     {
+        $event = Str::studly(str_replace('.', '\\', $alias));
+        $extends = (array) $this->getEvents()[$alias] ?? [];
+
         $replacements = [
-            str_replace('/', '\\', dirname(str_replace('\\', '/', $alias))),
-            class_basename(Str::studly($alias)),
-            //substr($alias, strlen(static::$eventNamespace)),
-            implode(', ', (array) $this->getEvents()[$alias] ?? []),
+            str_replace('/', '\\', dirname(str_replace('\\', '/', $event))),
+            class_basename($event),
+            $extends ? ' extends '.implode(', ', $extends) : '',
         ];
 
         return str_replace(
@@ -142,13 +144,13 @@ class ExtensionLoader
      * Add an event to the loader.
      *
      * @param string $event
-     * @param string $class
+     * @param array $extends
      *
      * @return void
      */
-    public function event($event, $class): void
+    public function event($event, $extends): void
     {
-        $this->events[$event] = $class;
+        $this->events[$event] = $extends;
     }
 
     /**
