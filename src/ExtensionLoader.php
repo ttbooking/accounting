@@ -32,9 +32,9 @@ class ExtensionLoader
     /**
      * The singleton instance of the loader.
      *
-     * @var static
+     * @var static|null
      */
-    protected static self $instance;
+    protected static $instance;
 
     /**
      * Create a new ExtensionLoader instance.
@@ -82,6 +82,8 @@ class ExtensionLoader
 
             return true;
         }
+
+        return null;
     }
 
     /**
@@ -126,12 +128,13 @@ class ExtensionLoader
      */
     protected function formatEventStub(string $alias, string $stub): string
     {
-        $event = Str::studly(str_replace('.', '\\', $alias));
-        $extends = (array) $this->getEvents()[$alias] ?? [];
+        $event = Str::snake(str_replace('\\', '.', substr($alias, strlen(static::$eventNamespace))));
+        $extends = (array) ($this->getEvents()[$event] ?? []);
+        $extends = array_map(fn ($interface) => Str::studly(str_replace('.', '\\', $interface)), $extends);
 
         $replacements = [
-            str_replace('/', '\\', dirname(str_replace('\\', '/', $event))),
-            class_basename($event),
+            str_replace('/', '\\', dirname(str_replace('\\', '/', $alias))),
+            class_basename($alias),
             $extends ? ' extends '.implode(', ', $extends) : '',
         ];
 
