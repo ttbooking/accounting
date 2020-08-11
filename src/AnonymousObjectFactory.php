@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting;
 
-use Closure, ReflectionClass, RuntimeException;
+use Closure;
+use ReflectionClass;
+use RuntimeException;
 
 final class AnonymousObjectFactory
 {
