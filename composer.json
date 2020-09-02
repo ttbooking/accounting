@@ -21,7 +21,7 @@
         "illuminate/support": "^6.0|^7.0",
         "moneyphp/money": "^3.2",
         "ramsey/uuid": "^3.7|^4.0",
-        "ttbooking/anonymous-object-factory": "^1.0",
+        "ttbooking/class-factory": "^1.0",
         "ttbooking/entity-locator": "*",
         "ttbooking/model-extensions": "^1.0"
     },
