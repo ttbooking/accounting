@@ -15,6 +15,7 @@ use Money\MoneyFormatter;
 use Money\MoneyParser;
 use TTBooking\Accounting\Contracts\SafeMoneyParser;
 use TTBooking\Accounting\Support\FallbackMoneyParser;
+use TTBooking\ClassFactory\ClassFactoryException;
 
 class Ledger implements Contracts\Ledger
 {
@@ -81,13 +82,17 @@ class Ledger implements Contracts\Ledger
         return $this->db->transaction($callback, $attempts);
     }
 
-    public function fireEvent($event, $payload = [], bool $halt = true)
+    public function fireEvent($event, array $payload = [], bool $halt = true)
     {
         if (! $this->dispatcher) {
             return $halt ? null : [];
         }
         if (is_string($event)) {
             $event = "accounting.$event";
+            try {
+                $event = new_class($event)(...$payload);
+            } catch (ClassFactoryException $e) {
+            }
         }
 
         return $this->dispatcher->dispatch($event, $payload, $halt);

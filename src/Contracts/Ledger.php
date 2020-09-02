@@ -25,12 +25,12 @@ interface Ledger
 
     /**
      * @param string|object $event
-     * @param mixed $payload
+     * @param array $payload
      * @param bool $halt
      *
      * @return mixed
      */
-    public function fireEvent($event, $payload = [], bool $halt = true);
+    public function fireEvent($event, array $payload = [], bool $halt = true);
 
     /**
      * @param Money $money

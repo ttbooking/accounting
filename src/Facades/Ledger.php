@@ -10,7 +10,7 @@ use Money\Money;
 
 /**
  * @method static mixed transaction(\Closure $callback, int $attempts = null)
- * @method static mixed fireEvent(string|object $event, mixed $payload = [], bool $halt = true)
+ * @method static mixed fireEvent(string|object $event, array $payload = [], bool $halt = true)
  * @method static string serializeMoney(Money $money)
  * @method static Money deserializeMoney(string $money, Currency $fallbackCurrency = null)
  * @method static string formatMoney(Money $money)
