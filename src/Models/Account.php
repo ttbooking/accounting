@@ -62,7 +62,7 @@ class Account extends Model implements AccountContract
         });
 
         static::created(function (self $account) {
-            Ledger::fireEvent('account.created'.$account->type, [$account], false);
+            Ledger::fireEvent('account.created.'.$account->type, [$account], false);
         });
     }
 

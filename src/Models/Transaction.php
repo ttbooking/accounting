@@ -27,6 +27,7 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  * @property string $parent_uuid
  * @property string $origin_uuid
  * @property string $destination_uuid
+ * @property string $type
  * @property string $currency
  * @property string $amount
  * @property string|null $base_amount
@@ -86,6 +87,7 @@ class Transaction extends Model implements TransactionContract
         'parent_uuid',
         'origin_uuid',
         'destination_uuid',
+        'type',
         'currency',
         'amount',
         'origin_amount',
@@ -101,13 +103,13 @@ class Transaction extends Model implements TransactionContract
                 throw new Exceptions\TransactionCreateAbortedException("Can't create transaction in finished state.");
             }
 
-            if (false === Ledger::fireEvent('transaction.creating', [$transaction])) {
+            if (false === Ledger::fireEvent('transaction.creating.'.$transaction->type, [$transaction])) {
                 throw new Exceptions\TransactionCreateAbortedException('Transaction creation aborted by event listener.');
             }
         });
 
         static::created(function (self $transaction) {
-            Ledger::fireEvent('transaction.created', [$transaction], false);
+            Ledger::fireEvent('transaction.created.'.$transaction->type, [$transaction], false);
         });
 
         static::updating(function (self $transaction) {
@@ -347,7 +349,7 @@ class Transaction extends Model implements TransactionContract
             $this->fixAmounts();
             $this->checkStatus(self::STATUS_STARTED);
 
-            if (false !== Ledger::fireEvent('transaction.committing', [$this])) {
+            if (false !== Ledger::fireEvent('transaction.committing.'.$this->type, [$this])) {
                 $this->checkStatus(self::STATUS_STARTED);
                 $this->getOrigin()->decrementMoney($this->getOriginAmount());
                 $this->getDestination()->incrementMoney($this->getDestinationAmount());
@@ -373,7 +375,7 @@ class Transaction extends Model implements TransactionContract
             $this->refreshForUpdate();
             $this->checkStatus(self::STATUS_COMMITTED);
 
-            if (false !== Ledger::fireEvent('transaction.reverting', [$this])) {
+            if (false !== Ledger::fireEvent('transaction.reverting.'.$this->type, [$this])) {
                 return TransactionManager::create(
                     $this->getDestination(),
                     $this->getOrigin(),
@@ -475,18 +477,18 @@ class Transaction extends Model implements TransactionContract
         switch ($this->status) {
 
             case self::STATUS_STARTED:
-                if (true !== Ledger::fireEvent('transaction.failed', [$this, $e])) {
+                if (true !== Ledger::fireEvent('transaction.failed.'.$this->type, [$this, $e])) {
                     $code = is_null($e) ? 0 : $e->getCode();
                     throw new Exceptions\TransactionFailedException("Transaction {$operation} has failed.", $code, $e);
                 }
                 break;
 
             case self::STATUS_COMMITTED:
-                Ledger::fireEvent('transaction.committed', [$this], false);
+                Ledger::fireEvent('transaction.committed.'.$this->type, [$this], false);
                 break;
 
             case self::STATUS_CANCELED:
-                Ledger::fireEvent('transaction.canceled', [$this], false);
+                Ledger::fireEvent('transaction.canceled.'.$this->type, [$this], false);
                 break;
 
             default:

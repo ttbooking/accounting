@@ -148,6 +148,7 @@ class TransactionManager implements Contracts\TransactionManager
             'parent_uuid' => isset($parent) ? $parent->getKey() : null,
             'origin_uuid' => $origin->getAccountKey(),
             'destination_uuid' => $destination->getAccountKey(),
+            'type' => $this->config->get('accounting.default_transaction_type'),
             'currency' => $amount->getCurrency()->getCode(),
             'amount' => $this->ledger->serializeMoney($amount),
             'payload' => $payload,

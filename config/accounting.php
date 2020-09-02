@@ -84,6 +84,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default Transaction Type
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the default transaction type.
+    |
+    | Max length is 36 characters.
+    |
+    */
+
+    'default_transaction_type' => env('ACCOUNTING_DEFAULT_TRANSACTION_TYPE', 'default'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Base Transaction Currency
     |--------------------------------------------------------------------------
     |

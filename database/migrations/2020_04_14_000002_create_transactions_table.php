@@ -21,6 +21,7 @@ class CreateTransactionsTable extends Migration
             $table->uuid('parent_uuid')->nullable()->index();
             $table->uuid('origin_uuid')->index();
             $table->uuid('destination_uuid')->index();
+            $table->string('type', 36)->index();
             $table->char('currency', 3)->index();
             $table->unsignedDecimal('amount', 13, 4);
             $table->unsignedDecimal('base_amount', 13, 4)->nullable();
