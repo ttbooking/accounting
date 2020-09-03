@@ -103,13 +103,13 @@ class Transaction extends Model implements TransactionContract
                 throw new Exceptions\TransactionCreateAbortedException("Can't create transaction in finished state.");
             }
 
-            if (false === Ledger::fireEvent('transaction.creating.'.$transaction->type, [$transaction])) {
+            if (false === Ledger::fireEvent($transaction->buildEvent('creating'), [$transaction])) {
                 throw new Exceptions\TransactionCreateAbortedException('Transaction creation aborted by event listener.');
             }
         });
 
         static::created(function (self $transaction) {
-            Ledger::fireEvent('transaction.created.'.$transaction->type, [$transaction], false);
+            Ledger::fireEvent($transaction->buildEvent('created'), [$transaction], false);
         });
 
         static::updating(function (self $transaction) {
@@ -349,7 +349,7 @@ class Transaction extends Model implements TransactionContract
             $this->fixAmounts();
             $this->checkStatus(self::STATUS_STARTED);
 
-            if (false !== Ledger::fireEvent('transaction.committing.'.$this->type, [$this])) {
+            if (false !== Ledger::fireEvent($this->buildEvent('committing'), [$this])) {
                 $this->checkStatus(self::STATUS_STARTED);
                 $this->getOrigin()->decrementMoney($this->getOriginAmount());
                 $this->getDestination()->incrementMoney($this->getDestinationAmount());
@@ -375,7 +375,7 @@ class Transaction extends Model implements TransactionContract
             $this->refreshForUpdate();
             $this->checkStatus(self::STATUS_COMMITTED);
 
-            if (false !== Ledger::fireEvent('transaction.reverting.'.$this->type, [$this])) {
+            if (false !== Ledger::fireEvent($this->buildEvent('reverting'), [$this])) {
                 return TransactionManager::create(
                     $this->getDestination(),
                     $this->getOrigin(),
@@ -477,22 +477,38 @@ class Transaction extends Model implements TransactionContract
         switch ($this->status) {
 
             case self::STATUS_STARTED:
-                if (true !== Ledger::fireEvent('transaction.failed.'.$this->type, [$this, $e])) {
+                if (true !== Ledger::fireEvent($this->buildEvent('failed'), [$this, $e])) {
                     $code = is_null($e) ? 0 : $e->getCode();
                     throw new Exceptions\TransactionFailedException("Transaction {$operation} has failed.", $code, $e);
                 }
                 break;
 
             case self::STATUS_COMMITTED:
-                Ledger::fireEvent('transaction.committed.'.$this->type, [$this], false);
+                Ledger::fireEvent($this->buildEvent('committed'), [$this], false);
                 break;
 
             case self::STATUS_CANCELED:
-                Ledger::fireEvent('transaction.canceled.'.$this->type, [$this], false);
+                Ledger::fireEvent($this->buildEvent('canceled'), [$this], false);
                 break;
 
             default:
                 throw new Exceptions\TransactionStatusMismatchException('Unknown transaction status.');
         }
+    }
+
+    /**
+     * @param string $event
+     *
+     * @return string
+     */
+    protected function buildEvent(string $event): string
+    {
+        // For example, "default.transaction.user.default.user.default.creating"
+        return implode('.', [
+            $this->type, 'transaction',
+            $this->origin->owner_type, $this->origin->type,
+            $this->destination->owner_type, $this->destination->type,
+            $event,
+        ]);
     }
 }
