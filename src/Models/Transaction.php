@@ -503,12 +503,11 @@ class Transaction extends Model implements TransactionContract
      */
     protected function buildEvent(string $event): string
     {
-        // For example, "default.transaction.user.default.user.default.creating"
+        // For example, "transaction.creating.default.user.default.user.default"
         return implode('.', [
-            $this->type, 'transaction',
+            'transaction', $event, $this->type,
             $this->origin->owner_type, $this->origin->type,
             $this->destination->owner_type, $this->destination->type,
-            $event,
         ]);
     }
 }
