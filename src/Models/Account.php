@@ -56,13 +56,13 @@ class Account extends Model implements AccountContract
         parent::boot();
 
         static::creating(function (self $account) {
-            if (false === Ledger::fireEvent('account.creating.'.$account->type, [$account])) {
+            if (false === Ledger::fireEvent($account->buildEvent('creating'), [$account])) {
                 throw new Exceptions\AccountCreateAbortedException('Account creation aborted by event listener.');
             }
         });
 
         static::created(function (self $account) {
-            Ledger::fireEvent('account.created.'.$account->type, [$account], false);
+            Ledger::fireEvent($account->buildEvent('created'), [$account], false);
         });
     }
 
@@ -229,5 +229,16 @@ class Account extends Model implements AccountContract
                 throw $e;
             }
         }
+    }
+
+    /**
+     * @param string $event
+     *
+     * @return string
+     */
+    protected function buildEvent(string $event): string
+    {
+        // For example, "account.creating.user.default"
+        return implode('.', ['account', $event, $this->owner_type, $this->type]);
     }
 }
