@@ -344,7 +344,7 @@ class Transaction extends Model implements TransactionContract
     public function commit(): self
     {
         return $this->transact(function () {
-            static::uncommitted()->lockForUpdate()->get();
+            static::uncommitted()->lockForUpdate()->count();
             $this->refreshForUpdate(/*'origin', 'destination'*/);
             $this->fixAmounts();
             $this->checkStatus(self::STATUS_STARTED);
