@@ -17,6 +17,8 @@ use TTBooking\Accounting\Contracts\AccountOwner;
 use TTBooking\Accounting\Exceptions;
 use TTBooking\Accounting\Facades\Ledger;
 use TTBooking\Accounting\Facades\Transaction as TransactionManager;
+use TTBooking\CastableMoney\Casts\Currency as CurrencyCast;
+use TTBooking\CastableMoney\Casts\DecimalMoney;
 use TTBooking\EntityLocator\Concerns\Locatable;
 use TTBooking\ModelExtensions\Concerns\HasConfigurableName;
 use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
@@ -28,8 +30,8 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  * @property string $owner_type
  * @property int $owner_id
  * @property string $type
- * @property string $currency
- * @property string $balance
+ * @property Currency $currency
+ * @property Money $balance
  * @property array|null $context
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -46,15 +48,15 @@ class Account extends Model implements AccountContract
     protected $primaryKey = 'uuid';
 
     protected $casts = [
+        'currency' => CurrencyCast::class,
+        'balance' => DecimalMoney::class,
         'context' => 'array',
     ];
 
     protected $fillable = ['owner_type', 'owner_id', 'type', 'currency', 'balance', 'context'];
 
-    protected static function boot()
+    protected static function booted()
     {
-        parent::boot();
-
         static::creating(function (self $account) {
             if (false === Ledger::fireEvent($account->buildEvent('creating'), [$account])) {
                 throw new Exceptions\AccountCreateAbortedException('Account creation aborted by event listener.');
@@ -107,7 +109,7 @@ class Account extends Model implements AccountContract
 
     public function getCurrency(): Currency
     {
-        return new Currency($this->currency);
+        return $this->currency;
     }
 
     public function getIncome(DateTimeInterface $byDate = null, AccountContract $origin = null): Money
@@ -143,7 +145,7 @@ class Account extends Model implements AccountContract
     public function getBalance(DateTimeInterface $byDate = null, AccountContract $other = null): Money
     {
         if (is_null($byDate) && is_null($other)) {
-            return Ledger::deserializeMoney($this->balance, $this->getCurrency());
+            return $this->balance;
         }
 
         if ($byDate == new \DateTime) {

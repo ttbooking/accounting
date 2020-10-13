@@ -7,8 +7,8 @@ namespace TTBooking\Accounting;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Money\Currency;
-use Money\Formatter\DecimalMoneyFormatter;
-use Money\Parser\DecimalMoneyParser;
+use TTBooking\MoneySerializer\Contracts\SerializesMoney;
+use TTBooking\MoneySerializer\Serializers\DecimalMoneySerializer;
 
 class AccountingServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -20,6 +20,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     public array $singletons = [
         Contracts\AccountManager::class => AccountManager::class,
         Contracts\TransactionManager::class => TransactionManager::class,
+        Contracts\Ledger::class => Ledger::class,
     ];
 
     /**
@@ -67,12 +68,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
             );
         });
 
-        $this->app->singleton(Contracts\Ledger::class, function () {
-            return $this->app->make(Ledger::class, [
-                'serializer' => $this->app->make(DecimalMoneyFormatter::class),
-                'deserializer' => $this->app->make(DecimalMoneyParser::class),
-            ]);
-        });
+        $this->app->when(Ledger::class)->needs(SerializesMoney::class)->give(DecimalMoneySerializer::class);
     }
 
     /**
@@ -82,6 +78,6 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
      */
     public function provides()
     {
-        return array_merge(array_keys($this->singletons), [Support\AccountLocator::class, Contracts\Ledger::class]);
+        return array_merge(array_keys($this->singletons), [Support\AccountLocator::class]);
     }
 }

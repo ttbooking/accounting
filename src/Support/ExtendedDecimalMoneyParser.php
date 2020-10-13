@@ -8,7 +8,7 @@ use Money\Currencies;
 use Money\Currency;
 use Money\Exception\ParserException;
 use Money\Parser\DecimalMoneyParser;
-use TTBooking\Accounting\Contracts\SafeMoneyParser;
+use TTBooking\SafeMoneyParser\SafeMoneyParser;
 
 class ExtendedDecimalMoneyParser implements SafeMoneyParser
 {

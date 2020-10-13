@@ -17,6 +17,8 @@ use TTBooking\Accounting\Contracts\Transaction as TransactionContract;
 use TTBooking\Accounting\Exceptions;
 use TTBooking\Accounting\Facades\Ledger;
 use TTBooking\Accounting\Facades\Transaction as TransactionManager;
+use TTBooking\CastableMoney\Casts\Currency as CurrencyCast;
+use TTBooking\CastableMoney\Casts\DecimalMoney;
 use TTBooking\ModelExtensions\Concerns\HasConfigurableName;
 use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
 
@@ -28,11 +30,11 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  * @property string $origin_uuid
  * @property string $destination_uuid
  * @property string $type
- * @property string $currency
- * @property string $amount
- * @property string|null $base_amount
- * @property string|null $origin_amount
- * @property string|null $destination_amount
+ * @property Currency $currency
+ * @property Money $amount
+ * @property Money|null $base_amount
+ * @property Money|null $origin_amount
+ * @property Money|null $destination_amount
  * @property array|null $payload
  * @property int $status
  * @property Carbon $created_at
@@ -42,6 +44,7 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  * @property Collection|Transaction[] $children
  * @property Account $origin
  * @property Account $destination
+ * @property-read Currency $baseCurrency
  *
  * @method static Builder withStatus(int $status, string $direction = 'asc')
  * @method static Builder uncommitted(string $direction = 'asc')
@@ -68,6 +71,11 @@ class Transaction extends Model implements TransactionContract
     ];
 
     protected $casts = [
+        'currency' => CurrencyCast::class,
+        'amount' => DecimalMoney::class,
+        'base_amount' => DecimalMoney::class.':base_currency',
+        'origin_amount' => DecimalMoney::class.':origin.currency',
+        'destination_amount' => DecimalMoney::class.':destination.currency',
         'payload' => 'array',
     ];
 
@@ -94,10 +102,8 @@ class Transaction extends Model implements TransactionContract
         'payload',
     ];
 
-    protected static function boot()
+    protected static function booted()
     {
-        parent::boot();
-
         static::creating(function (self $transaction) {
             if ($transaction->status !== self::STATUS_STARTED) {
                 throw new Exceptions\TransactionCreateAbortedException("Can't create transaction in finished state.");
@@ -256,12 +262,17 @@ class Transaction extends Model implements TransactionContract
 
     public function getCurrency(): Currency
     {
-        return new Currency($this->currency);
+        return $this->currency;
     }
 
     public function getAmount(): Money
     {
-        return Ledger::deserializeMoney($this->amount, $this->getCurrency());
+        return $this->amount;
+    }
+
+    public function getBaseCurrencyAttribute(): Currency
+    {
+        return TransactionManager::baseCurrency();
     }
 
     public function getBaseAmount(): Money
@@ -272,7 +283,7 @@ class Transaction extends Model implements TransactionContract
             return Ledger::convertMoney($this->getAmount(), $baseCurrency);
         }
 
-        return Ledger::deserializeMoney($this->base_amount, $baseCurrency);
+        return $this->base_amount;
     }
 
     public function getOriginAmount(): Money
@@ -283,7 +294,7 @@ class Transaction extends Model implements TransactionContract
             return Ledger::convertMoney($this->getAmount(), $originCurrency);
         }
 
-        return Ledger::deserializeMoney($this->origin_amount, $originCurrency);
+        return $this->origin_amount;
     }
 
     public function getDestinationAmount(): Money
@@ -294,7 +305,7 @@ class Transaction extends Model implements TransactionContract
             return Ledger::convertMoney($this->getAmount(), $destinationCurrency);
         }
 
-        return Ledger::deserializeMoney($this->destination_amount, $destinationCurrency);
+        return $this->destination_amount;
     }
 
     public function getPayload(): ?array

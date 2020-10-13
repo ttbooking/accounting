@@ -12,10 +12,9 @@ use Money\Converter;
 use Money\Currency;
 use Money\Money;
 use Money\MoneyFormatter;
-use Money\MoneyParser;
-use TTBooking\Accounting\Contracts\SafeMoneyParser;
-use TTBooking\Accounting\Support\FallbackMoneyParser;
 use TTBooking\ClassFactory\ClassFactoryException;
+use TTBooking\MoneySerializer\Contracts\SerializesMoney;
+use TTBooking\SafeMoneyParser\SafeMoneyParser;
 
 class Ledger implements Contracts\Ledger
 {
@@ -25,14 +24,8 @@ class Ledger implements Contracts\Ledger
     /** @var DatabaseManager */
     protected DatabaseManager $db;
 
-    /** @var Dispatcher|null */
-    protected ?Dispatcher $dispatcher;
-
-    /** @var MoneyFormatter|null */
-    protected ?MoneyFormatter $serializer;
-
-    /** @var SafeMoneyParser|null */
-    protected ?SafeMoneyParser $deserializer;
+    /** @var SerializesMoney */
+    protected SerializesMoney $serializer;
 
     /** @var MoneyFormatter|null */
     protected ?MoneyFormatter $formatter;
@@ -43,35 +36,35 @@ class Ledger implements Contracts\Ledger
     /** @var Converter|null */
     protected ?Converter $converter;
 
+    /** @var Dispatcher|null */
+    protected ?Dispatcher $dispatcher;
+
     /**
      * Ledger constructor.
      *
      * @param Repository $config
      * @param DatabaseManager $db
-     * @param Dispatcher|null $dispatcher
-     * @param MoneyFormatter|null $serializer
-     * @param MoneyParser|null $deserializer
+     * @param SerializesMoney $serializer
      * @param MoneyFormatter|null $formatter
-     * @param MoneyParser|null $parser
+     * @param SafeMoneyParser|null $parser
      * @param Converter|null $converter
+     * @param Dispatcher|null $dispatcher
      */
     public function __construct(
         Repository $config,
         DatabaseManager $db,
-        Dispatcher $dispatcher = null,
-        MoneyFormatter $serializer = null,
-        MoneyParser $deserializer = null,
+        SerializesMoney $serializer,
         MoneyFormatter $formatter = null,
-        MoneyParser $parser = null,
-        Converter $converter = null
+        SafeMoneyParser $parser = null,
+        Converter $converter = null,
+        Dispatcher $dispatcher = null
     ) {
         $this->config = $config;
         $this->db = $db;
         $this->dispatcher = $dispatcher;
         $this->serializer = $serializer;
-        $this->deserializer = self::decorateParser($deserializer);
-        $this->formatter = $formatter ?? $serializer;
-        $this->parser = self::decorateParser($parser ?? $deserializer);
+        $this->formatter = $formatter;
+        $this->parser = $parser;
         $this->converter = $converter;
     }
 
@@ -100,22 +93,12 @@ class Ledger implements Contracts\Ledger
 
     public function serializeMoney(Money $money): string
     {
-        if (! $this->serializer) {
-            return $money->getAmount();
-        }
-
-        return $this->serializer->format($money);
+        return $this->serializer->serialize($money);
     }
 
     public function deserializeMoney(string $money, Currency $fallbackCurrency = null): Money
     {
-        $fallbackCurrency ??= new Currency($this->config->get('accounting.default_account_currency'));
-
-        if (! $this->deserializer) {
-            return new Money($money, $fallbackCurrency);
-        }
-
-        return $this->deserializer->parse($money, $fallbackCurrency);
+        return $this->serializer->deserialize($money, $fallbackCurrency);
     }
 
     public function formatMoney(Money $money): string
@@ -149,15 +132,5 @@ class Ledger implements Contracts\Ledger
         $roundingMode ??= $this->config->get('accounting.rounding_mode');
 
         return $this->converter->convert($money, $counterCurrency, $roundingMode);
-    }
-
-    /**
-     * @param MoneyParser|null $parser
-     *
-     * @return SafeMoneyParser|null
-     */
-    private static function decorateParser(?MoneyParser $parser)
-    {
-        return $parser instanceof SafeMoneyParser || is_null($parser) ? $parser : new FallbackMoneyParser($parser);
     }
 }
