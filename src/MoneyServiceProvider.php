@@ -10,10 +10,10 @@ use Money\Converter;
 use Money\Currencies;
 use Money\Exchange;
 use Money\MoneyFormatter;
-use Money\MoneyParser;
 use TTBooking\Accounting\Support\ExtendedDecimalMoneyFormatter;
 use TTBooking\Accounting\Support\ExtendedDecimalMoneyParser;
 use TTBooking\Accounting\Support\PreciseCurrencies;
+use TTBooking\SafeMoneyParser\SafeMoneyParser;
 
 class MoneyServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -25,7 +25,7 @@ class MoneyServiceProvider extends ServiceProvider implements DeferrableProvider
     public array $singletons = [
         Currencies::class => Currencies\ISOCurrencies::class,
         MoneyFormatter::class => ExtendedDecimalMoneyFormatter::class,
-        MoneyParser::class => ExtendedDecimalMoneyParser::class,
+        SafeMoneyParser::class => ExtendedDecimalMoneyParser::class,
         Exchange::class => Exchange\SwapExchange::class,
         Converter::class => Converter::class,
     ];
