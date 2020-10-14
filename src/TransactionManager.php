@@ -140,17 +140,14 @@ class TransactionManager implements Contracts\TransactionManager
         }
 
         $addendum = ! $this->config->get('accounting.origin_forward_conversion') ? []
-            : ['origin_amount' => $this->ledger->serializeMoney(
-                $this->ledger->convertMoney($amount, $origin->getCurrency())
-            )];
+            : ['origin_amount' => $this->ledger->convertMoney($amount, $origin->getCurrency())];
 
         return tap(Transaction::query()->create([
             'parent_uuid' => isset($parent) ? $parent->getKey() : null,
             'origin_uuid' => $origin->getAccountKey(),
             'destination_uuid' => $destination->getAccountKey(),
             'type' => $this->config->get('accounting.default_transaction_type'),
-            'currency' => $amount->getCurrency()->getCode(),
-            'amount' => $this->ledger->serializeMoney($amount),
+            'amount' => $amount,
             'payload' => $payload,
         ] + $addendum), function (Transaction $transaction) use ($origin, $destination) {
             $origin instanceof Model && $transaction->origin()->associate($origin);

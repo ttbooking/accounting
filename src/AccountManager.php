@@ -232,7 +232,7 @@ class AccountManager implements Contracts\AccountManager
 
         return [
             'type' => $type ?? $types[0] ?? $this->config->get('accounting.default_account_type'),
-            'currency' => $currency ?? $currencies[0] ?? $this->config->get('accounting.default_account_currency'),
+            'currency' => new Currency($currency ?? $currencies[0] ?? $this->config->get('accounting.default_account_currency')),
         ];
     }
 }

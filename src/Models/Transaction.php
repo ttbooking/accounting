@@ -410,21 +410,21 @@ class Transaction extends Model implements TransactionContract
     protected function fixBaseAmount(): void
     {
         if (is_null($this->base_amount)) {
-            $this->base_amount = Ledger::serializeMoney($this->getBaseAmount());
+            $this->base_amount = $this->getBaseAmount();
         }
     }
 
     protected function fixOriginAmount(): void
     {
         if (is_null($this->origin_amount)) {
-            $this->origin_amount = Ledger::serializeMoney($this->getOriginAmount());
+            $this->origin_amount = $this->getOriginAmount();
         }
     }
 
     protected function fixDestinationAmount(): void
     {
         if (is_null($this->destination_amount)) {
-            $this->destination_amount = Ledger::serializeMoney($this->getDestinationAmount());
+            $this->destination_amount = $this->getDestinationAmount();
         }
     }
 

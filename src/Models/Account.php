@@ -192,7 +192,7 @@ class Account extends Model implements AccountContract
     {
         $amount = Ledger::convertMoney($amount, $this->getCurrency());
         Config::get('accounting.prefer_money_calculator')
-            ? $this->update(['balance' => Ledger::serializeMoney($this->getBalance()->add($amount))])
+            ? $this->update(['balance' => $this->getBalance()->add($amount)])
             : $this->increment('balance', Ledger::serializeMoney($amount));
     }
 
@@ -200,7 +200,7 @@ class Account extends Model implements AccountContract
     {
         $amount = Ledger::convertMoney($amount, $this->getCurrency());
         Config::get('accounting.prefer_money_calculator')
-            ? $this->update(['balance' => Ledger::serializeMoney($this->getBalance()->subtract($amount))])
+            ? $this->update(['balance' => $this->getBalance()->subtract($amount)])
             : $this->decrement('balance', Ledger::serializeMoney($amount));
     }
 
