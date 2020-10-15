@@ -47,6 +47,10 @@ class Account extends Model implements AccountContract
 
     protected $primaryKey = 'uuid';
 
+    protected $attributes = [
+        'balance' => '0',
+    ];
+
     protected $casts = [
         'currency' => CurrencyCast::class,
         'balance' => DecimalMoney::class,
