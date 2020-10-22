@@ -17,8 +17,9 @@ use TTBooking\Accounting\Contracts\AccountOwner;
 use TTBooking\Accounting\Exceptions;
 use TTBooking\Accounting\Facades\Ledger;
 use TTBooking\Accounting\Facades\Transaction as TransactionManager;
-use TTBooking\CastableMoney\Casts\Currency as CurrencyCast;
-use TTBooking\CastableMoney\Casts\DecimalMoney;
+use TTBooking\CastableMoney\Casts;
+use TTBooking\CastableMoney\Deviators;
+use TTBooking\Deviable\Concerns\SupportsDeviators;
 use TTBooking\EntityLocator\Concerns\Locatable;
 use TTBooking\ModelExtensions\Concerns\HasConfigurableName;
 use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
@@ -41,7 +42,7 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  */
 class Account extends Model implements AccountContract
 {
-    use HasConfigurableName, HasUuidPrimaryKey, Locatable;
+    use HasConfigurableName, HasUuidPrimaryKey, SupportsDeviators, Locatable;
 
     protected $table = 'accounting_accounts';
 
@@ -52,9 +53,13 @@ class Account extends Model implements AccountContract
     ];
 
     protected $casts = [
-        'currency' => CurrencyCast::class,
-        'balance' => DecimalMoney::class,
+        'currency' => Casts\Currency::class,
+        'balance' => Casts\DecimalMoney::class,
         'context' => 'array',
+    ];
+
+    protected $deviators = [
+        'balance' => Deviators\Money::class,
     ];
 
     protected $fillable = ['owner_type', 'owner_id', 'type', 'currency', 'balance', 'context'];

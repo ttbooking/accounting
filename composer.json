@@ -23,6 +23,7 @@
         "ramsey/uuid": "^3.7|^4.0",
         "ttbooking/castable-money": "^1.0",
         "ttbooking/class-factory": "^1.0",
+        "ttbooking/deviable": "^1.0",
         "ttbooking/entity-locator": "*",
         "ttbooking/model-extensions": "^1.0",
         "ttbooking/money-serializer": "^1.0",
