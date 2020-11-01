@@ -7,7 +7,6 @@ namespace TTBooking\Accounting;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Money\Currency;
-use TTBooking\CastableMoney\Deviators\Money as MoneyDeviator;
 use TTBooking\MoneySerializer\Contracts\SerializesMoney;
 use TTBooking\MoneySerializer\Serializers\DecimalMoneySerializer;
 
@@ -69,10 +68,7 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
             );
         });
 
-        $this->app
-            ->when([Ledger::class, MoneyDeviator::class])
-            ->needs(SerializesMoney::class)
-            ->give(DecimalMoneySerializer::class);
+        $this->app->when(Ledger::class)->needs(SerializesMoney::class)->give(DecimalMoneySerializer::class);
     }
 
     /**
