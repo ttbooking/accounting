@@ -516,9 +516,9 @@ class Transaction extends Model implements TransactionContract
     {
         // For example, "transaction.creating.default.user.default.user.default"
         return implode('.', [
-            'transaction', $event, $this->type,
+            'transaction', $event/*, $this->type,
             $this->origin->owner_type, $this->origin->type,
-            $this->destination->owner_type, $this->destination->type,
+            $this->destination->owner_type, $this->destination->type,*/
         ]);
     }
 }

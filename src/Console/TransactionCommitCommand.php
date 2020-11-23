@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\Accounting\Console;
 
 use Illuminate\Console\Command;
-use TTBooking\Accounting\Contracts\Transaction;
+use Illuminate\Contracts\Events\Dispatcher;
 use TTBooking\Accounting\Contracts\TransactionManager;
 
 class TransactionCommitCommand extends Command
@@ -29,11 +29,14 @@ class TransactionCommitCommand extends Command
      * Execute the console command.
      *
      * @param TransactionManager $manager
+     * @param Dispatcher|null $dispatcher
      *
      * @return void
      */
-    public function handle(TransactionManager $manager)
+    public function handle(TransactionManager $manager, Dispatcher $dispatcher = null)
     {
+        $dispatcher && $this->registerEventAnnouncers($dispatcher);
+
         $uuid = $this->argument('uuid');
 
         $transactions = $uuid === 'all' ? $manager->uncommitted() : collect([$manager->get($uuid)]);
@@ -44,11 +47,6 @@ class TransactionCommitCommand extends Command
 
         foreach ($transactions as $transaction) {
             $transaction->commit();
-            $this->info(sprintf('Transaction <comment>%s</comment> %s.',
-                $transaction->getKey(),
-                $transaction->getStatus() === Transaction::STATUS_COMMITTED
-                    ? 'successfully committed' : 'canceled',
-            ));
         }
     }
 }

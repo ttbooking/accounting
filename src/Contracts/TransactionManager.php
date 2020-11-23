@@ -22,9 +22,9 @@ interface TransactionManager
      *
      * @param bool $autoCommit
      *
-     * @return void
+     * @return $this
      */
-    public function enableAutoCommit(bool $autoCommit = true): void;
+    public function enableAutoCommit(bool $autoCommit = true): self;
 
     /**
      * Check if transaction auto commit is enabled.

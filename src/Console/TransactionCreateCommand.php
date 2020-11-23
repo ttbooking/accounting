@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting\Console;
 
-use Illuminate\Console\Command;
 use Illuminate\Contracts\Events\Dispatcher;
 use TTBooking\Accounting\Contracts\AccountManager;
 use TTBooking\Accounting\Contracts\Ledger;
-use TTBooking\Accounting\Contracts\Transaction;
 use TTBooking\Accounting\Contracts\TransactionManager;
-use TTBooking\Accounting\Events\AccountCreated;
 
-class TransactionCreateCommand extends Command
+class TransactionCreateCommand extends AccountingCommand
 {
     /**
      * The name and signature of the console command.
@@ -44,33 +41,14 @@ class TransactionCreateCommand extends Command
      */
     public function handle(TransactionManager $transaction, AccountManager $account, Ledger $ledger, Dispatcher $dispatcher = null)
     {
-        $dispatcher && $dispatcher->listen(AccountCreated::class, function (AccountCreated $event) {
-            $this->info(sprintf('Account <comment>%s</comment> successfully created.', $event->getAccount()->getAccountKey()));
-        });
+        $dispatcher && $this->registerEventAnnouncers($dispatcher);
 
-        $transfer = $transaction->create(
-            $origin = $account->locate($from = $this->argument('from')),
-            $destination = $account->locate([$to = $this->argument('to'), $from]),
-            $amount = $ledger->parseMoney($this->argument('amount'), $transaction->currency($origin, $destination))
-        );
-
-        $lines = [
-            'Transaction <comment>%s</comment> worth <comment>%s</comment> successfully created.',
-            'Transaction <comment>%s</comment> %s.',
-        ];
-
-        $this->info(sprintf($lines[0], $transfer->getKey(), $ledger->formatMoney($amount)));
-
-        if ($this->option('commit') && $transfer->getStatus() === Transaction::STATUS_STARTED) {
-            $transfer->commit();
-        }
-
-        if ($transfer->getStatus() !== Transaction::STATUS_STARTED) {
-            $this->info(sprintf($lines[1],
-                $transfer->getKey(),
-                $transfer->getStatus() === Transaction::STATUS_COMMITTED
-                    ? 'successfully committed' : 'canceled',
-            ));
-        }
+        $transaction
+            ->enableAutoCommit($this->option('commit'))
+            ->create(
+                $origin = $account->locate($from = $this->argument('from')),
+                $destination = $account->locate([$to = $this->argument('to'), $from]),
+                $ledger->parseMoney($this->argument('amount'), $transaction->currency($origin, $destination))
+            );
     }
 }

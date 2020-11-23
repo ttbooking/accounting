@@ -58,9 +58,11 @@ class TransactionManager implements Contracts\TransactionManager
         $this->config = $config;
     }
 
-    public function enableAutoCommit(bool $autoCommit = true): void
+    public function enableAutoCommit(bool $autoCommit = true): self
     {
         $this->autoCommit = $autoCommit;
+
+        return $this;
     }
 
     public function isAutoCommitEnabled(): bool

@@ -244,6 +244,6 @@ class Account extends Model implements AccountContract
     protected function buildEvent(string $event): string
     {
         // For example, "account.creating.user.default"
-        return implode('.', ['account', $event, $this->owner_type, $this->type]);
+        return implode('.', ['account', $event/*, $this->owner_type, $this->type*/]);
     }
 }
