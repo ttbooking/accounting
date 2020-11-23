@@ -18,6 +18,22 @@ use TTBooking\Accounting\Exceptions\TransactionZeroTransferException;
 interface TransactionManager
 {
     /**
+     * Enable or disable transaction auto commit.
+     *
+     * @param bool $autoCommit
+     *
+     * @return void
+     */
+    public function enableAutoCommit(bool $autoCommit = true): void;
+
+    /**
+     * Check if transaction auto commit is enabled.
+     *
+     * @return bool
+     */
+    public function isAutoCommitEnabled(): bool;
+
+    /**
      * Get table name for transaction storage.
      *
      * @return string

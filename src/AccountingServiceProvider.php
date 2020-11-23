@@ -58,6 +58,12 @@ class AccountingServiceProvider extends ServiceProvider implements DeferrablePro
     {
         $this->mergeConfigFrom(__DIR__.'/../config/accounting.php', 'accounting');
 
+        $this->app->afterResolving(Contracts\TransactionManager::class,
+            function (Contracts\TransactionManager $transaction) {
+                $transaction->enableAutoCommit($this->app['config']['accounting.auto_commit_transactions']);
+            }
+        );
+
         $this->app->bind(Support\AccountLocator::class, function () {
             return new Support\AccountLocator(
                 $this->app->make(Support\AccountOwnerLocator::class),

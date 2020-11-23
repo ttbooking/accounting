@@ -39,6 +39,9 @@ class TransactionManager implements Contracts\TransactionManager
     /** @var Repository */
     protected Repository $config;
 
+    /** @var bool */
+    protected bool $autoCommit = false;
+
     /**
      * TransactionManager constructor.
      *
@@ -53,6 +56,16 @@ class TransactionManager implements Contracts\TransactionManager
         $this->ledger = $ledger;
         $this->locator = $locator;
         $this->config = $config;
+    }
+
+    public function enableAutoCommit(bool $autoCommit = true): void
+    {
+        $this->autoCommit = $autoCommit;
+    }
+
+    public function isAutoCommitEnabled(): bool
+    {
+        return $this->autoCommit;
     }
 
     public function getTable(): string
@@ -152,7 +165,7 @@ class TransactionManager implements Contracts\TransactionManager
         ] + $addendum), function (Transaction $transaction) use ($origin, $destination) {
             $origin instanceof Model && $transaction->origin()->associate($origin);
             $destination instanceof Model && $transaction->destination()->associate($destination);
-            $this->config->get('accounting.auto_commit_transactions') && $transaction->commit();
+            $this->autoCommit && $transaction->commit();
         });
     }
 
