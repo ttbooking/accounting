@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting\Console;
 
-use Illuminate\Console\Command;
 use TTBooking\Accounting\Contracts\Ledger;
 use TTBooking\Accounting\Contracts\Transaction;
 use TTBooking\Accounting\Contracts\TransactionManager;
 
-class TransactionRevertCommand extends Command
+class TransactionRevertCommand extends AccountingCommand
 {
     /**
      * The name and signature of the console command.

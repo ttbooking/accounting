@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace TTBooking\Accounting\Console;
 
-use Illuminate\Console\Command;
 use Illuminate\Contracts\Events\Dispatcher;
 use TTBooking\Accounting\Contracts\TransactionManager;
 
-class TransactionCancelCommand extends Command
+class TransactionCancelCommand extends AccountingCommand
 {
     /**
      * The name and signature of the console command.

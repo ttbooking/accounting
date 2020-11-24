@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace TTBooking\Accounting\Console;
 
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use TTBooking\Accounting\Models\Transaction;
 
-class TransactionRehashCommand extends Command
+class TransactionRehashCommand extends AccountingCommand
 {
     /**
      * The name and signature of the console command.
