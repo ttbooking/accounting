@@ -103,6 +103,15 @@ interface TransactionManager
     public function get(string $uuid): Transaction;
 
     /**
+     * Retrieve last transaction.
+     *
+     * @throws TransactionNotFoundException
+     *
+     * @return Transaction
+     */
+    public function last(): Transaction;
+
+    /**
      * Retrieve all transactions.
      *
      * @param bool $descending

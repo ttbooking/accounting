@@ -36,7 +36,7 @@ interface Transaction extends Jsonable
 
     public function getDestinationAmount(): Money;
 
-    public function getPayload(): ?array;
+    public function getPayload(string $key = null, $default = null);
 
     public function getStatus(): int;
 
