@@ -105,11 +105,9 @@ interface TransactionManager
     /**
      * Retrieve last transaction.
      *
-     * @throws TransactionNotFoundException
-     *
-     * @return Transaction
+     * @return Transaction|null
      */
-    public function last(): Transaction;
+    public function last(): ?Transaction;
 
     /**
      * Retrieve all transactions.

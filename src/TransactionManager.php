@@ -192,17 +192,11 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve last transaction.
      *
-     * @throws TransactionNotFoundException
-     *
-     * @return Transaction|Model
+     * @return Transaction|Model|null
      */
-    public function last(): Transaction
+    public function last(): ?Transaction
     {
-        try {
-            return Transaction::query()->latest()->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            throw new TransactionNotFoundException('Transaction not found.', $e->getCode(), $e);
-        }
+        return Transaction::query()->latest()->first();
     }
 
     /**
