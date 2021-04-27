@@ -15,12 +15,12 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
-        "illuminate/contracts": "^7.0|^8.0",
-        "illuminate/database": "^7.0|^8.0",
-        "illuminate/support": "^7.0|^8.0",
+        "php": "^7.4 || ^8.0",
+        "illuminate/contracts": "^7.30.4 || ^8.24.0",
+        "illuminate/database": "^7.30.4 || ^8.24.0",
+        "illuminate/support": "^7.30.4 || ^8.24.0",
         "moneyphp/money": "^3.2",
-        "ramsey/uuid": "^3.7|^4.0",
+        "ramsey/uuid": "^3.7 || ^4.0",
         "ttbooking/castable-money": "^1.0",
         "ttbooking/class-factory": "^1.0",
         "ttbooking/entity-locator": "*",
@@ -29,12 +29,12 @@
         "ttbooking/safe-money-parser": "^1.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^5.0|^6.0|^7.0",
-        "phpunit/phpunit": "^8.4|^9.0"
+        "orchestra/testbench": "^5.0 || ^6.0",
+        "phpunit/phpunit": "^8.4 || ^9.0"
     },
     "suggest": {
-        "illuminate/events": "Required to utilize transaction events (^7.0|^8.0).",
-        "illuminate/console": "Required to control cash flow via console commands (^7.0|^8.0)."
+        "illuminate/events": "Required to utilize transaction events (^7.30.4 || ^8.24.0).",
+        "illuminate/console": "Required to control cash flow via console commands (^7.30.4 || ^8.24.0)."
     },
     "autoload": {
         "psr-4": {
