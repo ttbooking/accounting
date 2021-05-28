@@ -16,9 +16,9 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "illuminate/contracts": "^7.30.4 || ^8.24.0",
-        "illuminate/database": "^7.30.4 || ^8.24.0",
-        "illuminate/support": "^7.30.4 || ^8.24.0",
+        "illuminate/contracts": "^7.30.4 || ^8.40.0",
+        "illuminate/database": "^7.30.4 || ^8.40.0",
+        "illuminate/support": "^7.30.4 || ^8.40.0",
         "moneyphp/money": "^3.2",
         "ramsey/uuid": "^3.7 || ^4.0",
         "ttbooking/castable-money": "^1.0",
@@ -33,8 +33,8 @@
         "phpunit/phpunit": "^8.4 || ^9.0"
     },
     "suggest": {
-        "illuminate/events": "Required to utilize transaction events (^7.30.4 || ^8.24.0).",
-        "illuminate/console": "Required to control cash flow via console commands (^7.30.4 || ^8.24.0)."
+        "illuminate/events": "Required to utilize transaction events (^7.30.4 || ^8.40.0).",
+        "illuminate/console": "Required to control cash flow via console commands (^7.30.4 || ^8.40.0)."
     },
     "autoload": {
         "psr-4": {
