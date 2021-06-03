@@ -12,9 +12,9 @@ use Money\Converter;
 use Money\Currency;
 use Money\Money;
 use Money\MoneyFormatter;
+use Money\MoneyParser;
 use TTBooking\ClassFactory\ClassFactoryException;
 use TTBooking\MoneySerializer\Contracts\SerializesMoney;
-use TTBooking\SafeMoneyParser\SafeMoneyParser;
 
 class Ledger implements Contracts\Ledger
 {
@@ -30,8 +30,8 @@ class Ledger implements Contracts\Ledger
     /** @var MoneyFormatter|null */
     protected ?MoneyFormatter $formatter;
 
-    /** @var SafeMoneyParser|null */
-    protected ?SafeMoneyParser $parser;
+    /** @var MoneyParser|null */
+    protected ?MoneyParser $parser;
 
     /** @var Converter|null */
     protected ?Converter $converter;
@@ -46,7 +46,7 @@ class Ledger implements Contracts\Ledger
      * @param DatabaseManager $db
      * @param SerializesMoney $serializer
      * @param MoneyFormatter|null $formatter
-     * @param SafeMoneyParser|null $parser
+     * @param MoneyParser|null $parser
      * @param Converter|null $converter
      * @param Dispatcher|null $dispatcher
      */
@@ -55,7 +55,7 @@ class Ledger implements Contracts\Ledger
         DatabaseManager $db,
         SerializesMoney $serializer,
         MoneyFormatter $formatter = null,
-        SafeMoneyParser $parser = null,
+        MoneyParser $parser = null,
         Converter $converter = null,
         Dispatcher $dispatcher = null
     ) {

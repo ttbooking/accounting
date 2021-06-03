@@ -7,10 +7,11 @@ namespace TTBooking\Accounting\Support;
 use Money\Currencies;
 use Money\Currency;
 use Money\Exception\ParserException;
+use Money\Money;
+use Money\MoneyParser;
 use Money\Parser\DecimalMoneyParser;
-use TTBooking\SafeMoneyParser\SafeMoneyParser;
 
-class ExtendedDecimalMoneyParser implements SafeMoneyParser
+class ExtendedDecimalMoneyParser implements MoneyParser
 {
     const PREFIXED_CURRENCY_PATTERN = '/^(?P<currency>[A-Za-z]{3})? ?(?P<decimal>-?(?:0|[1-9]\d*)?\.?\d+?)$/';
 
@@ -27,12 +28,8 @@ class ExtendedDecimalMoneyParser implements SafeMoneyParser
         $this->parser = new DecimalMoneyParser($currencies);
     }
 
-    public function parse($money, $fallbackCurrency = null)
+    public function parse(string $money, Currency $fallbackCurrency = null): Money
     {
-        if (! is_string($money)) {
-            throw new ParserException('Formatted raw money should be string, e.g. USD1.00');
-        }
-
         $money = trim($money);
 
         if (! preg_match(self::PREFIXED_CURRENCY_PATTERN, $money, $matches) &&

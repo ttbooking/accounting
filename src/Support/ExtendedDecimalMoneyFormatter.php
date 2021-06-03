@@ -22,7 +22,7 @@ class ExtendedDecimalMoneyFormatter implements MoneyFormatter
         $this->formatter = new DecimalMoneyFormatter($currencies);
     }
 
-    public function format(Money $money)
+    public function format(Money $money): string
     {
         return $money->getCurrency()->getCode().$this->formatter->format($money);
     }
