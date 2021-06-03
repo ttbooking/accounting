@@ -6,6 +6,7 @@ namespace TTBooking\Accounting\Support;
 
 use Money\Currencies;
 use Money\Currency;
+use Traversable;
 
 class PreciseCurrencies implements Currencies
 {
@@ -27,17 +28,17 @@ class PreciseCurrencies implements Currencies
         $this->precision = $precision;
     }
 
-    public function contains(Currency $currency)
+    public function contains(Currency $currency): bool
     {
         return $this->currencies->contains($currency);
     }
 
-    public function subunitFor(Currency $currency)
+    public function subunitFor(Currency $currency): int
     {
         return $this->currencies->subunitFor($currency) + $this->precision;
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return $this->currencies->getIterator();
     }
