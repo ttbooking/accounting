@@ -177,10 +177,9 @@ class Transaction extends Model implements TransactionContract
     /**
      * Scope all transactions with given status.
      *
-     * @param Builder $query
-     * @param int $status
-     * @param string $direction
-     *
+     * @param  Builder  $query
+     * @param  int  $status
+     * @param  string  $direction
      * @return Builder
      */
     public function scopeWithStatus(Builder $query, int $status, string $direction = 'asc')
@@ -191,9 +190,8 @@ class Transaction extends Model implements TransactionContract
     /**
      * Scope all uncommitted transactions.
      *
-     * @param Builder $query
-     * @param string $direction
-     *
+     * @param  Builder  $query
+     * @param  string  $direction
      * @return Builder
      */
     public function scopeUncommitted(Builder $query, string $direction = 'asc')
@@ -204,9 +202,8 @@ class Transaction extends Model implements TransactionContract
     /**
      * Scope all committed transactions.
      *
-     * @param Builder $query
-     * @param string $direction
-     *
+     * @param  Builder  $query
+     * @param  string  $direction
      * @return Builder
      */
     public function scopeCommitted(Builder $query, string $direction = 'asc')
@@ -217,9 +214,8 @@ class Transaction extends Model implements TransactionContract
     /**
      * Scope all canceled transactions.
      *
-     * @param Builder $query
-     * @param string $direction
-     *
+     * @param  Builder  $query
+     * @param  string  $direction
      * @return Builder
      */
     public function scopeCanceled(Builder $query, string $direction = 'asc')
@@ -230,9 +226,8 @@ class Transaction extends Model implements TransactionContract
     /**
      * Scope all revertable transactions.
      *
-     * @param Builder $query
-     * @param string $direction
-     *
+     * @param  Builder  $query
+     * @param  string  $direction
      * @return Builder
      */
     public function scopeRevertable(Builder $query, string $direction = 'asc')
@@ -429,8 +424,7 @@ class Transaction extends Model implements TransactionContract
     }
 
     /**
-     * @param Closure $callback
-     *
+     * @param  Closure  $callback
      * @return mixed
      */
     protected function transact(Closure $callback)
@@ -451,7 +445,7 @@ class Transaction extends Model implements TransactionContract
     /**
      * Set transaction status.
      *
-     * @param int $status
+     * @param  int  $status
      */
     protected function setStatus(int $status): void
     {
@@ -462,7 +456,7 @@ class Transaction extends Model implements TransactionContract
     /**
      * Check transaction status before operation.
      *
-     * @param int $status
+     * @param  int  $status
      *
      * @throws Exceptions\TransactionStatusMismatchException
      */
@@ -476,7 +470,7 @@ class Transaction extends Model implements TransactionContract
     /**
      * Verify transaction status after operation.
      *
-     * @param Throwable|null $e
+     * @param  Throwable|null  $e
      *
      * @throws Exceptions\TransactionException
      */
@@ -508,8 +502,7 @@ class Transaction extends Model implements TransactionContract
     }
 
     /**
-     * @param string $event
-     *
+     * @param  string  $event
      * @return string
      */
     protected function buildEvent(string $event): string

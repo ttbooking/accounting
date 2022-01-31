@@ -37,16 +37,15 @@ interface Account extends Reportable
     /**
      * Transfer money to another account.
      *
-     * @param Account $destination
-     * @param Money $amount
-     * @param array|null $payload
+     * @param  Account  $destination
+     * @param  Money  $amount
+     * @param  array|null  $payload
+     * @return Transaction
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
      * @throws TransactionNegativeAmountException
      * @throws TransactionCreateAbortedException
-     *
-     * @return Transaction
      */
     public function transferMoney(self $destination, Money $amount, array $payload = null): Transaction;
 }

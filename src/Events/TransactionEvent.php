@@ -15,7 +15,7 @@ abstract class TransactionEvent implements TransactionEventContract
     /**
      * Create a new event instance.
      *
-     * @param Transaction $transaction
+     * @param  Transaction  $transaction
      */
     public function __construct(Transaction $transaction)
     {

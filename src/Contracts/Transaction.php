@@ -53,9 +53,9 @@ interface Transaction extends Jsonable
     public function isRevertTransaction(): bool;
 
     /**
-     * @throws TransactionException
-     *
      * @return $this
+     *
+     * @throws TransactionException
      */
     public function commit(): self;
 
@@ -65,11 +65,10 @@ interface Transaction extends Jsonable
     public function cancel(): self;
 
     /**
-     * @param Money|null $amount
+     * @param  Money|null  $amount
+     * @return static
      *
      * @throws TransactionException
-     *
-     * @return static
      */
     public function revert(Money $amount = null): self;
 }

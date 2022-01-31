@@ -12,8 +12,7 @@ use TTBooking\Accounting\Facades\Ledger;
 abstract class AccountingCommand extends Command
 {
     /**
-     * @param Dispatcher $dispatcher
-     *
+     * @param  Dispatcher  $dispatcher
      * @return void
      */
     protected function registerEventAnnouncers(Dispatcher $dispatcher)

@@ -22,8 +22,8 @@ class AccountPair implements AccountPairContract
     /**
      * AccountPair constructor.
      *
-     * @param Account $origin
-     * @param Account $destination
+     * @param  Account  $origin
+     * @param  Account  $destination
      */
     public function __construct(Account $origin, Account $destination)
     {

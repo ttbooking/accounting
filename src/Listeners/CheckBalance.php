@@ -15,7 +15,7 @@ class CheckBalance
     /**
      * Create the event listener.
      *
-     * @param Ledger $ledger
+     * @param  Ledger  $ledger
      */
     public function __construct(Ledger $ledger)
     {
@@ -25,8 +25,7 @@ class CheckBalance
     /**
      * Handle the event.
      *
-     * @param TransactionCommitting $event
-     *
+     * @param  TransactionCommitting  $event
      * @return bool
      */
     public function handle(TransactionCommitting $event)

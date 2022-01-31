@@ -19,8 +19,8 @@ class PreciseCurrencies implements Currencies
     /**
      * PreciseCurrencies constructor.
      *
-     * @param Currencies $currencies
-     * @param int $precision
+     * @param  Currencies  $currencies
+     * @param  int  $precision
      */
     public function __construct(Currencies $currencies, int $precision = 0)
     {

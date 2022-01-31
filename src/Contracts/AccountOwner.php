@@ -21,12 +21,11 @@ interface AccountOwner
     public function accounts(): MorphMany;
 
     /**
-     * @param string|null $type
-     * @param Currency|null $currency
+     * @param  string|null  $type
+     * @param  Currency|null  $currency
+     * @return Account
      *
      * @throws AccountNotFoundException
-     *
-     * @return Account
      */
     public function getAccount(string $type = null, Currency $currency = null): Account;
 }

@@ -32,11 +32,10 @@ class TransactionCreateCommand extends AccountingCommand
     /**
      * Execute the console command.
      *
-     * @param TransactionManager $transaction
-     * @param AccountManager $account
-     * @param Ledger $ledger
-     * @param Dispatcher|null $dispatcher
-     *
+     * @param  TransactionManager  $transaction
+     * @param  AccountManager  $account
+     * @param  Ledger  $ledger
+     * @param  Dispatcher|null  $dispatcher
      * @return void
      */
     public function handle(TransactionManager $transaction, AccountManager $account, Ledger $ledger, Dispatcher $dispatcher = null)

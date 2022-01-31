@@ -21,7 +21,7 @@ class ExtendedDecimalMoneyParser implements MoneyParser
     protected DecimalMoneyParser $parser;
 
     /**
-     * @param Currencies $currencies
+     * @param  Currencies  $currencies
      */
     public function __construct(Currencies $currencies)
     {

@@ -11,9 +11,8 @@ class Builder extends EloquentBuilder
     /**
      * Set the relationships that should be eager loaded and locked.
      *
-     * @param bool $lock
-     * @param mixed ...$relations
-     *
+     * @param  bool  $lock
+     * @param  mixed  ...$relations
      * @return $this
      */
     public function withLocked($lock = true, ...$relations)

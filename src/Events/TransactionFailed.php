@@ -16,8 +16,8 @@ class TransactionFailed extends TransactionEvent implements TransactionFailedCon
     /**
      * Create a new event instance.
      *
-     * @param Transaction $transaction
-     * @param Throwable|null $exception
+     * @param  Transaction  $transaction
+     * @param  Throwable|null  $exception
      */
     public function __construct(Transaction $transaction, Throwable $exception = null)
     {

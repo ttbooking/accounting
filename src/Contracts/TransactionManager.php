@@ -20,8 +20,7 @@ interface TransactionManager
     /**
      * Enable or disable transaction auto commit.
      *
-     * @param bool $autoCommit
-     *
+     * @param  bool  $autoCommit
      * @return $this
      */
     public function enableAutoCommit(bool $autoCommit = true): self;
@@ -50,9 +49,8 @@ interface TransactionManager
     /**
      * Choose default currency for transaction.
      *
-     * @param Account $origin
-     * @param Account $destination
-     *
+     * @param  Account  $origin
+     * @param  Account  $destination
      * @return Currency
      */
     public function currency(Account $origin, Account $destination): Currency;
@@ -60,9 +58,8 @@ interface TransactionManager
     /**
      * Calculate digest for the current transaction.
      *
-     * @param Transaction $current
-     * @param string|null $previousDigest
-     *
+     * @param  Transaction  $current
+     * @param  string|null  $previousDigest
      * @return string
      */
     public function digest(Transaction $current, string $previousDigest = null): string;
@@ -70,18 +67,17 @@ interface TransactionManager
     /**
      * Create new transaction.
      *
-     * @param Account $origin
-     * @param Account $destination
-     * @param Money $amount
-     * @param array|null $payload
-     * @param Transaction|null $parent
+     * @param  Account  $origin
+     * @param  Account  $destination
+     * @param  Money  $amount
+     * @param  array|null  $payload
+     * @param  Transaction|null  $parent
+     * @return Transaction
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
      * @throws TransactionNegativeAmountException
      * @throws TransactionCreateAbortedException
-     *
-     * @return Transaction
      */
     public function create(
         Account $origin,
@@ -94,11 +90,10 @@ interface TransactionManager
     /**
      * Retrieve transaction by its Universally Unique Identifier (UUID).
      *
-     * @param string $uuid
+     * @param  string  $uuid
+     * @return Transaction
      *
      * @throws TransactionNotFoundException
-     *
-     * @return Transaction
      */
     public function get(string $uuid): Transaction;
 
@@ -112,8 +107,7 @@ interface TransactionManager
     /**
      * Retrieve all transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return Enumerable|Transaction[]
      */
     public function all(bool $descending = false): Enumerable;
@@ -121,8 +115,7 @@ interface TransactionManager
     /**
      * Retrieve all uncommitted transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return Enumerable|Transaction[]
      */
     public function uncommitted(bool $descending = false): Enumerable;
@@ -130,8 +123,7 @@ interface TransactionManager
     /**
      * Retrieve all committed transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return Enumerable|Transaction[]
      */
     public function committed(bool $descending = false): Enumerable;
@@ -139,8 +131,7 @@ interface TransactionManager
     /**
      * Retrieve all canceled transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return Enumerable|Transaction[]
      */
     public function canceled(bool $descending = false): Enumerable;
@@ -148,8 +139,7 @@ interface TransactionManager
     /**
      * Retrieve all revertable transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return Enumerable|Transaction[]
      */
     public function revertable(bool $descending = false): Enumerable;
@@ -157,11 +147,10 @@ interface TransactionManager
     /**
      * Retrieve transaction by its address.
      *
-     * @param mixed $address
+     * @param  mixed  $address
+     * @return Transaction
      *
      * @throws TransactionNotFoundException
-     *
-     * @return Transaction
      */
     public function locate($address): Transaction;
 
@@ -170,8 +159,7 @@ interface TransactionManager
     /**
      * Total amount of money transfers.
      *
-     * @param DateTimeInterface|null $byDate
-     *
+     * @param  DateTimeInterface|null  $byDate
      * @return Money
      */
     public function total(DateTimeInterface $byDate = null): Money;
@@ -179,8 +167,7 @@ interface TransactionManager
     /**
      * Money amounts debited per account.
      *
-     * @param DateTimeInterface|null $byDate
-     *
+     * @param  DateTimeInterface|null  $byDate
      * @return Collection|Money[]
      */
     public function incomePerAccount(DateTimeInterface $byDate = null): Collection;
@@ -188,8 +175,7 @@ interface TransactionManager
     /**
      * Money amounts credited per account.
      *
-     * @param DateTimeInterface|null $byDate
-     *
+     * @param  DateTimeInterface|null  $byDate
      * @return Collection|Money[]
      */
     public function expensePerAccount(DateTimeInterface $byDate = null): Collection;
@@ -197,8 +183,7 @@ interface TransactionManager
     /**
      * Money balance per account.
      *
-     * @param DateTimeInterface|null $byDate
-     *
+     * @param  DateTimeInterface|null  $byDate
      * @return Collection|Money[]
      */
     public function totalPerAccount(DateTimeInterface $byDate = null): Collection;

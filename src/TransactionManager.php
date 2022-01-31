@@ -45,10 +45,10 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * TransactionManager constructor.
      *
-     * @param DatabaseManager $db
-     * @param Ledger $ledger
-     * @param EntityLocator $locator
-     * @param Repository $config
+     * @param  DatabaseManager  $db
+     * @param  Ledger  $ledger
+     * @param  EntityLocator  $locator
+     * @param  Repository  $config
      */
     public function __construct(DatabaseManager $db, Ledger $ledger, EntityLocator $locator, Repository $config)
     {
@@ -88,9 +88,8 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Choose default currency for transaction.
      *
-     * @param Account $origin
-     * @param Account $destination
-     *
+     * @param  Account  $origin
+     * @param  Account  $destination
      * @return Currency
      */
     public function currency(Account $origin, Account $destination): Currency
@@ -118,18 +117,17 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Create new transaction.
      *
-     * @param Account $origin
-     * @param Account $destination
-     * @param Money $amount
-     * @param array|null $payload
-     * @param TransactionContract|null $parent
+     * @param  Account  $origin
+     * @param  Account  $destination
+     * @param  Money  $amount
+     * @param  array|null  $payload
+     * @param  TransactionContract|null  $parent
+     * @return Transaction|Model
      *
      * @throws TransactionIdenticalEndpointsException
      * @throws TransactionZeroTransferException
      * @throws TransactionNegativeAmountException
      * @throws TransactionCreateAbortedException
-     *
-     * @return Transaction|Model
      */
     public function create(
         Account $origin,
@@ -174,11 +172,10 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve transaction by its Universally Unique Identifier (UUID).
      *
-     * @param string $uuid
+     * @param  string  $uuid
+     * @return Transaction|Model
      *
      * @throws TransactionNotFoundException
-     *
-     * @return Transaction|Model
      */
     public function get(string $uuid): Transaction
     {
@@ -202,8 +199,7 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve all transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return LazyCollection|Transaction[]
      */
     public function all(bool $descending = false): LazyCollection
@@ -214,8 +210,7 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve all uncommitted transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return LazyCollection|Transaction[]
      */
     public function uncommitted(bool $descending = false): LazyCollection
@@ -226,8 +221,7 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve all committed transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return LazyCollection|Transaction[]
      */
     public function committed(bool $descending = false): LazyCollection
@@ -238,8 +232,7 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve all canceled transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return LazyCollection|Transaction[]
      */
     public function canceled(bool $descending = false): LazyCollection
@@ -250,8 +243,7 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve all revertable transactions.
      *
-     * @param bool $descending
-     *
+     * @param  bool  $descending
      * @return LazyCollection|Transaction[]
      */
     public function revertable(bool $descending = false): LazyCollection
@@ -262,11 +254,10 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Retrieve transaction by its address.
      *
-     * @param mixed $address
+     * @param  mixed  $address
+     * @return Transaction|object
      *
      * @throws TransactionNotFoundException
-     *
-     * @return Transaction|object
      */
     public function locate($address): Transaction
     {
@@ -319,9 +310,8 @@ class TransactionManager implements Contracts\TransactionManager
     /**
      * Money amounts debited or credited per account.
      *
-     * @param bool $income
-     * @param DateTimeInterface|null $byDate
-     *
+     * @param  bool  $income
+     * @param  DateTimeInterface|null  $byDate
      * @return Collection|Money[]
      */
     protected function incomeOrExpensePerAccount(bool $income, DateTimeInterface $byDate = null): Collection

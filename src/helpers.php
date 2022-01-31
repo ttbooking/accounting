@@ -11,11 +11,10 @@ use TTBooking\Accounting\Facades\Transaction;
 
 if (! function_exists('transfer_money')) {
     /**
-     * @param AccountContract|string $from
-     * @param AccountContract|string $to
-     * @param Money|string $amount
-     * @param array|null $payload
-     *
+     * @param  AccountContract|string  $from
+     * @param  AccountContract|string  $to
+     * @param  Money|string  $amount
+     * @param  array|null  $payload
      * @return TransactionContract
      */
     function transfer_money($from, $to, $amount, array $payload = null): TransactionContract

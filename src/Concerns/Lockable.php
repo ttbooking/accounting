@@ -12,9 +12,8 @@ trait Lockable
     /**
      * Eager load relations on the model and lock them.
      *
-     * @param bool $lock
-     * @param mixed ...$relations
-     *
+     * @param  bool  $lock
+     * @param  mixed  ...$relations
      * @return $this
      */
     public function loadLocked($lock = true, ...$relations)
@@ -33,8 +32,7 @@ trait Lockable
     /**
      * Create a new custom Eloquent query builder for the model.
      *
-     * @param QueryBuilder $query
-     *
+     * @param  QueryBuilder  $query
      * @return Builder|static
      */
     public function newEloquentBuilder($query)
@@ -45,9 +43,8 @@ trait Lockable
     /**
      * Reload the current model instance with fresh attributes from the database and lock it and its chosen relations.
      *
-     * @param bool $lock
-     * @param mixed ...$with
-     *
+     * @param  bool  $lock
+     * @param  mixed  ...$with
      * @return $this
      */
     public function refreshLocked($lock = true, ...$with)
@@ -74,8 +71,7 @@ trait Lockable
     /**
      * Reload the current model and its chosen relations and lock them for updating.
      *
-     * @param mixed ...$with
-     *
+     * @param  mixed  ...$with
      * @return $this
      */
     public function refreshForUpdate(...$with)
@@ -86,8 +82,7 @@ trait Lockable
     /**
      * Reload and share lock the current model and its chosen relations.
      *
-     * @param mixed ...$with
-     *
+     * @param  mixed  ...$with
      * @return $this
      */
     public function refreshShared(...$with)

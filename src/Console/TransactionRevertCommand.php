@@ -30,9 +30,8 @@ class TransactionRevertCommand extends AccountingCommand
     /**
      * Execute the console command.
      *
-     * @param TransactionManager $manager
-     * @param Ledger $ledger
-     *
+     * @param  TransactionManager  $manager
+     * @param  Ledger  $ledger
      * @return void
      */
     public function handle(TransactionManager $manager, Ledger $ledger)

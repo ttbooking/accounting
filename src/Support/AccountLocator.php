@@ -30,11 +30,11 @@ class AccountLocator implements EntityLocator
     /**
      * AccountLocator constructor.
      *
-     * @param AccountOwnerLocator $locator
-     * @param string $defaultOwnerType
-     * @param string $defaultAccountType
-     * @param Currency $defaultAccountCurrency
-     * @param string $delimiter
+     * @param  AccountOwnerLocator  $locator
+     * @param  string  $defaultOwnerType
+     * @param  string  $defaultAccountType
+     * @param  Currency  $defaultAccountCurrency
+     * @param  string  $delimiter
      */
     public function __construct(
         AccountOwnerLocator $locator,
@@ -73,7 +73,7 @@ class AccountLocator implements EntityLocator
     }
 
     /**
-     * @param string $address
+     * @param  string  $address
      * @return string[]
      */
     private function bareAddr(string $address)

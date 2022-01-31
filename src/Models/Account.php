@@ -175,16 +175,15 @@ class Account extends Model implements AccountContract
     /**
      * Transfer money to another account.
      *
-     * @param AccountContract $destination
-     * @param Money $amount
-     * @param array|null $payload
+     * @param  AccountContract  $destination
+     * @param  Money  $amount
+     * @param  array|null  $payload
+     * @return Transaction
      *
      * @throws Exceptions\TransactionIdenticalEndpointsException
      * @throws Exceptions\TransactionZeroTransferException
      * @throws Exceptions\TransactionNegativeAmountException
      * @throws Exceptions\TransactionCreateAbortedException
-     *
-     * @return Transaction
      */
     public function transferMoney(AccountContract $destination, Money $amount, array $payload = null): Transaction
     {
@@ -237,8 +236,7 @@ class Account extends Model implements AccountContract
     }
 
     /**
-     * @param string $event
-     *
+     * @param  string  $event
      * @return string
      */
     protected function buildEvent(string $event): string

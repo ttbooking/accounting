@@ -16,7 +16,7 @@ class AccountOwnerLocator implements EntityLocator
     /**
      * AccountOwnerLocator constructor.
      *
-     * @param EntityLocator $locator
+     * @param  EntityLocator  $locator
      */
     public function __construct(EntityLocator $locator)
     {

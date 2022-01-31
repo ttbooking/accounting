@@ -11,8 +11,7 @@ class ConstraintRevert
     /**
      * Handle the event.
      *
-     * @param TransactionCommitting $event
-     *
+     * @param  TransactionCommitting  $event
      * @return bool|null
      */
     public function handle(TransactionCommitting $event)

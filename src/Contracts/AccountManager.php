@@ -23,54 +23,49 @@ interface AccountManager
     /**
      * Create new account or retrieve one if it exists.
      *
-     * @param AccountOwner $owner
-     * @param string|null $type
-     * @param Currency|null $currency
+     * @param  AccountOwner  $owner
+     * @param  string|null  $type
+     * @param  Currency|null  $currency
+     * @return Account
      *
      * @throws AccountCreateAbortedException
-     *
-     * @return Account
      */
     public function create(AccountOwner $owner, string $type = null, Currency $currency = null): Account;
 
     /**
      * Find account by its owner, type and currency.
      *
-     * @param AccountOwner $owner
-     * @param string|null $type
-     * @param Currency|null $currency
+     * @param  AccountOwner  $owner
+     * @param  string|null  $type
+     * @param  Currency|null  $currency
+     * @return Account
      *
      * @throws AccountNotFoundException
-     *
-     * @return Account
      */
     public function find(AccountOwner $owner, string $type = null, Currency $currency = null): Account;
 
     /**
      * Retrieve account by its Universally Unique Identifier (UUID).
      *
-     * @param string $uuid
+     * @param  string  $uuid
+     * @return Account
      *
      * @throws AccountCreateAbortedException
      * @throws AccountNotFoundException
-     *
-     * @return Account
      */
     public function get(string $uuid): Account;
 
     /**
      * Retrieve all existing accounts, or all accounts belonging to a single owner.
      *
-     * @param AccountOwner|null $owner
-     *
+     * @param  AccountOwner|null  $owner
      * @return Enumerable|Account[]
      */
     public function all(AccountOwner $owner = null): Enumerable;
 
     /**
-     * @param Account $origin
-     * @param Account $destination
-     *
+     * @param  Account  $origin
+     * @param  Account  $destination
      * @return AccountPair
      */
     public function pair(Account $origin, Account $destination): AccountPair;
@@ -78,11 +73,10 @@ interface AccountManager
     /**
      * Retrieve account by its address.
      *
-     * @param mixed $address
+     * @param  mixed  $address
+     * @return Account
      *
      * @throws AccountNotFoundException
-     *
-     * @return Account
      */
     public function locate($address): Account;
 
@@ -107,8 +101,7 @@ interface AccountManager
     /**
      * Check validity of cached balance for all accounts.
      *
-     * @param bool $aggressive
-     *
+     * @param  bool  $aggressive
      * @return bool
      */
     public function isValid(bool $aggressive = false): bool;

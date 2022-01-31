@@ -16,6 +16,7 @@ use TTBooking\Accounting\Models\Account as AccountModel;
  * Trait HasAccounts.
  *
  * @mixin Model
+ *
  * @property Collection|AccountModel[] $accounts
  */
 trait HasAccounts
@@ -29,12 +30,11 @@ trait HasAccounts
     }
 
     /**
-     * @param string|null $type
-     * @param Currency|null $currency
+     * @param  string|null  $type
+     * @param  Currency|null  $currency
+     * @return AccountModel|Model
      *
      * @throws AccountNotFoundException
-     *
-     * @return AccountModel|Model
      */
     public function getAccount(string $type = null, Currency $currency = null): AccountModel
     {

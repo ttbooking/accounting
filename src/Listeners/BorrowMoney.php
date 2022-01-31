@@ -20,8 +20,8 @@ class BorrowMoney
     /**
      * Create the event listener.
      *
-     * @param AccountManager $account
-     * @param Ledger $ledger
+     * @param  AccountManager  $account
+     * @param  Ledger  $ledger
      */
     public function __construct(AccountManager $account, Ledger $ledger)
     {
@@ -32,8 +32,7 @@ class BorrowMoney
     /**
      * Handle the event.
      *
-     * @param TransactionCommitting $event
-     *
+     * @param  TransactionCommitting  $event
      * @return void
      */
     public function handle(TransactionCommitting $event)

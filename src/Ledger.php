@@ -42,13 +42,13 @@ class Ledger implements Contracts\Ledger
     /**
      * Ledger constructor.
      *
-     * @param Repository $config
-     * @param DatabaseManager $db
-     * @param SerializesMoney $serializer
-     * @param MoneyFormatter|null $formatter
-     * @param MoneyParser|null $parser
-     * @param Converter|null $converter
-     * @param Dispatcher|null $dispatcher
+     * @param  Repository  $config
+     * @param  DatabaseManager  $db
+     * @param  SerializesMoney  $serializer
+     * @param  MoneyFormatter|null  $formatter
+     * @param  MoneyParser|null  $parser
+     * @param  Converter|null  $converter
+     * @param  Dispatcher|null  $dispatcher
      */
     public function __construct(
         Repository $config,

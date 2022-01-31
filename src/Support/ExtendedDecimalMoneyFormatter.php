@@ -15,7 +15,7 @@ class ExtendedDecimalMoneyFormatter implements MoneyFormatter
     protected DecimalMoneyFormatter $formatter;
 
     /**
-     * @param Currencies $currencies
+     * @param  Currencies  $currencies
      */
     public function __construct(Currencies $currencies)
     {

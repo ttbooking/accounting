@@ -27,9 +27,8 @@ class TransactionCommitCommand extends AccountingCommand
     /**
      * Execute the console command.
      *
-     * @param TransactionManager $manager
-     * @param Dispatcher|null $dispatcher
-     *
+     * @param  TransactionManager  $manager
+     * @param  Dispatcher|null  $dispatcher
      * @return void
      */
     public function handle(TransactionManager $manager, Dispatcher $dispatcher = null)

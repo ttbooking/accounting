@@ -39,8 +39,7 @@ class ExtensionLoader
     /**
      * Create a new ExtensionLoader instance.
      *
-     * @param array $events
-     *
+     * @param  array  $events
      * @return void
      */
     private function __construct(array $events)
@@ -51,8 +50,7 @@ class ExtensionLoader
     /**
      * Get or create the singleton event loader instance.
      *
-     * @param array $events
-     *
+     * @param  array  $events
      * @return static
      */
     public static function getInstance(array $events = [])
@@ -71,8 +69,7 @@ class ExtensionLoader
     /**
      * Load a class alias if it is registered.
      *
-     * @param string $alias
-     *
+     * @param  string  $alias
      * @return bool|null
      */
     public function load(string $alias): ?bool
@@ -89,8 +86,7 @@ class ExtensionLoader
     /**
      * Load a real-time event for the given alias.
      *
-     * @param string $alias
-     *
+     * @param  string  $alias
      * @return void
      */
     protected function loadEvent(string $alias): void
@@ -101,8 +97,7 @@ class ExtensionLoader
     /**
      * Ensure that the given alias has an existing real-time event class.
      *
-     * @param string $alias
-     *
+     * @param  string  $alias
      * @return string
      */
     protected function ensureEventExists(string $alias): string
@@ -121,9 +116,8 @@ class ExtensionLoader
     /**
      * Format the event stub with the proper namespace and class.
      *
-     * @param string $alias
-     * @param string $stub
-     *
+     * @param  string  $alias
+     * @param  string  $stub
      * @return string
      */
     protected function formatEventStub(string $alias, string $stub): string
@@ -146,9 +140,8 @@ class ExtensionLoader
     /**
      * Add an event to the loader.
      *
-     * @param string $event
-     * @param array $extends
-     *
+     * @param  string  $event
+     * @param  array  $extends
      * @return void
      */
     public function event($event, $extends): void
@@ -193,8 +186,7 @@ class ExtensionLoader
     /**
      * Set the registered events.
      *
-     * @param array $events
-     *
+     * @param  array  $events
      * @return void
      */
     public function setEvents(array $events): void
@@ -215,8 +207,7 @@ class ExtensionLoader
     /**
      * Set the "registered" state of the loader.
      *
-     * @param bool $value
-     *
+     * @param  bool  $value
      * @return void
      */
     public function setRegistered(bool $value): void
@@ -227,8 +218,7 @@ class ExtensionLoader
     /**
      * Set the real-time event namespace.
      *
-     * @param string $namespace
-     *
+     * @param  string  $namespace
      * @return void
      */
     public static function setEventNamespace(string $namespace): void
@@ -239,8 +229,7 @@ class ExtensionLoader
     /**
      * Set the value of the singleton event loader.
      *
-     * @param static $loader
-     *
+     * @param  static  $loader
      * @return void
      */
     public static function setInstance(self $loader): void

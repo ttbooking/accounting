@@ -39,10 +39,10 @@ class AccountManager implements Contracts\AccountManager
     /**
      * AccountManager constructor.
      *
-     * @param EntityLocator $locator
-     * @param TransactionManager $transaction
-     * @param Ledger $ledger
-     * @param Repository $config
+     * @param  EntityLocator  $locator
+     * @param  TransactionManager  $transaction
+     * @param  Ledger  $ledger
+     * @param  Repository  $config
      */
     public function __construct(
         EntityLocator $locator,
@@ -64,13 +64,12 @@ class AccountManager implements Contracts\AccountManager
     /**
      * Create new account or retrieve one if it exists.
      *
-     * @param AccountOwner $owner
-     * @param string|null $type
-     * @param Currency|null $currency
+     * @param  AccountOwner  $owner
+     * @param  string|null  $type
+     * @param  Currency|null  $currency
+     * @return Account|Model
      *
      * @throws AccountCreateAbortedException
-     *
-     * @return Account|Model
      */
     public function create(AccountOwner $owner, string $type = null, Currency $currency = null): Account
     {
@@ -80,14 +79,13 @@ class AccountManager implements Contracts\AccountManager
     /**
      * Find account by its owner, type and currency.
      *
-     * @param AccountOwner $owner
-     * @param string|null $type
-     * @param Currency|null $currency
+     * @param  AccountOwner  $owner
+     * @param  string|null  $type
+     * @param  Currency|null  $currency
+     * @return Account|Model
      *
      * @throws AccountCreateAbortedException
      * @throws AccountNotFoundException
-     *
-     * @return Account|Model
      */
     public function find(AccountOwner $owner, string $type = null, Currency $currency = null): Account
     {
@@ -105,11 +103,10 @@ class AccountManager implements Contracts\AccountManager
     /**
      * Retrieve account by its Universally Unique Identifier (UUID).
      *
-     * @param string $uuid
+     * @param  string  $uuid
+     * @return Account|Model
      *
      * @throws AccountNotFoundException
-     *
-     * @return Account|Model
      */
     public function get(string $uuid): Account
     {
@@ -123,8 +120,7 @@ class AccountManager implements Contracts\AccountManager
     /**
      * Retrieve all existing accounts, or all accounts belonging to a single owner.
      *
-     * @param AccountOwner|null $owner
-     *
+     * @param  AccountOwner|null  $owner
      * @return LazyCollection|Account[]
      */
     public function all(AccountOwner $owner = null): LazyCollection
@@ -140,11 +136,10 @@ class AccountManager implements Contracts\AccountManager
     /**
      * Retrieve account by its address.
      *
-     * @param mixed $address
+     * @param  mixed  $address
+     * @return Account|object
      *
      * @throws AccountNotFoundException
-     *
-     * @return Account|object
      */
     public function locate($address): Account
     {
@@ -193,11 +188,10 @@ class AccountManager implements Contracts\AccountManager
     /**
      * Prepare model attributes for creation and retrieval methods.
      *
-     * @param bool $forCreate
-     * @param AccountOwner $owner
-     * @param string|null $type
-     * @param Currency|null $currency
-     *
+     * @param  bool  $forCreate
+     * @param  AccountOwner  $owner
+     * @param  string|null  $type
+     * @param  Currency|null  $currency
      * @return array
      */
     protected function prepareAttributes(bool $forCreate, AccountOwner $owner, string $type = null, Currency $currency = null)

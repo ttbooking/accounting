@@ -11,8 +11,7 @@ class TestListener
     /**
      * Handle the event.
      *
-     * @param TransactionEvent $event
-     *
+     * @param  TransactionEvent  $event
      * @return bool
      */
     public function handle(TransactionEvent $event)
