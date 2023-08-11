@@ -8,10 +8,12 @@ use Carbon\Carbon;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Money\Currency;
 use Money\Money;
 use Throwable;
+use TTBooking\Accounting\Concerns\HasConfigurableName;
 use TTBooking\Accounting\Concerns\Lockable;
 use TTBooking\Accounting\Contracts\Transaction as TransactionContract;
 use TTBooking\Accounting\Exceptions;
@@ -19,8 +21,6 @@ use TTBooking\Accounting\Facades\Ledger;
 use TTBooking\Accounting\Facades\Transaction as TransactionManager;
 use TTBooking\CastableMoney\Casts\Currency as CurrencyCast;
 use TTBooking\CastableMoney\Casts\DecimalMoney;
-use TTBooking\ModelExtensions\Concerns\HasConfigurableName;
-use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
 
 /**
  * Class Transaction.
@@ -54,7 +54,7 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  */
 class Transaction extends Model implements TransactionContract
 {
-    use HasConfigurableName, HasUuidPrimaryKey, Lockable;
+    use HasUuids, HasConfigurableName, Lockable;
 
     protected $table = 'accounting_transactions';
 

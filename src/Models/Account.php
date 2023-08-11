@@ -7,11 +7,13 @@ namespace TTBooking\Accounting\Models;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Money\Currency;
 use Money\Money;
+use TTBooking\Accounting\Concerns\HasConfigurableName;
 use TTBooking\Accounting\Contracts\Account as AccountContract;
 use TTBooking\Accounting\Contracts\AccountOwner;
 use TTBooking\Accounting\Exceptions;
@@ -19,8 +21,6 @@ use TTBooking\Accounting\Facades\Ledger;
 use TTBooking\Accounting\Facades\Transaction as TransactionManager;
 use TTBooking\CastableMoney\Casts;
 use TTBooking\EntityLocator\Concerns\Locatable;
-use TTBooking\ModelExtensions\Concerns\HasConfigurableName;
-use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
 
 /**
  * Class Account.
@@ -40,7 +40,7 @@ use TTBooking\ModelExtensions\Concerns\HasUuidPrimaryKey;
  */
 class Account extends Model implements AccountContract
 {
-    use HasConfigurableName, HasUuidPrimaryKey, Locatable;
+    use HasUuids, HasConfigurableName, Locatable;
 
     protected $table = 'accounting_accounts';
 

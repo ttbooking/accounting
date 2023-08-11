@@ -10,7 +10,7 @@ This Laravel package provides support for robust, transactional money or asset t
 - Complete control through console commands
 
 ## Requirements
-PHP 7.4 and Laravel 6.0 at least.  
+PHP 8.0 and Laravel 9.31 at least.  
 RDBMS with native JSON field support (recommended).
 
 ## Installation
@@ -43,7 +43,7 @@ $ artisan vendor:publish --provider=TTBooking\Accounting\AccountingServiceProvid
 After all database-related modifications are done (if needed), you'll need to execute `artisan migrate` command.
 
 It is recommended to also configure morph map for every possible account owner entity type.  
-See https://laravel.com/docs/6.x/eloquent-relationships#custom-polymorphic-types for more info.
+See https://laravel.com/docs/10.x/eloquent-relationships#custom-polymorphic-types for more info.
 
 ## Usage
 To create account and link it to existing entity, you can use Account facade (or corresponding AccountManager interface):

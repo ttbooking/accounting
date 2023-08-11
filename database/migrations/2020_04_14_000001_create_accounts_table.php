@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAccountsTable extends Migration
+return new class extends Migration
 {
     const ACCOUNT_TABLE = 'accounting_accounts';
 
@@ -36,4 +36,4 @@ class CreateAccountsTable extends Migration
     {
         Schema::dropIfExists(self::ACCOUNT_TABLE);
     }
-}
+};
